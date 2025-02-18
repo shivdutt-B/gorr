@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid"; // For generating random strings
 
 export function Join() {
     const clientId = import.meta.env.VITE_CLIENT_ID;
-    const redirectUri = `https://gorr-hazel.vercel.app/`;
+    const redirectUri = `https://gorr-hazel.vercel.app/auth_done`;
     // const redirectUri = "https://gorr.onrender.com/auth/github/callback"
 
     // Get the function to initiate OAuth
