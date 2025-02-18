@@ -19,8 +19,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/join" element={<Join />}></Route>
-          <Route path="/auth_done" element={<AuthDone />}></Route>
-          <Route path="/check" eleement={<div>CHEKCING HERE</div>}></Route>
+          <Route path="/auth_done" exact element={<AuthDone />}></Route>
+          <Route path="/check" exact element={<div>CHEKCING HERE</div>}></Route>
         </Routes>
         {/* <Footer /> */}
       </BrowserRouter>
