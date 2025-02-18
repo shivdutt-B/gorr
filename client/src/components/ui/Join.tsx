@@ -1,11 +1,17 @@
-import React from "react"
-import { JoinBtn } from "./JoinBtn"
+import React from "react";
+import { JoinBtn } from "./JoinBtn";
+import useGitHubOAuth from "../../hooks/Auth";
 
 export function Join() {
-    return (
-        <>
-            <div className="flex flex-col justify-beteen items-center mt-14 h-[500px]">
+    const clientId = "YOUR_GITHUB_CLIENT_ID"; // Replace with your GitHub client ID
+    const redirectUri = `${window.location.origin}/integrations/github/oauth2/callback`; // Replace with your redirect URI
 
+    // Call the hook to initiate the OAuth flow
+    useGitHubOAuth(clientId, redirectUri);
+    
+    return (
+        <div className="flex justify-center items-center h-screen">
+            <div className="flex flex-col justify-between items-center">
                 <div className="p-[10px] rounded-full bg-white">
                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                         width="50px" height="50px" viewBox="0 0 296.000000 291.000000"
@@ -88,18 +94,15 @@ c24 -25 36 -30 89 -32 l61 -3 3 -107 c2 -75 -1 -108 -9 -108 -13 0 -269 218
 58 0 c52 0 62 3 87 30 35 37 44 37 97 4z"/>
                         </g>
                     </svg>
-
                 </div>
                 <div className="text-center mt-36">
-
                     <div className="leading-none">
                         <h1 className="text-white font-bold text-[40px]">Start With Us</h1>
                         <p className="text-gray-400">Auth using github</p>
                     </div>
                     <JoinBtn className="">JOIN</JoinBtn>
-
                 </div>
             </div>
-        </>
-    )
+        </div>
+    );
 }
