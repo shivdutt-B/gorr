@@ -3,12 +3,12 @@ import { JoinBtn } from "./JoinBtn";
 import useGitHubOAuth from "../../hooks/Auth";
 
 export function Join() {
-    const clientId = "YOUR_GITHUB_CLIENT_ID"; // Replace with your GitHub client ID
-    const redirectUri = `${window.location.origin}/integrations/github/oauth2/callback`; // Replace with your redirect URI
+    const clientId = process.env.CLIENT_ID; 
+    const redirectUri = `${window.location.origin}`; 
 
     // Call the hook to initiate the OAuth flow
     useGitHubOAuth(clientId, redirectUri);
-    
+
     return (
         <div className="flex justify-center items-center h-screen">
             <div className="flex flex-col justify-between items-center">
