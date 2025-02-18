@@ -14,9 +14,8 @@ export function Join() {
     5. When the user visits the url, an auth code is already added to the url which is then extracted and another request send to github and an access token is obtained.
     6. Finally using the access token is used to obtain user info.
     */
-   const clientId = import.meta.env.GITHUB_CLIENT_ID
-   const callBackURL = import.meta.env.GITHUB_REDIRECT_URL
-   const initiateOAuth = useGitHubOAuth(clientId, callBackURL);
+
+   const initiateOAuth = useGitHubOAuth(import.meta.env.VITE_CLIENT_ID, import.meta.env.VITE_REDIRECT_URL);
 
     return (
         <div className="flex justify-center items-center h-screen">
