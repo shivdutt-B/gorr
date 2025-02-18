@@ -1,32 +1,20 @@
 import React from "react";
 import { JoinBtn } from "./JoinBtn";
 import useGitHubOAuth from "../../hooks/Auth";
-import axios from "axios"
-import { v4 as uuidv4 } from "uuid"; // For generating random strings
 
 
 export function Join() {
-    const clientId = import.meta.env.VITE_CLIENT_ID;
-    const redirectUri = `https://gorr-hazel.vercel.app/auth_done`;
-    // const redirectUri = "https://gorr.onrender.com/auth/github/callback"
 
     // Get the function to initiate OAuth
-    const initiateOAuth = useGitHubOAuth(clientId, redirectUri);
-
-    const toBackend = async () => {
-        // const res = await axios.get("https://gorr.onrender.com/auth/github/")
-        // console.log('FROM BACKEND RESPONSE', res);
-
-        console.log('HIIII')
-        const state = uuidv4();
-        localStorage.setItem("latestCSRFToken", state);
-
-        // Construct the GitHub OAuth URL
-        const githubOAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&response_type=code&scope=repo&redirect_uri=${redirectUri}&state=${state}`;
-
-        // Redirect the user to GitHub
-        window.location.assign(githubOAuthUrl);
-    }
+    /*
+    1. When user clicks join button(Join component).
+    2. A request is send to github for user authentication.
+    3. If auth is successful then user is redirected to an already provided url(a frontend url).
+    4. When the user gets redirected to the url(component) and an useEffect is called on the component(Dashboard).
+    5. When the user visits the url, an auth code is already added to the url which is then extracted and another request send to github and an access token is obtained.
+    6. Finally using the access token is used to obtain user info.
+    */
+    const initiateOAuth = useGitHubOAuth(import.meta.env.GITHUB_CLIENT_ID, import.meta.env.GITHUB_REDIRECT_URL);
 
     return (
         <div className="flex justify-center items-center h-screen">
@@ -130,8 +118,7 @@ c24 -25 36 -30 89 -32 l61 -3 3 -107 c2 -75 -1 -108 -9 -108 -13 0 -269 218
                     <div
                         onClick={() => {
                             console.log("clicked");
-                            // initiateOAuth(); // Call the function to initiate OAuth
-                            toBackend()
+                            initiateOAuth(); 
                         }}
                     >
                         <JoinBtn className="">JOIN</JoinBtn>
