@@ -1,6 +1,7 @@
 import React from "react";
 import { JoinBtn } from "./JoinBtn";
 import useGitHubOAuth from "../../hooks/Auth";
+import axios from "axios"
 
 export function Join() {
     const clientId = import.meta.env.VITE_CLIENT_ID;
@@ -8,6 +9,11 @@ export function Join() {
 
     // Get the function to initiate OAuth
     const initiateOAuth = useGitHubOAuth(clientId, redirectUri);
+
+    const toBackend = async () => {
+        const res = await axios.get("https://gorr.onrender.com/auth/github/")
+        console.log('FROM BACKEND RESPONSE', res);
+    }
 
     return (
         <div className="flex justify-center items-center h-screen">
@@ -111,7 +117,8 @@ c24 -25 36 -30 89 -32 l61 -3 3 -107 c2 -75 -1 -108 -9 -108 -13 0 -269 218
                     <div
                         onClick={() => {
                             console.log("clicked");
-                            initiateOAuth(); // Call the function to initiate OAuth
+                            // initiateOAuth(); // Call the function to initiate OAuth
+                            toBackend()
                         }}
                     >
                         <JoinBtn className="">JOIN</JoinBtn>
