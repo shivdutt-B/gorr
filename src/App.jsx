@@ -6,22 +6,20 @@ import Home from "./pages/Home"
 import GorrLogo from "../src/assets/Logo/gorr_logo.svg"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Footer from "./components/ui/Footer"
+import { Navbar } from "./components/ui/Navbar"
+import { Join } from "./components/ui/Join";
 
 function App() {
   return (
 
     <div className="App">
       <BrowserRouter>
-        {/* <div className="text-red-900 bold">HELLO
-          <div className="w-[65px] h-[65px] flex justify-center items-center bg-white rounded-full">
-            <img src={GorrLogo} className="bg-white w-[45px] h-[45px]" />
-          </div>
-        </div> */}
+        {/* <Navbar /> */}
         <Routes>
           <Route path="/" element={<Home />}></Route>
-          <Route path="/there" element={<div>HII</div>}></Route>
+          <Route path="/join" element={<Join />}></Route>
         </Routes>
-        <Footer />
+        {/* <Footer /> */}
       </BrowserRouter>
     </div>
   );
