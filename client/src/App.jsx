@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Footer from "./components/ui/Footer"
 import { Navbar } from "./components/ui/Navbar"
 import { Join } from "./components/ui/Join";
+import AuthDone from "./pages/AuthDone";
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/join" element={<Join />}></Route>
-          <Route path="/auth_done" element={<div>DOEM</div>}></Route>
+          <Route path="/auth_done" element={<AuthDone />}></Route>
         </Routes>
         {/* <Footer /> */}
       </BrowserRouter>

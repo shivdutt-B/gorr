@@ -2,17 +2,30 @@ import React from "react";
 import { JoinBtn } from "./JoinBtn";
 import useGitHubOAuth from "../../hooks/Auth";
 import axios from "axios"
+import { v4 as uuidv4 } from "uuid"; // For generating random strings
+
 
 export function Join() {
     const clientId = import.meta.env.VITE_CLIENT_ID;
-    const redirectUri = `https://gorr-hazel.vercel.app/`;
+    // const redirectUri = `https://gorr-hazel.vercel.app/`;
+    const redirectUri = "https://gorr.onrender.com/auth/github/callback"
 
     // Get the function to initiate OAuth
     const initiateOAuth = useGitHubOAuth(clientId, redirectUri);
 
     const toBackend = async () => {
-        const res = await axios.get("https://gorr.onrender.com/auth/github/")
-        console.log('FROM BACKEND RESPONSE', res);
+        // const res = await axios.get("https://gorr.onrender.com/auth/github/")
+        // console.log('FROM BACKEND RESPONSE', res);
+
+        console.log('HIIII')
+        const state = uuidv4();
+        localStorage.setItem("latestCSRFToken", state);
+
+        // Construct the GitHub OAuth URL
+        const githubOAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&response_type=code&scope=repo&redirect_uri=${redirectUri}&state=${state}`;
+
+        // Redirect the user to GitHub
+        window.location.assign(githubOAuthUrl);
     }
 
     return (
