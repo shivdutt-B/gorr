@@ -18,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/join" element={<Join />}></Route>
+          <Route path="/auth_done" element={<div>DOEM</div>}></Route>
         </Routes>
         {/* <Footer /> */}
       </BrowserRouter>

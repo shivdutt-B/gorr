@@ -3,8 +3,8 @@ import { JoinBtn } from "./JoinBtn";
 import useGitHubOAuth from "../../hooks/Auth";
 
 export function Join() {
-    const clientId = process.env.CLIENT_ID; 
-    const redirectUri = `${window.location.origin}`; 
+    const clientId = import.meta.env.VITE_CLIENT_ID;
+    const redirectUri = `${window.location.origin}`;
 
     // Call the hook to initiate the OAuth flow
     useGitHubOAuth(clientId, redirectUri);
@@ -100,7 +100,10 @@ c24 -25 36 -30 89 -32 l61 -3 3 -107 c2 -75 -1 -108 -9 -108 -13 0 -269 218
                         <h1 className="text-white font-bold text-[40px]">Start With Us</h1>
                         <p className="text-gray-400">Auth using github</p>
                     </div>
-                    <JoinBtn className="">JOIN</JoinBtn>
+                    <JoinBtn onClick={() => {
+                        console.log('clicked')
+                        useGitHubOAuth(clientId, redirectUri)
+                    }} className="">JOIN</JoinBtn>
                 </div>
             </div>
         </div>
