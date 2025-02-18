@@ -15,9 +15,8 @@ import { ButtonLoading } from "./components/ui/LoadingBtn"
 function App() {
   return (
     <RecoilRoot>
-      <div className="App">
-        <BrowserRouter>
-          {/* <Navbar /> */}
+      <BrowserRouter>
+        <div className="App">
           <Routes>
             <Route path="/" element={<Home />}></Route>
             <Route path="/join" element={<Join />}></Route>
@@ -25,10 +24,8 @@ function App() {
             <Route path="/check" exact element={<div>CHEKCING HERE</div>}></Route>
             <Route path="/btn" exact element={<ButtonLoading />}></Route>
           </Routes>
-          {/* <ButtonLoading /> */}
-          {/* <Footer /> */}
-        </BrowserRouter>
-      </div>
+        </div>
+      </BrowserRouter>
     </RecoilRoot>
   );
 }
