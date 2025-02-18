@@ -4,23 +4,31 @@ import useGitHubOAuth from "../../hooks/Auth";
 
 export function Join() {
     const clientId = import.meta.env.VITE_CLIENT_ID;
-    const redirectUri = `${window.location.origin}`;
+    const redirectUri = `https://gorr-hazel.vercel.app/`;
 
-    // Call the hook to initiate the OAuth flow
-    useGitHubOAuth(clientId, redirectUri);
+    // Get the function to initiate OAuth
+    const initiateOAuth = useGitHubOAuth(clientId, redirectUri);
 
     return (
         <div className="flex justify-center items-center h-screen">
             <div className="flex flex-col justify-between items-center">
                 <div className="p-[10px] rounded-full bg-white">
-                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                        width="50px" height="50px" viewBox="0 0 296.000000 291.000000"
-                        preserveAspectRatio="xMidYMid meet">
+                    <svg
+                        version="1.0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="50px"
+                        height="50px"
+                        viewBox="0 0 296.000000 291.000000"
+                        preserveAspectRatio="xMidYMid meet"
+                    >
                         <metadata>
                             Created by potrace 1.16, written by Peter Selinger 2001-2019
                         </metadata>
-                        <g transform="translate(0.000000,291.000000) scale(0.100000,-0.100000)"
-                            fill="black" stroke="none">
+                        <g
+                            transform="translate(0.000000,291.000000) scale(0.100000,-0.100000)"
+                            fill="black"
+                            stroke="none"
+                        >
                             <path d="M440 2592 l-154 -27 -28 -115 c-16 -63 -40 -165 -54 -226 l-25 -111
 81 -151 81 -151 -10 -98 c-6 -54 -20 -182 -32 -284 l-22 -185 225 -405 c124
 -222 235 -423 246 -446 23 -45 11 -39 217 -102 468 -143 566 -170 593 -161 15
@@ -100,10 +108,14 @@ c24 -25 36 -30 89 -32 l61 -3 3 -107 c2 -75 -1 -108 -9 -108 -13 0 -269 218
                         <h1 className="text-white font-bold text-[40px]">Start With Us</h1>
                         <p className="text-gray-400">Auth using github</p>
                     </div>
-                    <JoinBtn onClick={() => {
-                        console.log('clicked')
-                        useGitHubOAuth(clientId, redirectUri)
-                    }} className="">JOIN</JoinBtn>
+                    <div
+                        onClick={() => {
+                            console.log("clicked");
+                            initiateOAuth(); // Call the function to initiate OAuth
+                        }}
+                    >
+                        <JoinBtn className="">JOIN</JoinBtn>
+                    </div>
                 </div>
             </div>
         </div>

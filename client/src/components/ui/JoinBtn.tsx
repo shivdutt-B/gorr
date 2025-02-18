@@ -11,7 +11,7 @@ export function JoinBtn() {
                     Authorize
                 </span>
             </JoinBtnSource>
-            
+
         </>
     )
 }
