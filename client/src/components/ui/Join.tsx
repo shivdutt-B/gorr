@@ -5,7 +5,6 @@ import useGitHubOAuth from "../../hooks/Auth";
 
 export function Join() {
 
-    // Get the function to initiate OAuth
     /*
     1. When user clicks join button(Join component).
     2. A request is send to github for user authentication.
