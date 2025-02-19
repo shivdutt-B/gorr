@@ -14,7 +14,7 @@ export function Join() {
     6. Finally using the access token is used to obtain user info.
     */
 
-   const initiateOAuth = useGitHubOAuth(import.meta.env.VITE_CLIENT_ID, "https://gorr-lyart.vercel.app/auth_done");
+   const initiateOAuth = useGitHubOAuth(import.meta.env.VITE_CLIENT_ID, "https://gorr.onrender.com/auth/github/callback");
 
     return (
         <div className="flex justify-center items-center h-screen">

@@ -9,7 +9,7 @@ app.use(express.json());
 
 const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-const FRONTEND_URL = "http://localhost:5173"; // Update with your frontend URL
+const FRONTEND_URL = "https://gorr-lyart.vercel.app"; // Update with your frontend URL
 
 // Step 1: Redirect user to GitHub OAuth
 app.get("/auth/github", (req, res) => {
