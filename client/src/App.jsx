@@ -7,15 +7,25 @@ import GorrLogo from "./assets/Logo/gorr_logo.svg"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Footer from "./components/ui/Footer"
 import { Navbar } from "./components/ui/Navbar"
-import { Join } from "./components/ui/Join";
+// import { Join } from "./components/ui/Join";
+import Join from "./pages/Join";
 import AuthDone from "./pages/AuthDone";
-import { RecoilRoot } from "recoil";
 import { ButtonLoading } from "./components/ui/LoadingBtn"
+import { RecoilRoot } from "recoil";
+import { useEffect } from "react";
+
+import { userAtom } from "./states/userAtom";
+import { useRecoilState } from 'recoil'
 
 function App() {
+  const [user, setUser] = useRecoilState(userAtom)
+
+  useEffect(() => {
+    console.log('USER', user)
+  }, [])
   return (
-    <RecoilRoot>
-      <BrowserRouter>
+    <BrowserRouter>
+      <RecoilRoot>
         <div className="App">
           <Routes>
             <Route path="/" element={<Home />}></Route>
@@ -25,8 +35,8 @@ function App() {
             <Route path="/btn" exact element={<ButtonLoading />}></Route>
           </Routes>
         </div>
-      </BrowserRouter>
-    </RecoilRoot>
+      </RecoilRoot>
+    </BrowserRouter>
   );
 }
 

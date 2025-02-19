@@ -1,143 +1,47 @@
-// import React, { useEffect } from "react";
-// import axios from "axios";
-// import { ButtonLoading } from "../components/ui/LoadingBtn";
-
-// function AuthDone() {
-//     async function getUser() {
-//         console.log("User data:", window.location);
-
-//         const params = new URLSearchParams(window.location.search);
-//         const code = params.get("code");
-
-//         if (!code) {
-//             console.error("Authorization code is missing");
-//             return;
-//         }
-
-//         try {
-//             // Exchange code for access token
-//             const tokenResponse = await axios.post(
-//                 "https://github.com/login/oauth/access_token",
-//                 null,
-//                 {
-//                     params: {
-//                         client_id: import.meta.env.GITHUB_CLIENT_ID,
-//                         client_secret: import.meta.env.GITHUB_CLIENT_SECRET, // Fixed env variable
-//                         code,
-//                     },
-//                     headers: { Accept: "application/json" },
-//                 }
-//             );
-
-//             const accessToken = tokenResponse.data.access_token;
-
-//             if (!accessToken) {
-//                 console.error("Failed to retrieve access token");
-//                 return;
-//             }
-
-//             // Fetch user details
-//             const userResponse = await axios.get("https://api.github.com/user", {
-//                 headers: { Authorization: `token ${accessToken}` },
-//             });
-
-//             console.log("USER:", userResponse.data);
-//         } catch (error) {
-//             console.error("Error fetching user:", error);
-//         }
-//     }
-
-//     useEffect(() => {
-//         getUser();
-//     }, []);
-
-//     return <div>AuthDone</div>;
-// }
-
-// export default AuthDone;
-
-
-
-
-// ====================================================================================
-
-import React, { useEffect } from "react";
-import axios from "axios";
-import { useLoading } from "../hooks/useLoading"; // Import the custom hook
+import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
+import { useFetchUserData } from "../services/FetchUserData";
 import { loadingAtom } from "../states/loadingAtom";
+import { userAtom } from "../states/userAtom";
+import { ButtonLoading } from "../components/ui/LoadingBtn";
+import { useLoading } from "../hooks/useLoading";
 
 function AuthDone() {
-    const { startLoading, stopLoading, cancelRequest } = useLoading();
-    const { loading } = useRecoilValue(loadingAtom);
+    const user = useRecoilValue(userAtom);
+    const isLoading = useRecoilValue(loadingAtom);
+    const { cancelRequests } = useLoading();
+    const fetchUser = useFetchUserData();
 
-    async function getUser() {
-        console.log("User data:", window.location);
-
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
-
-        if (!code) {
-            console.error("Authorization code is missing");
-            return;
-        }
-
-        const signal = startLoading(); // Start loading and get the abort signal
-
-        try {
-            // Exchange code for access token
-            const tokenResponse = await axios.post(
-                "https://github.com/login/oauth/access_token",
-                null,
-                {
-                    params: {
-                        client_id: import.meta.env.VITE_GITHUB_CLIENT_ID, // Use VITE_ prefix for Vite env variables
-                        client_secret: import.meta.env.VITE_GITHUB_CLIENT_SECRET,
-                        code,
-                    },
-                    headers: { Accept: "application/json" },
-                    signal, // Pass abort signal
-                }
-            );
-
-            const accessToken = tokenResponse.data.access_token;
-
-            if (!accessToken) {
-                console.error("Failed to retrieve access token");
-                return;
-            }
-
-            // Fetch user details
-            const userResponse = await axios.get("https://api.github.com/user", {
-                headers: { Authorization: `token ${accessToken}` },
-                signal, // Pass abort signal
-            });
-
-            console.log("USER:", userResponse.data);
-        } catch (error) {
-            if (axios.isCancel(error)) {
-                console.log("Request canceled:", error.message);
-            } else {
-                console.error("Error fetching user:", error);
-            }
-        } finally {
-            stopLoading();
-        }
-    }
+    const [hasFetchedUser, setHasFetchedUser] = useState(false);
 
     useEffect(() => {
-        getUser();
-    }, []);
+        setTimeout(() => {
+            if (!user && !hasFetchedUser) {
+                fetchUser();
+                setHasFetchedUser(true);
+            }
+        }, 5000)
+    }, [user]);
 
     return (
         <div>
-            <h2>AuthDone</h2>
-            {loading && (
-                <div>
-                    <div onClick={cancelRequest}>
-                        <ButtonLoading></ButtonLoading>
-                    </div>
+            {isLoading ? (
+                <div onClick={cancelRequests}>
+                    <ButtonLoading />
                 </div>
+            ) : user ? (
+                <div>
+                    <h2>Welcome, {user.login}!</h2>
+                    <img src={user.avatar_url} alt="Profile" width="100" />
+                    <p>
+                        GitHub Profile:{" "}
+                        <a href={user.html_url} target="_blank" rel="noopener noreferrer">
+                            {user.html_url}
+                        </a>
+                    </p>
+                </div>
+            ) : (
+                <p>Failed to load user data. Please try logging in again.</p>
             )}
         </div>
     );

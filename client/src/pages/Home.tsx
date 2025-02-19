@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { FeaturesSection } from '../components/ui/FeaturesSection'
 import {FlipWords} from "../components/ui/FlipWords"
 import  {Cover} from "../components/ui/Cover"

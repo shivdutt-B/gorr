@@ -2,10 +2,14 @@ require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+
 
 const app = express();
 app.use(cors()); // Allow frontend requests
 app.use(express.json());
+app.use(cookieParser());
+
 
 const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
@@ -21,12 +25,11 @@ app.get("/auth/github", (req, res) => {
 
 // Step 2: GitHub redirects back with a code
 app.get("/auth/github/callback", async (req, res) => {
-    console.log('REACHED2')
     const code = req.query.code;
+    console.log('CODE', code)
     if (!code) return res.status(400).json({ error: "Authorization code missing" });
 
     try {
-        // Step 3: Exchange code for access token
         const tokenResponse = await axios.post("https://github.com/login/oauth/access_token", null, {
             params: {
                 client_id: CLIENT_ID,
@@ -36,22 +39,15 @@ app.get("/auth/github/callback", async (req, res) => {
             headers: { Accept: "application/json" },
         });
 
-        const accessToken = tokenResponse.data.access_token;
 
+        const accessToken = tokenResponse.data.access_token;
+        console.log('TOKEN', accessToken)
         if (!accessToken) return res.status(400).json({ error: "Failed to get access token" });
 
-        // Step 4: Fetch user details
-        const userResponse = await axios.get("https://api.github.com/user", {
-            headers: { Authorization: `token ${accessToken}` },
-        });
+        // Set HTTP-only secure cookie
+        res.cookie("github_token", accessToken, { httpOnly: false, secure: true, sameSit: "Strict" });
 
-        const userData = userResponse.data;
-
-        // Redirect to frontend with user data (or store it in session)
-        res.redirect(`${FRONTEND_URL}/auth_done?user=${encodeURIComponent(JSON.stringify(userData))}`)
-        // res.redirect(`${FRONTEND_URL}/auth_done`)
-        // res.json({"success":"true", 'user': userData})
-
+        res.redirect(`${FRONTEND_URL}/auth_done`);
     } catch (error) {
         console.error("Error authenticating with GitHub:", error.message);
         res.status(500).json({ error: "Internal Server Error" });
@@ -60,3 +56,4 @@ app.get("/auth/github/callback", async (req, res) => {
 
 // Start the server
 app.listen(5000, () => console.log("Server running on http://localhost:5000"));
+

@@ -1,6 +1,11 @@
-import { atom } from 'recoil';
+import { atom } from "recoil";
 
 export const loadingAtom = atom({
-  key: 'loadingatom', // unique ID for this atom
-  default: { loading: false, abortController: null }, // initial state
+  key: "loadingState",
+  default: false,
+});
+
+export const requestMapAtom = atom({
+  key: "requestMapState",
+  default: new Map(),
 });

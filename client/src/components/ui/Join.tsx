@@ -14,7 +14,7 @@ export function Join() {
     6. Finally using the access token is used to obtain user info.
     */
 
-   const initiateOAuth = useGitHubOAuth(import.meta.env.VITE_CLIENT_ID, "https://gorr.onrender.com/auth/github/callback");
+    const initiateOAuth = useGitHubOAuth(import.meta.env.VITE_CLIENT_ID, "http://localhost:5000/auth/github/callback");
 
     return (
         <div className="flex justify-center items-center h-screen">
@@ -118,7 +118,7 @@ c24 -25 36 -30 89 -32 l61 -3 3 -107 c2 -75 -1 -108 -9 -108 -13 0 -269 218
                     <div
                         onClick={() => {
                             console.log("clicked");
-                            initiateOAuth(); 
+                            initiateOAuth();
                         }}
                     >
                         <JoinBtn className="">JOIN</JoinBtn>

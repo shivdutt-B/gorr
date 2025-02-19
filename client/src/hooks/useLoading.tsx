@@ -1,28 +1,43 @@
-import { useSetRecoilState } from 'recoil';
-import { loadingAtom } from '../states/loadingAtom';
+import { useRecoilState } from "recoil";
+import { loadingAtom, requestMapAtom } from "../states/loadingAtom";
 
 export const useLoading = () => {
-    const setLoadingState = useSetRecoilState(loadingAtom);
+    const [isLoading, setLoading] = useRecoilState(loadingAtom);
+    const [requestMap, setRequestMap] = useRecoilState(requestMapAtom);
 
-    const startLoading = () => {
+    const startLoading = (key: string) => {
         const controller = new AbortController();
-        setLoadingState({ loading: true, abortController: controller });
+
+        setRequestMap((prev) => {
+            const newMap = new Map(prev);
+            newMap.set(key, controller);
+            return newMap;
+        });
+
+        setLoading(true);
         return controller.signal;
     };
 
-    const stopLoading = () => {
-        setLoadingState({ loading: false, abortController: null });
-    };
-
-    const cancelRequest = () => {
-        setLoadingState(prevState => {
-            if (prevState.abortController) {
-                prevState.abortController.abort();
-                return { loading: false, abortController: null };
-            }
-            return prevState;
+    const stopLoading = (key: string) => {
+        setRequestMap((prev) => {
+            const newMap = new Map(prev);
+            newMap.delete(key);
+            return newMap;
         });
+
+        // ✅ Ensure this runs **outside** state update functions
+        setTimeout(() => {
+            setLoading((prev) => {
+                return requestMap.size === 0 ? false : prev;
+            });
+        }, 0);
     };
 
-    return { startLoading, stopLoading, cancelRequest };
+    const cancelRequests = () => {
+        requestMap.forEach((controller) => controller.abort());
+        setRequestMap(new Map());
+        setLoading(false);
+    };
+
+    return { isLoading, startLoading, stopLoading, cancelRequests };
 };
