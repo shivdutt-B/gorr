@@ -9,7 +9,8 @@ app.use(express.json());
 
 const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-const FRONTEND_URL = "https://gorr-lyart.vercel.app"; // Update with your frontend URL
+// const FRONTEND_URL = "https://gorr-lyart.vercel.app"; // Update with your frontend URL
+const FRONTEND_URL = "http://localhost:5173"
 
 // Step 1: Redirect user to GitHub OAuth
 app.get("/auth/github", (req, res) => {
@@ -47,8 +48,8 @@ app.get("/auth/github/callback", async (req, res) => {
         const userData = userResponse.data;
 
         // Redirect to frontend with user data (or store it in session)
-        // res.redirect(`${FRONTEND_URL}/auth_done?user=${encodeURIComponent(JSON.stringify(userData))}`)
-        res.redirect(`${FRONTEND_URL}/auth_done`)
+        res.redirect(`${FRONTEND_URL}/auth_done?user=${encodeURIComponent(JSON.stringify(userData))}`)
+        // res.redirect(`${FRONTEND_URL}/auth_done`)
         // res.json({"success":"true", 'user': userData})
 
     } catch (error) {
