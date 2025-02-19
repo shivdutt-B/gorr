@@ -47,9 +47,9 @@ app.get("/auth/github/callback", async (req, res) => {
         const userData = userResponse.data;
 
         // Redirect to frontend with user data (or store it in session)
-        // res.redirect(`${FRONTEND_URL}/dashboard?user=${encodeURIComponent(JSON.stringify(userData))}`);
         // res.redirect(`${FRONTEND_URL}/auth_done?user=${encodeURIComponent(JSON.stringify(userData))}`)
-        res.json({"success":"true", 'user': userData})
+        res.redirect(`${FRONTEND_URL}/auth_done`)
+        // res.json({"success":"true", 'user': userData})
 
     } catch (error) {
         console.error("Error authenticating with GitHub:", error.message);
