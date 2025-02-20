@@ -15,12 +15,10 @@ function AuthDone() {
     const [hasFetchedUser, setHasFetchedUser] = useState(false);
 
     useEffect(() => {
-        setTimeout(() => {
-            if (!user && !hasFetchedUser) {
-                fetchUser();
-                setHasFetchedUser(true);
-            }
-        }, 5000)
+        if (!user && !hasFetchedUser) {
+            fetchUser();
+            setHasFetchedUser(true);
+        }
     }, [user]);
 
     return (

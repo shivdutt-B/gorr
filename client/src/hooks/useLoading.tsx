@@ -19,23 +19,25 @@ export const useLoading = () => {
     };
 
     const stopLoading = (key: string) => {
+        let newMap;
+        
+        // ✅ First, update the requestMapAtom state
         setRequestMap((prev) => {
-            const newMap = new Map(prev);
+            newMap = new Map(prev);
             newMap.delete(key);
             return newMap;
         });
 
-        // ✅ Ensure this runs **outside** state update functions
-        setTimeout(() => {
-            setLoading((prev) => {
-                return requestMap.size === 0 ? false : prev;
-            });
-        }, 0);
+        // ✅ Then, update the loading state separately (outside setRequestMap)
+        setLoading(newMap.size > 0);
     };
 
     const cancelRequests = () => {
-        requestMap.forEach((controller) => controller.abort());
-        setRequestMap(new Map());
+        setRequestMap((prev) => {
+            prev.forEach((controller) => controller.abort());
+            return new Map();
+        });
+
         setLoading(false);
     };
 

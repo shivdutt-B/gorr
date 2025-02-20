@@ -20,27 +20,24 @@ export const useFetchUserData = () => {
 
     console.log("🔍 Using GitHub Token:", token);
 
-
     const signal = startLoading("FetchUserData");
 
     try {
+      const request = axios.get("https://api.github.com/user", {
+        headers: { Authorization: `Bearer ${token}` },
+        signal,
+      });
 
-        const userResponse = await axios.get("https://api.github.com/user", {
-          headers: { Authorization: `Bearer ${token}` }, 
-          signal,
-        });
-        
-        console.log("✅ GitHub API Response:", userResponse.data);
-        
-        // ✅ Update Recoil state **outside of async function**
-        setTimeout(() => {
-          setUser(userResponse.data);
-          stopLoading("FetchUserData"); // ✅ Safe state update
-        }, 0);
+      const userResponse = await request;
+      console.log("✅ GitHub API Response:", userResponse.data);
 
+      setTimeout(() => {
+        setUser(userResponse.data);
+        stopLoading("FetchUserData");
+      }, 0);
     } catch (error) {
-      console.error("❌ Failed to fetch user data:", error);
-      stopLoading("FetchUserData"); // ✅ Ensure this runs
+      console.error("❌ Request aborted or failed:", error);
+      stopLoading("FetchUserData");
     }
   };
 };
