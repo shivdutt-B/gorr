@@ -9,7 +9,7 @@ export const useFetchUserData = () => {
   const { startLoading, stopLoading } = useLoading();
   const setUser = useSetRecoilState(userAtom);
 
-  return async () => {
+  return useCallback(async () => {
     const token = GetCookie("github_token");
 
     if (!token) {
@@ -39,5 +39,7 @@ export const useFetchUserData = () => {
       console.error("❌ Request aborted or failed:", error);
       stopLoading("FetchUserData");
     }
-  };
+}, [setUser, startLoading, stopLoading]); // ✅ Memoized to prevent re-renders
 };
+
+

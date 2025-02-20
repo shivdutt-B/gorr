@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
 import { useFetchUserData } from "../services/FetchUserData";
 import { loadingAtom } from "../states/loadingAtom";
@@ -12,14 +12,16 @@ function AuthDone() {
     const { cancelRequests } = useLoading();
     const fetchUser = useFetchUserData();
 
-    const [hasFetchedUser, setHasFetchedUser] = useState(false);
+    // ✅ Use useRef() to prevent multiple requests
+    const hasFetched = useRef(false);
 
     useEffect(() => {
-        if (!user && !hasFetchedUser) {
+        if (!user && !hasFetched.current) {
+            console.log("🚀 Fetching GitHub user...");
             fetchUser();
-            setHasFetchedUser(true);
+            hasFetched.current = true; // ✅ Prevents duplicate calls
         }
-    }, [user]);
+    }, [fetchUser, user]);
 
     return (
         <div>
