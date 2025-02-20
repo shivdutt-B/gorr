@@ -1,45 +1,51 @@
-import { useLoading } from "./useLoading";
-import { useSetRecoilState } from "recoil";
+import { useLoading } from "../hooks/useLoading";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 import { userAtom } from "../states/userAtom";
 import axios from "axios";
-import GetCookie from "../utils/GetCookie";
 import { useCallback } from "react";
+import GetCookie from "../utils/GetCookie";
 
-export const useFetchUserData = () => {
-  const { startLoading, stopLoading } = useLoading();
-  const setUser = useSetRecoilState(userAtom);
+export function useFetchUserData() {
+    const { startLoading, stopLoading } = useLoading();
+    const setUser = useSetRecoilState(userAtom);
+    const user = useRecoilValue(userAtom);
 
-  return useCallback(async () => {
-    const token = GetCookie("github_token");
+    const fetchUser = useCallback(async () => {
+        if (user) {
+            console.log("✅ User is already loaded, skipping fetch.");
+            return;
+        }
 
-    if (!token) {
-      console.error("❌ No GitHub token found.");
-      stopLoading("FetchUserData");
-      return;
-    }
+        const token = GetCookie("github_token");
+        if (!token) {
+            console.warn("❌ No GitHub token found. Skipping fetch.");
+            return;
+        }
 
-    console.log("🔍 Using GitHub Token:", token);
+        console.log("⏳ Fetching GitHub user...");
+        const signal = startLoading("FetchUser");
 
-    const signal = startLoading("FetchUserData");
+        try {
+            const response = await axios.get("https://api.github.com/user", {
+                headers: { Authorization: `Bearer ${token}` },
+                signal,
+            });
 
-    try {
-      const request = axios.get("https://api.github.com/user", {
-        headers: { Authorization: `Bearer ${token}` },
-        signal,
-      });
+            console.log("✅ GitHub API Response:", response.data);
 
-      const userResponse = await request;
-      console.log("✅ GitHub API Response:", userResponse.data);
+            setTimeout(() => {
+                setUser(response.data);
+                stopLoading("FetchUser");
+            }, 0);
+        } catch (error) {
+            if (axios.isCancel(error)) {
+                console.log("🚫 Request canceled:", error.message);
+            } else {
+                console.error("❌ Error fetching user:", error);
+            }
+            stopLoading("FetchUser");
+        }
+    }, [setUser, user, startLoading, stopLoading]);
 
-      setTimeout(() => {
-        setUser(userResponse.data);
-        stopLoading("FetchUserData");
-      }, 0);
-    } catch (error) {
-      console.error("❌ Request aborted or failed:", error);
-      stopLoading("FetchUserData");
-    }
-}, [setUser, startLoading, stopLoading]); // ✅ Memoized to prevent re-renders
-};
-
-
+    return fetchUser;
+}

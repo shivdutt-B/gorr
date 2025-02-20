@@ -7,21 +7,19 @@ import { ButtonLoading } from "../components/ui/LoadingBtn";
 import { TryAgainSource } from "../components/ui/TryAgainSource";
 import { useLoading } from "../hooks/useLoading";
 
-
 function DashboardLayout() {
     const user = useRecoilValue(userAtom);
     const isLoading = useRecoilValue(loadingAtom);
     const { cancelRequests } = useLoading();
     const fetchUser = useFetchUserData();
 
-    // ✅ Use useRef() to prevent multiple requests
     const hasFetched = useRef(false);
 
     useEffect(() => {
         if (!user && !hasFetched.current) {
-            console.log("🚀 Fetching GitHub user...");
+            console.log("🚀 Fetching GitHub user from Dashboard... FROM DASHBO0ARD");
             fetchUser();
-            hasFetched.current = true; // ✅ Prevents duplicate calls
+            hasFetched.current = true;
         }
     }, [fetchUser, user]);
 
