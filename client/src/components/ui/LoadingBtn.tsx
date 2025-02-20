@@ -7,7 +7,7 @@ export function ButtonLoading() {
 
     return (
         <div className="flex justify-center items-center h-screen">
-            <Button className="bg-white text-black flex items-center gap-2 px-4 py-2"
+            <Button className="bg-red-500 text-white flex items-center gap-2 px-4 py-2"
                 onClick={cancelRequests} // ✅ Ensure cancel works
             >
                 Cancel

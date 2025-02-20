@@ -1,12 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
-import { useFetchUserData } from "../services/FetchUserData";
+import { useFetchUserData } from "../hooks/useFetchUserData";
 import { loadingAtom } from "../states/loadingAtom";
 import { userAtom } from "../states/userAtom";
 import { ButtonLoading } from "../components/ui/LoadingBtn";
+import { TryAgainSource } from "../components/ui/TryAgainSource";
 import { useLoading } from "../hooks/useLoading";
 
-function AuthDone() {
+
+function DashboardLayout() {
     const user = useRecoilValue(userAtom);
     const isLoading = useRecoilValue(loadingAtom);
     const { cancelRequests } = useLoading();
@@ -41,10 +43,12 @@ function AuthDone() {
                     </p>
                 </div>
             ) : (
-                <p>Failed to load user data. Please try logging in again.</p>
+                <div onClick={cancelRequests}>
+                    <TryAgainSource onClick={cancelRequests} />
+                </div>
             )}
         </div>
     );
 }
 
-export default AuthDone;
+export default DashboardLayout;

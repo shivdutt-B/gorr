@@ -1,4 +1,4 @@
-import { useLoading } from "../hooks/useLoading";
+import { useLoading } from "./useLoading";
 import { useSetRecoilState } from "recoil";
 import { userAtom } from "../states/userAtom";
 import axios from "axios";

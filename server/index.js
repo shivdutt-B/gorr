@@ -47,7 +47,7 @@ app.get("/auth/github/callback", async (req, res) => {
         // Set HTTP-only secure cookie
         res.cookie("github_token", accessToken, { httpOnly: false, secure: true, sameSit: "Strict" });
 
-        res.redirect(`${FRONTEND_URL}/auth_done`);
+        res.redirect(`${FRONTEND_URL}/dashboard`);
     } catch (error) {
         console.error("Error authenticating with GitHub:", error.message);
         res.status(500).json({ error: "Internal Server Error" });
