@@ -1,7 +1,4 @@
 import React from 'react'
-import { motion } from "motion/react";
-import { RefObject, useEffect, useId, useState } from "react";
-import { cn } from "../../utils/cn";
 
 import FridayRelease from "../../assets/FeatureHero/friday_release.png"
 import { AnimatedBeam } from './AnimatedBeam';
@@ -35,7 +32,6 @@ function ExtraInfo() {
                             </div>
                         </div>
 
-                        {/* <div className="col-span-2 sm:col-span-1 md:col-span-2 bg-black rounded-lg overflow-hidden"> */}
                         <div className="integrate-snippet-container col-span-2 sm:col-span-2 md:col-span-2 bg-black rounded-lg overflow-hidden">
                             <AnimatedBeam />
                             <div className="snippit-container grid gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-2">
@@ -84,31 +80,8 @@ function ExtraInfo() {
                                         <p className="text-blue-300 underline">https://vercel-site.vercel.app</p>
                                     </div>
                                 </div>
-
-
-
                             </div>
                         </div>
-                        {/* <div className="hidden sm:flex sm:flex-row text-center  justify-between <div className="hidden sm:flex sm:flex-row text-center flex-wrap justify-between gap-3 sm:flex-row">
-"> */}
-                        {/* <div className="steps-container gap-3">
-
-                            <div className="h-full flex flex-col justify-center items-center rounded-lg">
-                                <p className="text-red-500 text-6xl md:text-6xl font-extrabold inline-block"><span className="text-white text-8xl hollow-text">1</span> Code</p>
-                            </div>
-                            <div className="h-full flex flex-col justify-center items-center rounded-lg">
-                                <div className="relative">
-                                    <p className="relative z-10 text-blue-500 text-6xl md:text-6xl font-extrabold inline-block"><span className="text-white text-8xl hollow-text">2</span> Push</p>
-                                </div>
-                            </div>
-                            <div className="text-green-500 h-full flex flex-col justify-center items-center rounded-lg">
-                                <div>
-                                    <p className="text-green-500 text-6xl md:text-6xl font-extrabold inline-block"><span className="text-white text-8xl hollow-text">3</span> Live</p>
-                                </div>
-                            </div>
-                        </div> */}
-
-
                     </div>
                 </div>
             </section>

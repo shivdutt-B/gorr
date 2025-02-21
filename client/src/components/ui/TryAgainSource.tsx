@@ -1,4 +1,3 @@
-import { Loader2 } from "lucide-react";
 import { Button } from "./LoadingBtnSource";
 import Failed from "../../assets/Loading/failed.svg"
 import useGitHubOAuth from "../../hooks/useAuth";

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useId, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "../../utils/cn";
 import { SparklesCore } from "./Sparkles";

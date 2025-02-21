@@ -8,23 +8,24 @@ import {
 } from "framer-motion";
 import { cn } from "../../utils/cn";
 import { Link } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue} from "recoil";
 import { userAtom } from "../../states/userAtom";
 import { loadingAtom } from "../../states/loadingAtom";
+import { Loader2 } from "lucide-react";
 
 export const NavbarSource = ({
     navItems,
     className,
 }) => {
-    const user = useRecoilValue(userAtom); // ✅ Get user state from Recoil
-    const isLoading = useRecoilValue(loadingAtom); // ✅ Loading state
+    const user = useRecoilValue(userAtom); 
+    const isLoading = useRecoilValue(loadingAtom); 
 
     const { scrollYProgress } = useScroll();
     const [visible, setVisible] = useState(true);
 
-    // ✅ Define button text & link once (avoids duplication)
+
+    // Displays the text inside the link which either leads to dashboard or join based on user's state.
     const buttonText = isLoading ? "Loading..." : user ? "Dashboard" : "Join";
-    const buttonLink = user ? "/dashboard" : "/join";
 
     useMotionValueEvent(scrollYProgress, "change", (current) => {
         if (typeof current === "number") {
@@ -36,7 +37,7 @@ export const NavbarSource = ({
     return (
         <AnimatePresence mode="wait">
             <motion.div
-                initial={{ opacity: 1, y: 0 }} // ✅ Start visible
+                initial={{ opacity: 1, y: 0 }} 
                 animate={{ y: visible ? 0 : -100, opacity: visible ? 1 : 0 }}
                 transition={{ duration: 0.2 }}
                 className={cn(
@@ -55,15 +56,14 @@ export const NavbarSource = ({
                     </a>
                 ))}
 
-                {/* ✅ Dynamic Button (Join or Dashboard) */}
+                {/* Dynamic Button (Disabled while loading) */}
                 {isLoading ? (
-                    <div className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-[12px] opacity-50 cursor-not-allowed">
-                        <span>Loading...</span>
-                        <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent h-px" />
+                    <div className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-[12px] opacity-50 cursor-not-allowed flex items-center gap-2 pointer-events-none">
+                        <Loader2 className="animate-spin" size={18} />
                     </div>
                 ) : (
                     <Link
-                        to={buttonLink}
+                        to={user ? "/dashboard" : "/join"} // ✅ Redirects based on user state
                         className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-[12px]"
                     >
                         <span>{buttonText}</span>

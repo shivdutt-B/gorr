@@ -30,3 +30,7 @@ dist-ssr
 .env.production
 .env.test
 .env.* 
+
+# todos
+todo
+.todo

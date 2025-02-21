@@ -1,15 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import { cn } from "../../utils/cn";
 import createGlobe from "cobe";
-import { motion } from "framer-motion";
 import { IconBrandYoutubeFilled } from "@tabler/icons-react";
 
 // Components
 import { EvervaultCard } from "./evervault-card"
-import { Cover } from "./Cover"
-import { FlipWords } from "./FlipWords";
-import ExtraInfo from "./ExtraInfo"
-// import { AnimatedBeamDemo } from "./Integrate2";
 
 // Assets
 import Code from "../../assets/FeatureHero/image.png"
@@ -45,8 +40,6 @@ export function FeaturesSection() {
 
   return (
     <>
-      {/* <FlipWords />
-      <Cover /> */}
       <div className="relative z-20 py-10 lg:py-40 max-w-7xl mx-auto bg-black" id="about">
         <div className="px-8">
           <h4 className="text-3xl lg:text-5xl lg:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium text-black dark:text-white">
@@ -68,7 +61,6 @@ export function FeaturesSection() {
           </div>
         </div>
       </div>
-      {/* <ExtraInfo /> */}
     </>
   );
 }
@@ -93,7 +85,6 @@ const FeatureDescription = ({ children }) => (
 
 export const SkeletonOne = () => (
   <div className="relative flex h-full">
-    {/* Image */}
     <img
       src={Code}
       alt="header"

@@ -17,11 +17,9 @@ body {
 
 .hollow-text {
   -webkit-text-stroke: 7px #FFFDF0;
-  /* White border */
   color: transparent;
   position: relative;
   left: 30px;
-  /* Remove fill */
 }
 
 .steps-container {
@@ -59,7 +57,6 @@ body {
 @media only screen and (max-width: 767px) {
   .steps-container {
     display: none;
-    /* justify-content: center; */
   }
 
 }

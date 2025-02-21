@@ -17,7 +17,6 @@ function DashboardLayout() {
 
     useEffect(() => {
         if (!user && !hasFetched.current) {
-            console.log("🚀 Fetching GitHub user from Dashboard... FROM DASHBO0ARD");
             fetchUser();
             hasFetched.current = true;
         }

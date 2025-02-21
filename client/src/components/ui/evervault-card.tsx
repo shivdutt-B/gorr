@@ -3,7 +3,6 @@ import { useMotionValue } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import { useMotionTemplate, motion } from "framer-motion";
 import { cn } from "../../utils/cn";
-import GorrLogo from "../../assets/Logo/gorr_logo.svg";
 
 export const EvervaultCard = ({ text, className }) => {
   let mouseX = useMotionValue(0);
@@ -38,8 +37,6 @@ export const EvervaultCard = ({ text, className }) => {
           <div className="relative h-44 w-44 rounded-full flex items-center justify-center text-white font-bold text-4xl">
             <div className="absolute w-full h-full bg-white/[0.8] dark:bg-black/[0.8] blur-sm rounded-full" />
             <div className="dark:text-white text-black z-20">
-              {/* {text} */}
-              {/* <img src={GorrLogo} alt="lgog" /> */}
               <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="100px" height="100px" viewBox="0 0 296.000000 291.000000" preserveAspectRatio="xMidYMid meet">
                 <metadata>
                   Created by potrace 1.16, written by Peter Selinger 2001-2019

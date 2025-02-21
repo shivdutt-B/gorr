@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid"; // For generating random strings
 const useGitHubOAuth = (clientId, redirectUri, scope = "repo") => {
     const initiateOAuth = () => {
         // Generate a random string for the CSRF token using uuid
-        console.log('HIIII', clientId, redirectUri)
         const state = uuidv4();
         localStorage.setItem("latestCSRFToken", state);
 
