@@ -9,6 +9,7 @@ import { useRecoilValue } from "recoil";
 import { useFetchUserData } from "../src/hooks/useFetchUserData";
 import { userAtom } from "../src/states/userAtom";
 import Dashboard from "./pages/Dashboard";
+import ImportRepo from "./pages/ImportRepo";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function AppWithUserCheck() {
       <Route path="/" element={<Home />} />
       <Route path="/join" element={<Join />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/import" element={<ImportRepo />} />
     </Routes>
   );
 }

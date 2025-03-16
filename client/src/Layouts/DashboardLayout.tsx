@@ -6,6 +6,9 @@ import { userAtom } from "../states/userAtom";
 import { ButtonLoading } from "../components/ui/LoadingBtn";
 import { TryAgainSource } from "../components/ui/TryAgainSource";
 import { useLoading } from "../hooks/useLoading";
+import { Navbar } from '../components/ui/Navbar';
+import SearchProjectInput from '../components/ui/SearchProjectInput';
+import DashBoardHeader from "../components/ui/DashBoardHeader";
 
 function DashboardLayout() {
     const user = useRecoilValue(userAtom);
@@ -26,18 +29,22 @@ function DashboardLayout() {
         <div>
             {isLoading ? (
                 <div onClick={cancelRequests}>
+                    {/* Cancel button */}
                     <ButtonLoading />
                 </div>
             ) : user ? (
-                <div>
-                    <h2>Welcome, {user.login}!</h2>
+                <div className="">
+                    {console.log(user.avatar_url)}
+                    <DashBoardHeader />
+                    <SearchProjectInput />
+                    {/* <h2>Welcome, {user.login}!</h2>
                     <img src={user.avatar_url} alt="Profile" width="100" />
                     <p>
                         GitHub Profile:{" "}
                         <a href={user.html_url} target="_blank" rel="noopener noreferrer">
                             {user.html_url}
                         </a>
-                    </p>
+                    </p> */}
                 </div>
             ) : (
                 <div onClick={cancelRequests}>
