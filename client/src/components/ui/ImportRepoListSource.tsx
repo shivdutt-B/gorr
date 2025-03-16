@@ -12,9 +12,9 @@ const ImportRepoListSource = ({ repositories }) => {
                             <span className="w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center text-xs">⚫</span>
                         )}
                         <span className="text-md">
-                            {repo.name} <span className="text-gray-400">· {repo.date}</span>
+                            {repo.name} <span className="text-gray-400">· {repo.updated_at ? new Date(repo.updated_at).toLocaleDateString() : "N/A"}</span>
                         </span>
-                        {repo.locked && <span className="text-gray-500">🔒</span>}
+                        {/* {repo.locked && <span className="text-gray-500">🔒</span>} */}
                     </div>
                     <button className="bg-white text-black text-sm font-medium px-3 py-2  rounded-[4px]">Import</button>
                 </div>

@@ -8,12 +8,13 @@ export const useFetchRepos = () => {
   const user = useRecoilValue(userAtom);
   const [repos, setRepos] = useRecoilState(reposAtom);
   const { startLoading, stopLoading } = useLoading();
-  const hasFetched = useRef(false);
+  const hasFetched = useRef(false); // Prevent infinite requests
 
   const fetchRepos = useCallback(async () => {
-    if (!user?.repos_url || hasFetched.current) return;
+    if (!user?.repos_url || hasFetched.current) return; // Stop multiple requests
     
-    const signal = startLoading("FetchRepos"); // Start loading state
+    hasFetched.current = true; // Mark as fetched before making API request
+    const signal = startLoading("FetchRepos");
 
     try {
       const response = await fetch(user.repos_url, { signal });
@@ -22,18 +23,17 @@ export const useFetchRepos = () => {
       const data = await response.json();
       console.log("✅ GitHub Repositories:", data);
       setRepos(data);
-      
-      hasFetched.current = true; // Prevent duplicate fetch
     } catch (error) {
-      console.error("Error fetching repositories:", error);
+      console.error("❌ Error fetching repositories:", error);
+      hasFetched.current = false; // Reset flag on failure
     } finally {
-      stopLoading("FetchRepos"); // Stop loading state
+      stopLoading("FetchRepos");
     }
-  }, [user?.repos_url, setRepos, startLoading, stopLoading]); // ✅ Memoized function
+  }, [user?.repos_url, setRepos, startLoading, stopLoading]);
 
   useEffect(() => {
-    fetchRepos();
-  }, [fetchRepos]); // ✅ Only runs when `fetchRepos` changes
+    if (repos.length === 0) fetchRepos(); // Fetch only if no repos exist
+  }, [fetchRepos, repos.length]); // ✅ Prevents re-fetching if data exists
 
   return fetchRepos;
 };
