@@ -12,13 +12,16 @@ export const useFetchRepos = () => {
 
   const fetchRepos = useCallback(async () => {
     if (!user?.repos_url || hasFetched.current) return; // Stop multiple requests
-    
+
     hasFetched.current = true; // Mark as fetched before making API request
     const signal = startLoading("FetchRepos");
 
     try {
+      console.log("⏳ Waiting for 5 seconds before fetching...");
+      await new Promise((resolve) => setTimeout(resolve, 5000)); // ⏳ 5-second delay
+
       const response = await fetch(user.repos_url, { signal });
-      if (!response.ok) throw new Error("Failed to fetch repositories");
+      if (!response.ok) throw new Error("Failed to fetch repositories");;
 
       const data = await response.json();
       console.log("✅ GitHub Repositories:", data);

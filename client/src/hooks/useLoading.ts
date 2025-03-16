@@ -5,6 +5,8 @@ export const useLoading = () => {
     const [isLoading, setLoading] = useRecoilState(loadingAtom);
     const [requestMap, setRequestMap] = useRecoilState(requestMapAtom);
 
+    console.log('CANCELLED LOADING')
+
     const startLoading = (key: string) => {
         const controller = new AbortController();
 
