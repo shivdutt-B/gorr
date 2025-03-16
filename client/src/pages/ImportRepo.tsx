@@ -1,12 +1,12 @@
-import React from 'react'
-import ImportRepoLayout from '../Layouts/ImportRepoLayout'
+import React from 'react';
+import ImportRepoLayout from '../Layouts/ImportRepoLayout';
 
 function ImportRepo() {
     return (
         <>
             <ImportRepoLayout />
         </>
-    )
+    );
 }
 
-export default ImportRepo
+export default ImportRepo;

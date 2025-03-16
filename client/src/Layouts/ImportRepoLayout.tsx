@@ -1,7 +1,7 @@
-import React from 'react'
-import { Navbar } from '../components/ui/Navbar'
-import ImportRepoList from '../components/ui/ImportRepoList'
-import ImportThirdPartyRepo from '../components/ui/ImportThirdPartyRepo'
+import React from 'react';
+import { Navbar } from '../components/ui/Navbar';
+import ImportRepoList from '../components/ui/ImportRepoList';
+import ImportThirdPartyRepo from '../components/ui/ImportThirdPartyRepo';
 
 function ImportRepoLayout() {
     return (
@@ -12,11 +12,11 @@ function ImportRepoLayout() {
                 <p className="text-gray-400 text-lg">To deploy a new Project, import an existing Git Repository 🚀.</p>
             </div>
             <div className="flex mt-10 gap-5 justify-center flex-col">
-                <ImportRepoList></ImportRepoList>
-                {/* <ImportThirdPartyRepo></ImportThirdPartyRepo > */}
+                <ImportRepoList />
+                {/* <ImportThirdPartyRepo /> */}
             </div>
         </div>
-    )
+    );
 }
 
-export default ImportRepoLayout
+export default ImportRepoLayout;

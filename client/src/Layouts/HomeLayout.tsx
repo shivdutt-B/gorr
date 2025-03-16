@@ -16,7 +16,7 @@ function HomeLayout() {
             <ExtraInfo />
             <Footer />
         </>
-    )
+    );
 }
 
-export default HomeLayout
+export default HomeLayout;

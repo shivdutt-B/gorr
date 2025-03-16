@@ -7,4 +7,4 @@ const GetCookie = (name) => {
     return null;
 };
 
-export default GetCookie
+export default GetCookie;

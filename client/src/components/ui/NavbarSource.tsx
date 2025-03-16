@@ -1,11 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-    motion,
-    AnimatePresence,
-    useScroll,
-    useMotionValueEvent,
-} from "framer-motion";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { cn } from "../../utils/cn";
 import { Link } from "react-router-dom";
 import { useRecoilValue} from "recoil";
@@ -13,18 +8,13 @@ import { userAtom } from "../../states/userAtom";
 import { loadingAtom } from "../../states/loadingAtom";
 import { Loader2 } from "lucide-react";
 
-export const NavbarSource = ({
-    navItems,
-    className,
-}) => {
+export const NavbarSource = ({ navItems, className }) => {
     const user = useRecoilValue(userAtom); 
     const isLoading = useRecoilValue(loadingAtom); 
 
     const { scrollYProgress } = useScroll();
     const [visible, setVisible] = useState(true);
 
-
-    // Displays the text inside the link which either leads to dashboard or join based on user's state.
     const buttonText = isLoading ? "Loading..." : user ? "Dashboard" : "Join";
 
     useMotionValueEvent(scrollYProgress, "change", (current) => {
@@ -56,14 +46,13 @@ export const NavbarSource = ({
                     </a>
                 ))}
 
-                {/* Dynamic Button (Disabled while loading) */}
                 {isLoading ? (
                     <div className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-[12px] opacity-50 cursor-not-allowed flex items-center gap-2 pointer-events-none">
                         <Loader2 className="animate-spin" size={18} />
                     </div>
                 ) : (
                     <Link
-                        to={user ? "/dashboard" : "/join"} // ✅ Redirects based on user state
+                        to={user ? "/dashboard" : "/join"} 
                         className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-[12px]"
                     >
                         <span>{buttonText}</span>

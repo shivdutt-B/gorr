@@ -1,11 +1,8 @@
-import React from 'react'
-import { Join } from '../components/ui/Join'
-
+import React from 'react';
+import { Join } from '../components/ui/Join';
 
 function JoinPage() {
-  return (
-      <Join />
-  )
+  return <Join />;
 }
 
-export default JoinPage
+export default JoinPage;

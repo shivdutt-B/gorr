@@ -29,7 +29,6 @@ function DashboardLayout() {
         <div>
             {isLoading ? (
                 <div onClick={cancelRequests}>
-                    {/* Cancel button */}
                     <ButtonLoading />
                 </div>
             ) : user ? (
@@ -37,14 +36,6 @@ function DashboardLayout() {
                     {console.log(user.avatar_url)}
                     <DashBoardHeader />
                     <SearchProjectInput />
-                    {/* <h2>Welcome, {user.login}!</h2>
-                    <img src={user.avatar_url} alt="Profile" width="100" />
-                    <p>
-                        GitHub Profile:{" "}
-                        <a href={user.html_url} target="_blank" rel="noopener noreferrer">
-                            {user.html_url}
-                        </a>
-                    </p> */}
                 </div>
             ) : (
                 <div onClick={cancelRequests}>

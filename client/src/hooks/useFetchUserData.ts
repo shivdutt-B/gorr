@@ -11,12 +11,8 @@ export function useFetchUserData() {
     const user = useRecoilValue(userAtom);
 
     const fetchUser = useCallback(async () => {
-
         const token = GetCookie("github_token");
-
-        if (!token) {
-            return;
-        }
+        if (!token) return;
 
         const signal = startLoading("FetchUser");
 
@@ -28,7 +24,6 @@ export function useFetchUserData() {
 
             console.log("✅ GitHub API Response:", response.data);
 
-            // Safe state update
             setTimeout(() => {
                 setUser(response.data);
                 stopLoading("FetchUser");

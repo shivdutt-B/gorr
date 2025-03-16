@@ -1,6 +1,6 @@
-import React from 'react'
-import DashboardLayout from '../Layouts/DashboardLayout'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import DashboardLayout from '../Layouts/DashboardLayout';
+import { Link } from 'react-router-dom';
 
 function Dashboard() {
     return (
@@ -8,7 +8,7 @@ function Dashboard() {
             <DashboardLayout />
             <Link to="/">Home</Link>
         </>
-    )
+    );
 }
 
-export default Dashboard
+export default Dashboard;

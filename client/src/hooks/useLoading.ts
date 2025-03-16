@@ -5,42 +5,39 @@ export const useLoading = () => {
     const [isLoading, setLoading] = useRecoilState(loadingAtom);
     const [requestMap, setRequestMap] = useRecoilState(requestMapAtom);
 
-    console.log('CANCELLED LOADING')
+    console.log('CANCELLED LOADING');
 
     const startLoading = (key: string) => {
         const controller = new AbortController();
 
         setRequestMap((prev) => {
-            const newMap = new Map(prev);
+            const newMap = new Map(prev); // ✅ Create a new Map instance
             newMap.set(key, controller);
             return newMap;
         });
 
-        setLoading(true);
+        setTimeout(() => setLoading(true), 0); // ✅ Ensure state update happens separately
+
         return controller.signal;
     };
 
     const stopLoading = (key: string) => {
-        let newMap;
-        
-        // ✅ First, update the requestMapAtom state
         setRequestMap((prev) => {
-            newMap = new Map(prev);
+            const newMap = new Map(prev);
             newMap.delete(key);
+            setTimeout(() => setLoading(newMap.size > 0), 0); // ✅ Move setLoading outside Recoil update
             return newMap;
         });
-
-        // ✅ Then, update the loading state separately (outside setRequestMap)
-        setLoading(newMap.size > 0);
     };
 
     const cancelRequests = () => {
         setRequestMap((prev) => {
-            prev.forEach((controller) => controller.abort());
-            return new Map();
+            const newMap = new Map(prev);
+            newMap.forEach((controller) => controller.abort());
+            return new Map(); // ✅ Reset request map
         });
 
-        setLoading(false);
+        setTimeout(() => setLoading(false), 0); // ✅ Ensure setLoading happens separately
     };
 
     return { isLoading, startLoading, stopLoading, cancelRequests };

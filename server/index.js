@@ -53,7 +53,14 @@ app.get("/auth/github/callback", async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-
+app.get("/repos", (req, res) => {
+    const data = [
+        { name: "Repo 1", lastUpdated: "2021-09-01", gitUrl: "giturl", cloneUrl: "cloneurl" },
+        { name: "Repo 2", lastUpdated: "2021-09-02", gitUrl: "giturl", cloneUrl: "cloneurl" },
+        { name: "Repo 3", lastUpdated: "2021-09-03", gitUrl: "giturl", cloneUrl: "cloneurl" },
+    ];
+    res.send(data);
+})
 app.get("/fetchsome", (req, res) => {
     setTimeout(() => {
         res.send("THIS IS NEW DATA")
