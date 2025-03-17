@@ -14,6 +14,8 @@ export function useFetchUserData() {
         const token = GetCookie("github_token");
         if (!token) return;
 
+        await new Promise((resolve) => setTimeout(resolve, 5000)); // ✅ Delay before API call
+
         const signal = startLoading("FetchUser");
 
         try {
