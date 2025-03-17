@@ -33,10 +33,11 @@ export default function ImportRepoList() {
 
     useEffect(() => {
         if (user && !hasFetched.current) {
-            fetchRepos(); // ✅ Updated fetch call
-            hasFetched.current = true;
+            console.log("FETCHING REPOS ONCE");
+            fetchRepos(); // Fetch repositories
+            hasFetched.current = true; // Prevent re-fetching
         }
-    }, [fetchRepos, user]);
+    }, [user]); // Removed fetchRepos to avoid re-triggering
 
     return (
         <div className="max-w-3xl mx-auto p-4">
