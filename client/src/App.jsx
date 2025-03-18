@@ -21,18 +21,18 @@ function App() {
 
 function AppWithUserCheck() {
   const user = useRecoilValue(userAtom);
-  const location = useLocation(); 
+  const location = useLocation();
   const fetchUser = useFetchUserData();
   const hasFetched = useRef(false);
 
   useEffect(() => {
     // console.log('TRIGGER BEFORE');
-    if (!user && !hasFetched.current && location.pathname !== "/dashboard") {
+    if (!user && !hasFetched.current) {
       console.log("🚀 Fetching user globally... FROM APP.JSX");
       fetchUser();
       hasFetched.current = true;
     }
-  }, [fetchUser, user, location.pathname]);
+  }, [fetchUser, user]);
 
   return (
     <Routes>

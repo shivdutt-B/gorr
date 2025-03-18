@@ -36,6 +36,13 @@ export function useFetchUserData() {
             console.log('SYS USER', requestMap)
         } catch (error) {
             stopLoading("FetchUser");
+
+            if (error.name === "AbortError") {
+                console.log("✅ Abort user request");
+            }
+            else {
+                console.log(error)
+            }
         }
     }, [setUser, user, startLoading, stopLoading]);
 
