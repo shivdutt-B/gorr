@@ -7,9 +7,10 @@ interface ButtonLoadingProps {
 }
 
 export function ButtonLoading({ onCancel }: ButtonLoadingProps) {
-  const { cancelRequests } = useLoading();
+  const { cancelRequests, stopLoading } = useLoading();
 
   const handleCancel = () => {
+    console.log('REACHED LOAIDNG')
     cancelRequests();
     onCancel?.();
   };

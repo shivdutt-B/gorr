@@ -3,7 +3,7 @@ import ImportRepoListSource from "./ImportRepoListSource";
 import { useRecoilValue } from "recoil";
 import { useFetchRepos } from "../../hooks/useFetchRepos";
 import { reposAtom } from "../../states/reposAtom";
-import { loadingAtom } from "../../states/loadingAtom";
+import { loadingAtom, requestMapAtom } from "../../states/loadingAtom";
 import { ButtonLoading } from "../ui/LoadingBtn";
 import { TryAgainSource } from "../ui/TryAgainSource";
 import { useLoading } from "../../hooks/useLoading";
@@ -14,10 +14,11 @@ export default function ImportRepoList() {
   const repos = useRecoilValue(reposAtom) || []; // Ensure repos is always an array
   const isLoading = useRecoilValue(loadingAtom);
   const fetchRepos = useFetchRepos(); // Function to fetch repositories
-  const { cancelRequests } = useLoading();
+  const { cancelRequests, stopLoading } = useLoading();
   const user = useRecoilValue(userAtom);
   const hasFetched = useRef(false);
   const isCancelled = useRef(false);
+  const requestMap = useRecoilValue(requestMapAtom);
 
   const [visibleCount, setVisibleCount] = useState(5); // Show 5 repos initially
   const [searchQuery, setSearchQuery] = useState(""); // Store search input
@@ -33,6 +34,7 @@ export default function ImportRepoList() {
   );
 
   useEffect(() => {
+    console.log("HII", requestMap);
     if (user && !hasFetched.current && !isCancelled.current) {
       console.log("FETCHING REPOS ONCE");
       fetchRepos();
@@ -49,7 +51,7 @@ export default function ImportRepoList() {
 
   const handleCancel = () => {
     isCancelled.current = true;
-    cancelRequests();
+    stopLoading("fetchRepos");
   };
 
   return (

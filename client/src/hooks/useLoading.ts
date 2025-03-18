@@ -5,7 +5,7 @@ export const useLoading = () => {
     const [isLoading, setLoading] = useRecoilState(loadingAtom);
     const [requestMap, setRequestMap] = useRecoilState(requestMapAtom);
 
-    console.log('CANCELLED LOADING');
+    // console.log('CANCELLED LOADING');
 
     const startLoading = (key: string) => {
         const controller = new AbortController();
@@ -13,6 +13,7 @@ export const useLoading = () => {
         setRequestMap((prev) => {
             const newMap = new Map(prev); // ✅ Create a new Map instance
             newMap.set(key, controller);
+            console.log('SYS LOD', newMap)
             return newMap;
         });
 
@@ -24,8 +25,10 @@ export const useLoading = () => {
     const stopLoading = (key: string) => {
         setRequestMap((prev) => {
             const newMap = new Map(prev);
+            console.log('SYS LOD', newMap)
             newMap.delete(key);
             setTimeout(() => setLoading(newMap.size > 0), 0); // ✅ Move setLoading outside Recoil update
+            console.log('SYS LOD2', newMap)
             return newMap;
         });
     };
@@ -33,6 +36,7 @@ export const useLoading = () => {
     const cancelRequests = () => {
         setRequestMap((prev) => {
             const newMap = new Map(prev);
+            console.log('SYS LOD', newMap)
             newMap.forEach((controller) => controller.abort());
             return new Map(); // ✅ Reset request map
         });

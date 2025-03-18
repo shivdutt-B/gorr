@@ -4,11 +4,14 @@ import { userAtom } from "../states/userAtom";
 import axios from "axios";
 import { useCallback } from "react";
 import GetCookie from "../utils/GetCookie";
+import { requestMapAtom } from "../states/loadingAtom";
 
 export function useFetchUserData() {
     const { startLoading, stopLoading } = useLoading();
     const setUser = useSetRecoilState(userAtom);
     const user = useRecoilValue(userAtom);
+    
+    const requestMap = useRecoilValue(requestMapAtom)
 
     const fetchUser = useCallback(async () => {
         const token = GetCookie("github_token");
@@ -30,6 +33,7 @@ export function useFetchUserData() {
                 setUser(response.data);
                 stopLoading("FetchUser");
             }, 0);
+            console.log('SYS USER', requestMap)
         } catch (error) {
             stopLoading("FetchUser");
         }

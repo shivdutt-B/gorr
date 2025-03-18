@@ -26,7 +26,7 @@ function AppWithUserCheck() {
   const hasFetched = useRef(false);
 
   useEffect(() => {
-    console.log('TRIGGER BEFORE');
+    // console.log('TRIGGER BEFORE');
     if (!user && !hasFetched.current && location.pathname !== "/dashboard") {
       console.log("🚀 Fetching user globally... FROM APP.JSX");
       fetchUser();
