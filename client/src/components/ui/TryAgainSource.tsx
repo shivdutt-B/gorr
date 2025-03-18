@@ -3,10 +3,11 @@ import { Button } from "./LoadingBtnSource";
 import Failed from "../../assets/Loading/failed.svg";
 import { Link } from "react-router-dom";
 
+interface TryAgainSourceProps {
+  onClick?: () => void;
+}
 
-export function TryAgainSource() {
-  
-
+export function TryAgainSource({ onClick }: TryAgainSourceProps) {
   return (
     <div className="flex gap-4 flex-col flex-wrap justify-center items-center h-screen">
       <div className="flex flex-col gap-3 items-center h-[450px] w-[380px] justify-center rounded-lg">
@@ -21,7 +22,10 @@ export function TryAgainSource() {
               Back home
             </Button>
           </Link>
-          <Button className="bg-green-500 text-black flex items-center gap-2 px-4 py-2 w-32">
+          <Button
+            onClick={onClick}
+            className="bg-green-500 text-black flex items-center gap-2 px-4 py-2 w-32"
+          >
             Try again
           </Button>
         </div>

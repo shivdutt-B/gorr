@@ -1,107 +1,56 @@
-import { useCallback, useEffect, useRef } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useCallback, useState } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userAtom } from "../states/userAtom";
 import { reposAtom } from "../states/reposAtom";
-import { useLoading } from "../hooks/useLoading";
-import { loadingAtom, requestMapAtom } from "../states/loadingAtom";
-import { useSetRecoilState } from "recoil";
+import { useLoading } from "./useLoading";
 
-export function useFetchRepos() {
-  const setLoading = useSetRecoilState(loadingAtom);
-  const setRepos = useSetRecoilState(reposAtom);
-  const setRequestMap = useSetRecoilState(requestMapAtom);
-  const user = useRecoilValue(userAtom);
-
-  const requestMap = useRecoilValue(requestMapAtom)
-
-  const fetchRepos = async () => {
-      setLoading(true);
-      
-      // Create a new AbortController
-      const controller = new AbortController();
-      const signal = controller.signal;
-
-      
-      // Add artificial delay for testing
-      await new Promise(resolve => setTimeout(resolve, 5000));
-
-      setRequestMap((prev) => {
-          const newMap = new Map(prev);
-          newMap.set("fetchRepos", controller);
-          return newMap;
-      });
-
-      try {
-          const response = await fetch(user.repos_url, { signal });
-
-          if (!response.ok) throw new Error("Failed to fetch repositories");
-
-          const data = await response.json();
-          setRepos(data);
-          console.log('SYS REPO', requestMap)
-      } catch (error) {
-          if (error.name === "AbortError") {
-              console.log("Fetch request was aborted");
-          } else {
-              console.error(error);
-          }
-      } finally {
-          setLoading(false);
-          setRequestMap((prev) => {
-              const newMap = new Map(prev);
-              newMap.delete("fetchRepos");
-              return newMap;
-          });
-      }
-  };
-
-  return fetchRepos;
+interface UseFetchReposReturn {
+  fetchRepos: () => Promise<void>;
+  isLoading: boolean;
+  error: string | null;
 }
 
+export function useFetchRepos(): UseFetchReposReturn {
+  const setRepos = useSetRecoilState(reposAtom);
+  const user = useRecoilValue(userAtom);
+  const { startLoading, stopLoading } = useLoading();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-// =============================================
+  const fetchRepos = useCallback(async () => {
+    if (!user?.repos_url) {
+      setError("No repository URL available");
+      return;
+    }
 
-// import { useCallback } from "react";
-// import { useRecoilValue, useSetRecoilState } from "recoil";
-// import { reposAtom } from "../states/reposAtom";
-// import { userAtom } from "../states/userAtom";
-// import { useLoading } from "../hooks/useLoading";
+    setIsLoading(true);
+    setError(null);
+    const signal = startLoading("fetchRepos");
 
-// export function useFetchRepos() {
-//     const { startLoading, stopLoading } = useLoading();
-//     const setRepos = useSetRecoilState(reposAtom);
-//     const user = useRecoilValue(userAtom);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      const response = await fetch(user.repos_url, { signal });
 
-//     const fetchRepos = useCallback(async () => {
-//         if (!user?.repos_url) {
-//             console.log("No repos_url available");
-//             return;
-//         }
+      if (!response.ok) {
+        throw new Error(`Failed to fetch repositories: ${response.statusText}`);
+      }
 
-//         console.log("Starting repo fetch...");
-//         const signal = startLoading("fetchRepos");
+      const data = await response.json();
+      setRepos(data);
+      setError(null);
+    } catch (error) {
+      if (error.name === "AbortError") {
+        console.log("Fetch request was aborted");
+        setError("Request canceled");
+      } else {
+        console.error("Error fetching repos:", error);
+        setError(error.message || "Failed to fetch repositories");
+      }
+    } finally {
+      stopLoading("fetchRepos");
+      setIsLoading(false);
+    }
+  }, [setRepos, user, startLoading, stopLoading]);
 
-//         try {
-//             const response = await fetch(user.repos_url, { signal });
-
-//             if (!response.ok) {
-//                 throw new Error("Failed to fetch repositories");
-//             }
-
-//             const data = await response.json();
-//             console.log("Fetched repos:", data);
-//             setRepos(data);
-//         } catch (error) {
-//             if (error.name === "AbortError") {
-//                 console.log("Fetch request was aborted");
-//             } else {
-//                 console.error("Error fetching repos:", error);
-//             }
-//         } finally {
-//             console.log("Stopping loading state");
-//             stopLoading("fetchRepos");
-//         }
-//     }, [setRepos, user, startLoading, stopLoading]);
-
-//     return fetchRepos;
-// }
+  return { fetchRepos, isLoading, error };
+}

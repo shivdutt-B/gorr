@@ -2,22 +2,31 @@ import { useLoading } from "../hooks/useLoading";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { userAtom } from "../states/userAtom";
 import axios from "axios";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import GetCookie from "../utils/GetCookie";
-import { requestMapAtom } from "../states/loadingAtom";
 
 export function useFetchUserData() {
-    const { startLoading, stopLoading } = useLoading();
+    const { startLoading, stopLoading, isRequestLoading } = useLoading();
     const setUser = useSetRecoilState(userAtom);
     const user = useRecoilValue(userAtom);
-    
-    const requestMap = useRecoilValue(requestMapAtom);
+    const requestInProgress = useRef(false);
 
     const fetchUser = useCallback(async () => {
-        const token = GetCookie("github_token");
-        if (!token) return;
+        // Prevent duplicate requests using both local ref and global loading state
+        if (requestInProgress.current || isRequestLoading("FetchUser")) {
+            console.log("⚠️ User fetch already in progress, skipping new request");
+            return;
+        }
 
-        const signal = startLoading("FetchUser");
+        const token = GetCookie("github_token");
+        if (!token) {
+            console.log("❌ No GitHub token found");
+            setUser(null);
+            return;
+        }
+
+        requestInProgress.current = true;
+        const signal = startLoading("FetchUser", true);
 
         try {
             await new Promise(resolve => setTimeout(resolve, 5000));
@@ -27,20 +36,29 @@ export function useFetchUserData() {
                 signal,
             });
 
-
-            console.log("✅ GitHub API Response:", response.data);
-            setUser(response.data);
+            // Only set user if request wasn't cancelled
+            if (!signal.aborted) {
+                console.log("✅ GitHub API Response:", response.data);
+                setUser(response.data);
+            } else {
+                console.log("⚠️ Request was cancelled, not updating user");
+            }
             
         } catch (error) {
             if (axios.isCancel(error)) {
                 console.log("✅ Request was cancelled");
+                setUser(null);
             } else {
                 console.error("❌ Error fetching user:", error);
+                setUser(null);
             }
         } finally {
-            stopLoading("FetchUser");
+            requestInProgress.current = false;
+            if (!signal.aborted) {
+                stopLoading("FetchUser");
+            }
         }
-    }, [setUser, startLoading, stopLoading]);
+    }, [setUser, startLoading, stopLoading, isRequestLoading]);
 
     return fetchUser;
 }
