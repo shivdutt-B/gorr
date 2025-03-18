@@ -56,3 +56,59 @@ export const useLoading = () => {
 
     return { isLoading, startLoading, stopLoading, cancelRequests };
 };
+
+// =====================
+
+// import { useRecoilState } from "recoil";
+// import { loadingAtom, requestMapAtom } from "../states/loadingAtom";
+
+// export const useLoading = () => {
+//     const [isLoading, setLoading] = useRecoilState(loadingAtom);
+//     const [requestMap, setRequestMap] = useRecoilState(requestMapAtom);
+
+//     const startLoading = (key: string) => {
+//         const controller = new AbortController();
+        
+//         setRequestMap((prev) => {
+//             // Abort any existing request with the same key
+//             const existingController = prev.get(key);
+//             if (existingController) {
+//                 existingController.abort();
+//             }
+            
+//             const newMap = new Map(prev);
+//             newMap.set(key, controller);
+//             return newMap;
+//         });
+
+//         setLoading(true);
+//         return controller.signal;
+//     };
+
+//     const stopLoading = (key: string) => {
+//         setRequestMap((prev) => {
+//             const newMap = new Map(prev);
+//             const controller = newMap.get(key);
+            
+//             if (controller) {
+//                 controller.abort();
+//                 newMap.delete(key);
+//             }
+            
+//             // Update loading state based on remaining requests
+//             setLoading(newMap.size > 0);
+//             return newMap;
+//         });
+//     };
+
+//     const cancelRequests = () => {
+//         setRequestMap((prev) => {
+//             // Abort all pending requests
+//             prev.forEach(controller => controller.abort());
+//             return new Map();
+//         });
+//         setLoading(false);
+//     };
+
+//     return { isLoading, startLoading, stopLoading, cancelRequests };
+// };

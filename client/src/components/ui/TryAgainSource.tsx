@@ -1,27 +1,11 @@
 import React from "react";
 import { Button } from "./LoadingBtnSource";
 import Failed from "../../assets/Loading/failed.svg";
-import useGitHubOAuth from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
 
-interface TryAgainSourceProps {
-  onRetry?: () => void;
-}
 
-export function TryAgainSource({ onRetry }: TryAgainSourceProps) {
-  const initiateOAuth = useGitHubOAuth(
-    import.meta.env.VITE_CLIENT_ID,
-    "http://localhost:5000/auth/github/callback"
-  );
-
-  const handleRetry = () => {
-    if (onRetry) {
-      onRetry();
-    } else {
-      console.log("TRYING AGAIN");
-      initiateOAuth();
-    }
-  };
+export function TryAgainSource() {
+  
 
   return (
     <div className="flex gap-4 flex-col flex-wrap justify-center items-center h-screen">
@@ -37,10 +21,7 @@ export function TryAgainSource({ onRetry }: TryAgainSourceProps) {
               Back home
             </Button>
           </Link>
-          <Button
-            className="bg-green-500 text-black flex items-center gap-2 px-4 py-2 w-32"
-            onClick={handleRetry}
-          >
+          <Button className="bg-green-500 text-black flex items-center gap-2 px-4 py-2 w-32">
             Try again
           </Button>
         </div>

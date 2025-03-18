@@ -74,8 +74,8 @@ export default function ImportRepoList() {
 
       {/* Repository List */}
       {isCanceled ? (
-        <div>
-          <TryAgainSource onRetry={handleRetry} />
+        <div onClick={handleRetry}>
+          <TryAgainSource />
         </div>
       ) : isLoading ? (
         <div onClick={handleCancel}>
@@ -115,3 +115,5 @@ export default function ImportRepoList() {
     </div>
   );
 }
+
+// ==================================
