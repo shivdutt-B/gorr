@@ -18,6 +18,10 @@ export function useFetchRepos() {
       // Create a new AbortController
       const controller = new AbortController();
       const signal = controller.signal;
+
+      
+      // Add artificial delay for testing
+      await new Promise(resolve => setTimeout(resolve, 5000));
       
       setRequestMap((prev) => {
           const newMap = new Map(prev);

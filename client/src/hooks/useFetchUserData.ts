@@ -16,6 +16,8 @@ export function useFetchUserData() {
 
         const signal = startLoading("FetchUser");
 
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
         try {
             const response = await axios.get("https://api.github.com/user", {
                 headers: { Authorization: `Bearer ${token}` },
