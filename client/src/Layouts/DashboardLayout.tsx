@@ -42,7 +42,7 @@ function DashboardLayout() {
     <div>
       {isCanceled ? (
         <div onClick={handleRetry}>
-          <TryAgainSource onRetry={handleRetry} />
+          <TryAgainSource/>
         </div>
       ) : isLoading ? (
         <div onClick={handleCancel}>
@@ -55,7 +55,7 @@ function DashboardLayout() {
         </div>
       ) : (
         <div onClick={handleRetry}>
-          <TryAgainSource onRetry={handleRetry} />
+          <TryAgainSource/>
         </div>
       )}
     </div>

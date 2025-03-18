@@ -76,37 +76,29 @@ export function useFetchRepos() {
     const setRequestMap = useSetRecoilState(requestMapAtom);
 
     const fetchRepos = useCallback(async () => {
-        if (!user.repos_url) return;
+        if (!user?.repos_url) return;
 
         // Start loading and create an abort signal
         const signal = startLoading("fetchRepos");
 
-        // Add artificial delay for testing
-        await new Promise(resolve => setTimeout(resolve, 5000));
-
         try {
+            console.log('REPO FETCHING START')
             const response = await fetch(user.repos_url, { signal });
 
             if (!response.ok) throw new Error("Failed to fetch repositories");
 
             const data = await response.json();
-            
-            // Use setTimeout to prevent blocking the main thread
-            setTimeout(() => {
-                setRepos(data);
-                stopLoading("fetchRepos");
-            }, 0);
-
+            setRepos(data);
             console.log("✅ GitHub Repos Response:", data);
             console.log("SYS REPO", requestMap);
         } catch (error) {
-            stopLoading("fetchRepos");
-
             if (error.name === "AbortError") {
                 console.log("❌ Fetch request was aborted");
             } else {
                 console.error(error);
             }
+        } finally {
+            stopLoading("fetchRepos");
         }
     }, [setRepos, user, startLoading, stopLoading, requestMap]);
 
