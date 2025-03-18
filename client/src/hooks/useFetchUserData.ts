@@ -11,7 +11,7 @@ export function useFetchUserData() {
     const setUser = useSetRecoilState(userAtom);
     const user = useRecoilValue(userAtom);
     
-    const requestMap = useRecoilValue(requestMapAtom)
+    const requestMap = useRecoilValue(requestMapAtom);
 
     const fetchUser = useCallback(async () => {
         const token = GetCookie("github_token");
@@ -19,32 +19,28 @@ export function useFetchUserData() {
 
         const signal = startLoading("FetchUser");
 
-        await new Promise(resolve => setTimeout(resolve, 5000));
-
         try {
+            await new Promise(resolve => setTimeout(resolve, 5000));
+
             const response = await axios.get("https://api.github.com/user", {
                 headers: { Authorization: `Bearer ${token}` },
                 signal,
             });
 
+
             console.log("✅ GitHub API Response:", response.data);
-
-            setTimeout(() => {
-                setUser(response.data);
-                stopLoading("FetchUser");
-            }, 0);
-            console.log('SYS USER', requestMap)
+            setUser(response.data);
+            
         } catch (error) {
+            if (axios.isCancel(error)) {
+                console.log("✅ Request was cancelled");
+            } else {
+                console.error("❌ Error fetching user:", error);
+            }
+        } finally {
             stopLoading("FetchUser");
-
-            if (error.name === "AbortError") {
-                console.log("✅ Abort user request");
-            }
-            else {
-                console.log(error)
-            }
         }
-    }, [setUser, user, startLoading, stopLoading]);
+    }, [setUser, startLoading, stopLoading]);
 
     return fetchUser;
 }

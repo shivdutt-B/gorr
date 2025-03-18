@@ -9,25 +9,37 @@ export const useLoading = () => {
 
     const startLoading = (key: string) => {
         const controller = new AbortController();
-
+        
         setRequestMap((prev) => {
-            const newMap = new Map(prev); // ✅ Create a new Map instance
+            // Abort any existing request with the same key
+            const existingController = prev.get(key);
+            if (existingController) {
+                existingController.abort();
+            }
+            
+            const newMap = new Map(prev);
             newMap.set(key, controller);
             console.log('SYS LOD', newMap)
             return newMap;
         });
 
-        setTimeout(() => setLoading(true), 0); // ✅ Ensure state update happens separately
-
+        setLoading(true);
         return controller.signal;
     };
 
     const stopLoading = (key: string) => {
         setRequestMap((prev) => {
             const newMap = new Map(prev);
-            console.log('SYS LOD', newMap)
-            newMap.delete(key);
-            setTimeout(() => setLoading(newMap.size > 0), 0); // ✅ Move setLoading outside Recoil update
+            const controller = newMap.get(key);
+            
+            // Cleanup the specific request
+            if (controller) {
+                controller.abort(); // Ensure the request is aborted
+                newMap.delete(key);
+            }
+            
+            // Update loading state based on remaining requests
+            setTimeout(() => setLoading(newMap.size > 0), 0);
             console.log('SYS LOD2', newMap)
             return newMap;
         });
@@ -35,13 +47,11 @@ export const useLoading = () => {
 
     const cancelRequests = () => {
         setRequestMap((prev) => {
-            const newMap = new Map(prev);
-            console.log('SYS LOD', newMap)
-            newMap.forEach((controller) => controller.abort());
-            return new Map(); // ✅ Reset request map
+            // Abort all pending requests
+            prev.forEach(controller => controller.abort());
+            return new Map();
         });
-
-        setTimeout(() => setLoading(false), 0); // ✅ Ensure setLoading happens separately
+        setLoading(false);
     };
 
     return { isLoading, startLoading, stopLoading, cancelRequests };
