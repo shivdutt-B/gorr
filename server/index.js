@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 
 
 const app = express();
-app.use(cors()); // Allow frontend requests
+app.use(cors()); // Allow all the frontend requests
 app.use(express.json());
 app.use(cookieParser());
 
