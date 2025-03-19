@@ -42,16 +42,30 @@ export const NavbarSource = ({ navItems, className }) => {
           className
         )}
       >
-        {navItems.map((navItem, idx) => (
-          <a
-            key={`link=${idx}`}
-            href={navItem.link}
-            className="relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
-          >
-            <span className="block sm:hidden">{navItem.icon}</span>
-            <span className="hidden sm:block text-sm">{navItem.name}</span>
-          </a>
-        ))}
+        {navItems.map((navItem, idx) => {
+          if (navItem.name.toLowerCase() === 'about' || navItem.name.toLowerCase() === 'contact') {
+            return (
+              <a
+                key={`link=${idx}`}
+                href={navItem.link}
+                className="relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
+              >
+                <span className="block sm:hidden">{navItem.icon}</span>
+                <span className="hidden sm:block text-sm">{navItem.name}</span>
+              </a>
+            );
+          }
+          return (
+            <Link
+              key={`link=${idx}`}
+              to={navItem.link}
+              className="relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
+            >
+              <span className="block sm:hidden">{navItem.icon}</span>
+              <span className="hidden sm:block text-sm">{navItem.name}</span>
+            </Link>
+          );
+        })}
 
         {isLoading ? (
           <div className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-[12px] flex items-center gap-2">

@@ -5,7 +5,7 @@
 // import { useLoading } from "./useLoading";
 
 // interface UseFetchReposReturn {
-//   fetchRepos: () => Promise<void>;
+//   FetchRepos: () => Promise<void>;
 //   isLoading: boolean;
 //   error: string | null;
 // }
@@ -17,7 +17,7 @@
 //   const [isLoading, setIsLoading] = useState(false);
 //   const [error, setError] = useState<string | null>(null);
 
-//   const fetchRepos = useCallback(async () => {
+//   const FetchRepos = useCallback(async () => {
 //     if (!user?.repos_url) {
 //       setError("No repository URL available");
 //       return;
@@ -25,7 +25,7 @@
 
 //     setIsLoading(true);
 //     setError(null);
-//     const signal = startLoading("fetchRepos");
+//     const signal = startLoading("FetchRepos");
 
 //     try {
 //       await new Promise(resolve => setTimeout(resolve, 5000));
@@ -47,12 +47,12 @@
 //         setError(error.message || "Failed to fetch repositories");
 //       }
 //     } finally {
-//       stopLoading("fetchRepos");
+//       stopLoading("FetchRepos");
 //       setIsLoading(false);
 //     }
 //   }, [setRepos, user, startLoading, stopLoading]);
 
-//   return { fetchRepos, isLoading, error };
+//   return { FetchRepos, isLoading, error };
 // }
 
 
@@ -65,7 +65,7 @@ import { reposAtom } from "../states/reposAtom";
 import { useLoading } from "./useLoading";
 
 interface UseFetchReposReturn {
-  fetchRepos: () => Promise<void>;
+  FetchRepos: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
 }
@@ -77,7 +77,7 @@ export function useFetchRepos(): UseFetchReposReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRepos = useCallback(async () => {
+  const FetchRepos = useCallback(async () => {
     if (!user?.repos_url) {
       setError("No repository URL available");
       return;
@@ -85,11 +85,10 @@ export function useFetchRepos(): UseFetchReposReturn {
 
     setIsLoading(true);
     setError(null);
-    const controller = startLoading("fetchRepos");
+    const controller = startLoading("FetchRepos");
 
     try {
-      // Simulating delay to visualize loading
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       // Abort if request was cancelled before sending
       if (controller.signal.aborted) {
@@ -97,16 +96,29 @@ export function useFetchRepos(): UseFetchReposReturn {
         return;
       }
 
-      const response = await fetch(user.repos_url, { signal: controller.signal });
+      const response = await fetch(user.repos_url, { 
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
 
-      console.log('REPO RES', response)
 
       if (!response.ok) {
         throw new Error(`Failed to fetch repositories: ${response.statusText}`);
       }
 
       const data = await response.json();
-      setRepos(data);
+
+      const filteredData = data.map((repo) => ({
+        name: repo.name,
+        git_url: repo.git_url,
+        clone_url: repo.clone_url,
+        lastUpdated: repo.updated_at,
+      }));
+
+      console.log('REPO RES', filteredData)
+      setRepos(filteredData);
       setError(null);
     } catch (error) {
       if (error.name === "AbortError") {
@@ -118,11 +130,11 @@ export function useFetchRepos(): UseFetchReposReturn {
       }
     } finally {
       if (!controller.signal.aborted) {
-        stopLoading("fetchRepos");
+        stopLoading("FetchRepos");
       }
       setIsLoading(false);
     }
   }, [setRepos, user, startLoading, stopLoading]);
 
-  return { fetchRepos, isLoading, error };
+  return { FetchRepos, isLoading, error };
 }

@@ -90,7 +90,7 @@ export function useFetchUserData() {
     const source = axios.CancelToken.source(); // ⬅️ Create cancel token
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       const response = await axios.get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${token}` },

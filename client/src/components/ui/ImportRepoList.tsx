@@ -11,7 +11,7 @@
 
 // export default function ImportRepoList() {
 //   const repos = useRecoilValue(reposAtom);
-//   const { fetchRepos, isLoading: isRepoLoading } = useFetchRepos();
+//   const { FetchRepos, isLoading: isRepoLoading } = useFetchRepos();
 //   const { stopLoading, isRequestLoading } = useLoading();
 //   const user = useRecoilValue(userAtom);
 //   const hasFetched = useRef(false);
@@ -38,22 +38,22 @@
 //       !hasFetched.current &&
 //       !isCanceled &&
 //       (!repos || repos.length === 0) &&
-//       !isRequestLoading("fetchRepos");
+//       !isRequestLoading("FetchRepos");
 
 //     if (shouldFetch) {
 //       console.log("🚀 Initiating repo fetch");
 //       setError(null);
 //       hasFetched.current = true;
-//       fetchRepos().catch((err) => {
+//       FetchRepos().catch((err) => {
 //         console.error("Failed to fetch repos:", err);
 //         setError(err.message || "Failed to fetch repositories");
 //       });
 //     }
-//   }, [user, isCanceled, repos, fetchRepos, isRequestLoading]);
+//   }, [user, isCanceled, repos, FetchRepos, isRequestLoading]);
 
 //   const handleCancel = () => {
 //     console.log("Cancelling repo fetch request");
-//     stopLoading("fetchRepos");
+//     stopLoading("FetchRepos");
 //     setIsCanceled(true);
 //     hasFetched.current = true;
 //     setError(null);
@@ -206,7 +206,7 @@ import { userAtom } from "../../states/userAtom";
 
 export default function ImportRepoList() {
   const repos = useRecoilValue(reposAtom);
-  const { fetchRepos, isLoading: isRepoLoading } = useFetchRepos();
+  const { FetchRepos, isLoading: isRepoLoading } = useFetchRepos();
   const { stopLoading, isRequestLoading } = useLoading();
   const user = useRecoilValue(userAtom);
   const hasFetched = useRef(false);
@@ -218,12 +218,20 @@ export default function ImportRepoList() {
   const isUserLoading = isRequestLoading("FetchUser");
   const isLoading = isRepoLoading || isUserLoading;
 
-  // Correctly reset hasFetched and other states when necessary
+  // Reset states when component unmounts or on hard refresh
   useEffect(() => {
-    if (!user || isCanceled || !repos || repos.length === 0) {
+    // Reset states on mount
+    hasFetched.current = false;
+    setIsCanceled(false);
+    setError(null);
+
+    // Cleanup on unmount
+    return () => {
       hasFetched.current = false;
-    }
-  }, [user, isCanceled, repos]);
+      setIsCanceled(false);
+      setError(null);
+    };
+  }, []); // Empty dependency array means this runs once on mount
 
   useEffect(() => {
     const shouldFetch =
@@ -231,22 +239,22 @@ export default function ImportRepoList() {
       !hasFetched.current &&
       !isCanceled &&
       (!repos || repos.length === 0) &&
-      !isRequestLoading("fetchRepos");
+      !isRequestLoading("FetchRepos");
 
     if (shouldFetch) {
       console.log("🚀 Initiating repo fetch");
       setError(null);
       hasFetched.current = true;
-      fetchRepos().catch((err) => {
+      FetchRepos().catch((err) => {
         console.error("Failed to fetch repos:", err);
         setError(err.message || "Failed to fetch repositories");
       });
     }
-  }, [user, isCanceled, repos, fetchRepos, isRequestLoading]);
+  }, [user, isCanceled, repos, FetchRepos, isRequestLoading]);
 
   const handleCancel = () => {
     console.log("Cancelling repo fetch request");
-    stopLoading("fetchRepos");
+    stopLoading("FetchRepos");
     setIsCanceled(true);
     hasFetched.current = true;
     setError(null);
@@ -290,24 +298,49 @@ export default function ImportRepoList() {
   const renderFooter = () => (
     <div className="mt-4">
       {visibleCount < filteredRepos.length && (
-        <div
-          onClick={() => setVisibleCount(visibleCount + 5)}
-          className="flex mt-3 text-gray-400 text-sm cursor-pointer hover:text-white transition group"
-        >
-          <p className="transition-transform group-hover:translate-x-1 text-center">
-            Load More
-          </p>
+        <div className="flex justify-center my-3 text-gray-400 text-sm">
+          <span
+            className="group-hover:translate-x-1 text-center cursor-pointer hover:text-white transition group flex items-center gap-1"
+            onClick={() => setVisibleCount(visibleCount + 5)}
+          >
+            Load More{" "}
+            <svg
+              className="w-5 h-5 transition transform group-hover:translate-y-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              stroke="#00000"
+            >
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></g>
+              <g id="SVGRepo_iconCarrier">
+                {" "}
+                <path
+                  d="M7 10L12 15L17 10"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>{" "}
+              </g>
+            </svg>
+          </span>
         </div>
       )}
-
-      <Link
-        to="/"
-        className="mt-3 text-gray-400 text-sm cursor-pointer hover:text-white transition group"
-      >
-        <span className="transition-transform group-hover:translate-x-1">
-          Import Third-Party Git Repository →
-        </span>
-      </Link>
+      <div className="flex justify-center">
+        <Link
+          to="/"
+          className="mt-3 text-gray-400 text-sm cursor-pointer hover:text-white transition group"
+        >
+          <span className="transition-transform group-hover:translate-x-1">
+            Import Third-Party Git Repository →
+          </span>
+        </Link>
+      </div>
     </div>
   );
 
