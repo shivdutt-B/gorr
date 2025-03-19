@@ -1,18 +1,21 @@
 import { Loader2 } from "lucide-react";
 import { Button } from "./LoadingBtnSource";
-import { useLoading } from "../../hooks/useLoading";
+import React from "react";
 
-export function ButtonLoading() {
-    const { cancelRequests } = useLoading();
+interface ButtonLoadingProps {
+  onClick?: () => void;
+}
 
-    return (
-        <div className="flex justify-center items-center h-screen">
-            <Button className="bg-red-500 text-white flex items-center gap-2 px-4 py-2"
-                onClick={cancelRequests} // ✅ Ensure cancel works
-            >
-                Cancel
-                <Loader2 className="animate-spin" />
-            </Button>
-        </div>
-    );
+export function ButtonLoading({ onClick }: ButtonLoadingProps) {
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <Button
+        onClick={onClick}
+        className="bg-red-500 text-white flex items-center gap-2 px-4 py-2"
+      >
+        Cancel
+        <Loader2 className="animate-spin" />
+      </Button>
+    </div>
+  );
 }

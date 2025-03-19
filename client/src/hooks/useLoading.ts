@@ -1,44 +1,129 @@
+// import { useRecoilState } from "recoil";
+// import { requestMapAtom } from "../states/loadingAtom";
+
+// export const useLoading = () => {
+//     const [requestMap, setRequestMap] = useRecoilState(requestMapAtom);
+
+//     const startLoading = (key: string, persistent: boolean = false) => {
+//         const controller = new AbortController();
+        
+//         setRequestMap((prev) => {
+//             const existingController = prev.get(key);
+//             if (existingController && !persistent) {
+//                 existingController.abort();
+//             }
+            
+//             const newMap = new Map(prev);
+//             newMap.set(key, controller);
+//             return newMap;
+//         });
+
+//         return controller.signal;
+//     };
+
+//     const stopLoading = (key: string) => {
+//         let wasAborted = false;
+        
+//         setRequestMap((prev) => {
+//             const newMap = new Map(prev);
+//             const controller = newMap.get(key);
+            
+//             if (controller) {
+//                 try {
+//                     controller.abort();
+//                     wasAborted = true;
+//                 } catch (error) {
+//                     console.error("Error aborting request:", error);
+//                 }
+//                 newMap.delete(key);
+//             }
+            
+//             return newMap;
+//         });
+
+//         return wasAborted;
+//     };
+
+//     const cancelRequests = () => {
+//         requestMap.forEach(controller => {
+//             try {
+//                 controller.abort();
+//             } catch (error) {
+//                 console.error("Error aborting request:", error);
+//             }
+//         });
+//         setRequestMap(new Map());
+//     };
+
+//     const isRequestLoading = (key: string) => {
+//         return requestMap.has(key);
+//     };
+
+//     return { 
+//         startLoading, 
+//         stopLoading, 
+//         cancelRequests,
+//         isRequestLoading
+//     };
+// };
+
+
+// ==============================================
+
+
 import { useRecoilState } from "recoil";
-import { loadingAtom, requestMapAtom } from "../states/loadingAtom";
+import { requestMapAtom } from "../states/loadingAtom";
 
 export const useLoading = () => {
-    const [isLoading, setLoading] = useRecoilState(loadingAtom);
-    const [requestMap, setRequestMap] = useRecoilState(requestMapAtom);
+  const [requestMap, setRequestMap] = useRecoilState(requestMapAtom);
 
-    console.log('CANCELLED LOADING');
+  const startLoading = (key: string, persistent: boolean = false) => {
+    const controller = new AbortController();
 
-    const startLoading = (key: string) => {
-        const controller = new AbortController();
+    setRequestMap((prev) => {
+      const existingController = prev.get(key);
+      if (existingController && !persistent) {
+        existingController.abort();
+      }
 
-        setRequestMap((prev) => {
-            const newMap = new Map(prev); // ✅ Create a new Map instance
-            newMap.set(key, controller);
-            return newMap;
-        });
+      const newMap = new Map(prev);
+      newMap.set(key, controller);
+      return newMap;
+    });
 
-        setTimeout(() => setLoading(true), 0); // ✅ Ensure state update happens separately
+    return controller;
+  };
 
-        return controller.signal;
-    };
+  const stopLoading = (key: string) => {
+    let wasAborted = false;
 
-    const stopLoading = (key: string) => {
-        setRequestMap((prev) => {
-            const newMap = new Map(prev);
-            newMap.delete(key);
-            setTimeout(() => setLoading(newMap.size > 0), 0); // ✅ Move setLoading outside Recoil update
-            return newMap;
-        });
-    };
+    setRequestMap((prev) => {
+      const newMap = new Map(prev);
+      const controller = newMap.get(key);
 
-    const cancelRequests = () => {
-        setRequestMap((prev) => {
-            const newMap = new Map(prev);
-            newMap.forEach((controller) => controller.abort());
-            return new Map(); // ✅ Reset request map
-        });
+      if (controller) {
+        try {
+          controller.abort();
+          wasAborted = true;
+        } catch (error) {
+          console.error("Error aborting request:", error);
+        }
+        newMap.delete(key);
+      }
 
-        setTimeout(() => setLoading(false), 0); // ✅ Ensure setLoading happens separately
-    };
+      return newMap;
+    });
 
-    return { isLoading, startLoading, stopLoading, cancelRequests };
+    return wasAborted;
+  };
+
+  const isRequestLoading = (key: string) => {
+    return requestMap.has(key);
+  };
+
+  return {
+    startLoading,
+    stopLoading,
+    isRequestLoading,
+  };
 };

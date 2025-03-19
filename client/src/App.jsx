@@ -8,6 +8,7 @@ import { useFetchUserData } from "../src/hooks/useFetchUserData";
 import { userAtom } from "../src/states/userAtom";
 import Dashboard from "./pages/Dashboard";
 import ImportRepo from "./pages/ImportRepo";
+import { useLoading } from "./hooks/useLoading";
 
 function App() {
   return (
@@ -21,18 +22,23 @@ function App() {
 
 function AppWithUserCheck() {
   const user = useRecoilValue(userAtom);
-  const location = useLocation(); 
+  const location = useLocation();
   const fetchUser = useFetchUserData();
   const hasFetched = useRef(false);
+  const { isRequestLoading } = useLoading();
+  const isLoading = isRequestLoading("FetchUser");
 
   useEffect(() => {
-    console.log('TRIGGER BEFORE');
-    if (!user && !hasFetched.current && location.pathname !== "/dashboard") {
-      console.log("🚀 Fetching user globally... FROM APP.JSX");
-      fetchUser();
-      hasFetched.current = true;
-    }
-  }, [fetchUser, user, location.pathname]);
+    const initiateFetch = async () => {
+      if (!user && !hasFetched.current && !isLoading) {
+        console.log("🚀 Fetching user globally... FROM APP.JSX");
+        hasFetched.current = true;
+        await fetchUser();
+      }
+    };
+
+    initiateFetch();
+  }, [fetchUser, user, isLoading]);
 
   return (
     <Routes>

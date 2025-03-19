@@ -1,44 +1,140 @@
-import { useCallback, useEffect, useRef } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+// import { useCallback, useState } from "react";
+// import { useRecoilValue, useSetRecoilState } from "recoil";
+// import { userAtom } from "../states/userAtom";
+// import { reposAtom } from "../states/reposAtom";
+// import { useLoading } from "./useLoading";
+
+// interface UseFetchReposReturn {
+//   FetchRepos: () => Promise<void>;
+//   isLoading: boolean;
+//   error: string | null;
+// }
+
+// export function useFetchRepos(): UseFetchReposReturn {
+//   const setRepos = useSetRecoilState(reposAtom);
+//   const user = useRecoilValue(userAtom);
+//   const { startLoading, stopLoading } = useLoading();
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [error, setError] = useState<string | null>(null);
+
+//   const FetchRepos = useCallback(async () => {
+//     if (!user?.repos_url) {
+//       setError("No repository URL available");
+//       return;
+//     }
+
+//     setIsLoading(true);
+//     setError(null);
+//     const signal = startLoading("FetchRepos");
+
+//     try {
+//       await new Promise(resolve => setTimeout(resolve, 5000));
+//       const response = await fetch(user.repos_url, { signal });
+
+//       if (!response.ok) {
+//         throw new Error(`Failed to fetch repositories: ${response.statusText}`);
+//       }
+
+//       const data = await response.json();
+//       setRepos(data);
+//       setError(null);
+//     } catch (error) {
+//       if (error.name === "AbortError") {
+//         console.log("Fetch request was aborted");
+//         setError("Request canceled");
+//       } else {
+//         console.error("Error fetching repos:", error);
+//         setError(error.message || "Failed to fetch repositories");
+//       }
+//     } finally {
+//       stopLoading("FetchRepos");
+//       setIsLoading(false);
+//     }
+//   }, [setRepos, user, startLoading, stopLoading]);
+
+//   return { FetchRepos, isLoading, error };
+// }
+
+
+// ==========================================
+
+import { useCallback, useState } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userAtom } from "../states/userAtom";
 import { reposAtom } from "../states/reposAtom";
-import { useLoading } from "../hooks/useLoading";
+import { useLoading } from "./useLoading";
 
-export const useFetchRepos = () => {
-    const user = useRecoilValue(userAtom);
-    const [repos, setRepos] = useRecoilState(reposAtom);
-    const { startLoading, stopLoading } = useLoading();
-    const hasFetched = useRef(false);
+interface UseFetchReposReturn {
+  FetchRepos: () => Promise<void>;
+  isLoading: boolean;
+  error: string | null;
+}
 
-    const fetchRepos = useCallback(async () => {
-        if (!user?.repos_url || hasFetched.current) return; // ✅ Prevent unnecessary calls
+export function useFetchRepos(): UseFetchReposReturn {
+  const setRepos = useSetRecoilState(reposAtom);
+  const user = useRecoilValue(userAtom);
+  const { startLoading, stopLoading } = useLoading();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-        hasFetched.current = true;
-        const signal = startLoading("FetchRepos");
+  const FetchRepos = useCallback(async () => {
+    if (!user?.repos_url) {
+      setError("No repository URL available");
+      return;
+    }
 
-        try {
-            console.log("⏳ Waiting for 5 seconds before fetching...");
-            await new Promise((resolve) => setTimeout(resolve, 5000)); // ✅ Ensure delay before fetching
+    setIsLoading(true);
+    setError(null);
+    const controller = startLoading("FetchRepos");
 
-            const response = await fetch("http://localhost:5000/repos", { signal });
-            if (!response.ok) throw new Error("Failed to fetch repositories");
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
-            const data = await response.json();
-            console.log("✅ GitHub Repositories:", data);
-            setRepos(data);
-        } catch (error) {
-            console.error("❌ Error fetching repositories:", error);
-            hasFetched.current = false;
-        } finally {
-            stopLoading("FetchRepos");
+      // Abort if request was cancelled before sending
+      if (controller.signal.aborted) {
+        console.log("Request was aborted before sending.");
+        return;
+      }
+
+      const response = await fetch(user.repos_url, { 
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/vnd.github.v3+json'
         }
-    }, [user?.repos_url, setRepos, startLoading, stopLoading]);
+      });
 
-    useEffect(() => {
-        if (repos.length === 0 && !hasFetched.current) {
-            fetchRepos();
-        }
-    }, [fetchRepos, repos.length]);
 
-    return fetchRepos;
-};
+      if (!response.ok) {
+        throw new Error(`Failed to fetch repositories: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      const filteredData = data.map((repo) => ({
+        name: repo.name,
+        git_url: repo.git_url,
+        clone_url: repo.clone_url,
+        lastUpdated: repo.updated_at,
+      }));
+
+      console.log('REPO RES', filteredData)
+      setRepos(filteredData);
+      setError(null);
+    } catch (error) {
+      if (error.name === "AbortError") {
+        console.log("Fetch request was aborted");
+        setError("Request canceled");
+      } else {
+        console.error("Error fetching repos:", error);
+        setError(error.message || "Failed to fetch repositories");
+      }
+    } finally {
+      if (!controller.signal.aborted) {
+        stopLoading("FetchRepos");
+      }
+      setIsLoading(false);
+    }
+  }, [setRepos, user, startLoading, stopLoading]);
+
+  return { FetchRepos, isLoading, error };
+}
