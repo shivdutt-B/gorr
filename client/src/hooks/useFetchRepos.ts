@@ -28,7 +28,6 @@ export function useFetchRepos(): UseFetchReposReturn {
     const controller = startLoading("FetchRepos");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       // Abort if request was cancelled before sending
       if (controller.signal.aborted) {
