@@ -38,8 +38,7 @@ export default function ImportRepoList() {
       !hasFetched.current &&
       !isCanceled &&
       (!repos || repos.length === 0) &&
-      !isRequestLoading("fetchRepos") &&
-      !isUserLoading; // Only fetch if user fetch is complete
+      !isRequestLoading("fetchRepos");
 
     if (shouldFetch) {
       console.log("🚀 Initiating repo fetch");
@@ -50,7 +49,7 @@ export default function ImportRepoList() {
         setError(err.message || "Failed to fetch repositories");
       });
     }
-  }, [user, isCanceled, repos, fetchRepos, isRequestLoading, isUserLoading]);
+  }, [user, isCanceled, repos, fetchRepos, isRequestLoading]);
 
   const handleCancel = () => {
     console.log("Cancelling repo fetch request");
