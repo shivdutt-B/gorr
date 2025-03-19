@@ -3,9 +3,7 @@ import ImportRepoLayout from '../Layouts/ImportRepoLayout';
 
 function ImportRepo() {
     return (
-        <>
             <ImportRepoLayout />
-        </>
     );
 }
 
