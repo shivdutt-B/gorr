@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-1: 0 100% 63%;
+  --color-2: 270 100% 63%;
+  --color-3: 210 100% 63%;
+  --color-4: 195 100% 63%;
+  --color-5: 90 100% 63%;
+}
+
+html,
+body {
+  @apply bg-black text-white;
+}
+
+.hollow-text {
+  -webkit-text-stroke: 7px #FFFDF0;
+  color: transparent;
+  position: relative;
+  left: 30px;
+}
+
+.steps-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column !important;
+}
+
+.integrate-snippet-container>div,
+.friday-release-container {
+  border: 1px solid rgba(128, 128, 128, 0.425);
+  padding: 10px;
+}
+
+.snippit-content-container {
+  font-size: clamp(8px, 12px, 14px);
+}
+
+.snippit-content-container p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media only screen and (max-width: 400px) {
+  .snippit-container {
+    display: block;
+  }
+
+  .snippit-container>div:last-child {
+    margin-top: 10px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .steps-container {
+    display: none;
+  }
+
+}
