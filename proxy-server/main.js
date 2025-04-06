@@ -13,7 +13,7 @@ const proxy = httpProxy.createProxy();
 app.use((req, res) => {
   const hostname = req.hostname;
   console.log('hostname: ', hostname)
-  const subdomain = hostname.split(".").slice(0, -1).join("/");
+  const subdomain = hostname.split(".").slice(0, -2).join("/");
   console.log('subdomomain: ', subdomain)
 
   // Constructing the target URL for the proxy based on the subdomain
