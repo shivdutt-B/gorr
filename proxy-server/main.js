@@ -15,6 +15,11 @@ app.use((req, res) => {
   // Extract the proxy server domain part (e.g., "gorr-proxy-server.onrender.com")
   const proxyDomain = "gorr-proxy-server.onrender.com";
 
+  const st = JSON.stringify(req)
+  console.log('req: ', st)
+
+  console.log('hostname: ', hostname)
+
   // Extract all subdomain parts by removing the proxy domain
   let projectPath = "";
   if (hostname.endsWith(proxyDomain)) {
