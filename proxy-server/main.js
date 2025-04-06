@@ -12,10 +12,20 @@ const proxy = httpProxy.createProxy();
 // Middleware to handle incoming requests and proxy them to the correct S3 path
 app.use((req, res) => {
   const hostname = req.hostname;
-  const subdomain = hostname.split(".").slice(0, -2).join("/");
+  // Extract the proxy server domain part (e.g., "gorr-proxy-server.onrender.com")
+  const proxyDomain = "gorr-proxy-server.onrender.com";
+
+  // Extract all subdomain parts by removing the proxy domain
+  let projectPath = "";
+  if (hostname.endsWith(proxyDomain)) {
+    projectPath = hostname.slice(0, -proxyDomain.length - 1); // -1 for the dot
+    // Replace dots with slashes to create the path structure
+    projectPath = projectPath.replace(/\./g, "/");
+  }
 
   // Constructing the target URL for the proxy based on the subdomain
-  const resolvesTo = `${BASE_PATH}/${subdomain}`;
+  const resolvesTo = `${BASE_PATH}/${projectPath}`;
+  console.log(`Proxying request from ${hostname} to ${resolvesTo}`);
 
   // Proxying the request to the constructed URL
   return proxy.web(req, res, { target: resolvesTo, changeOrigin: true });
