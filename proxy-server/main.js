@@ -12,35 +12,44 @@ const proxy = httpProxy.createProxy();
 // Middleware to handle incoming requests and proxy them to the correct S3 path
 app.use(async (req, res) => {
   const hostname = req.hostname;
-  // Extract the proxy server domain part (e.g., "gorr-proxy-server.onrender.com")
-  const proxyDomain = "gorr-proxy-server.onrender.com";
 
-  const st = await JSON.stringify(req)
-  console.log('req: ', st)
+  console.log("hostname: ", hostname);
+  console.log("query params: ", req.query);
 
-  console.log('hostname: ', hostname)
-
-  // Extract all subdomain parts by removing the proxy domain
+  // Extract app name from query parameter instead of hostname
   let projectPath = "";
-  if (hostname.endsWith(proxyDomain)) {
-    projectPath = hostname.slice(0, -proxyDomain.length - 1); // -1 for the dot
-    // Replace dots with slashes to create the path structure
+  if (req.query && req.query.app) {
+    // Get the app name from the query parameter
+    projectPath = req.query.app;
+    // Replace dots with slashes to create the path structure (if needed)
     projectPath = projectPath.replace(/\./g, "/");
+    console.log("projectPath: ", projectPath);
+
+    // Constructing the target URL for the proxy based on the app parameter
+    const resolvesTo = `${BASE_PATH}/${projectPath}`;
+    console.log(`Proxying request to ${resolvesTo}`);
+
+    // Proxying the request to the constructed URL
+    return proxy.web(req, res, { target: resolvesTo, changeOrigin: true });
+  } else {
+    // If no app parameter is provided, return an error or redirect to a default page
+    return res
+      .status(400)
+      .send("Missing app parameter. Use ?app=your-app-name");
   }
-
-  // Constructing the target URL for the proxy based on the subdomain
-  const resolvesTo = `${BASE_PATH}/${projectPath}`;
-  console.log(`Proxying request from ${hostname} to ${resolvesTo}`);
-
-  // Proxying the request to the constructed URL
-  return proxy.web(req, res, { target: resolvesTo, changeOrigin: true });
 });
 
 // Event listener for proxy requests to modify the path if necessary
-// Although this is handled in the AWS S3 bucket itself, we are doing it here for the sake of completeness.
 proxy.on("proxyReq", (proxyReq, req, res) => {
   const url = req.url;
-  if (url === "/") {
+
+  // Remove the app query parameter from the proxied URL
+  if (proxyReq.path.includes("?app=")) {
+    const cleanPath = proxyReq.path.split("?")[0];
+    proxyReq.path = cleanPath;
+  }
+
+  if (proxyReq.path === "/" || proxyReq.path === "") {
     // Appending 'index.html' to the path if the URL is the root
     proxyReq.path += "index.html";
   }
