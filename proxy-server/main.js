@@ -10,12 +10,12 @@ const BASE_PATH = process.env.S3_BASE_PATH;
 const proxy = httpProxy.createProxy();
 
 // Middleware to handle incoming requests and proxy them to the correct S3 path
-app.use((req, res) => {
+app.use(async (req, res) => {
   const hostname = req.hostname;
   // Extract the proxy server domain part (e.g., "gorr-proxy-server.onrender.com")
   const proxyDomain = "gorr-proxy-server.onrender.com";
 
-  const st = JSON.stringify(req)
+  const st = await JSON.stringify(req)
   console.log('req: ', st)
 
   console.log('hostname: ', hostname)
