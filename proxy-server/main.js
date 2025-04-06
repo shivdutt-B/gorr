@@ -12,7 +12,9 @@ const proxy = httpProxy.createProxy();
 // Middleware to handle incoming requests and proxy them to the correct S3 path
 app.use((req, res) => {
   const hostname = req.hostname;
+  console.log('hostname: ', hostname)
   const subdomain = hostname.split(".").slice(0, -1).join("/");
+  console.log('subdomomain: ', subdomain)
 
   // Constructing the target URL for the proxy based on the subdomain
   const resolvesTo = `${BASE_PATH}/${subdomain}`;
