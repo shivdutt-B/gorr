@@ -9,7 +9,7 @@ const proxy = httpProxy.createProxy();
 
 // Middleware to handle path-based proxying
 app.use("/*", (req, res) => {
-  console.log("req.path: ", req.path);
+  console.log("req.path: ", req);
   console.log("req.url: ", req.url);
   let pathFromUrl = req.path.substring(1); // remove leading slash
 
