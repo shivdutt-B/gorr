@@ -9,8 +9,8 @@ const proxy = httpProxy.createProxy();
 
 // Middleware to handle path-based proxying
 app.use("/*", (req, res) => {
-  console.log("req.path: ", req);
-  console.log("req.url: ", req.url);
+  // console.log("req.path: ", req);
+  // console.log("req.url: ", req.url);
   let pathFromUrl = req.path.substring(1); // remove leading slash
 
   pathFromUrl = pathFromUrl.replaceAll(".", "/");
@@ -19,6 +19,7 @@ app.use("/*", (req, res) => {
 
   // This constructs: http://s3-bucket-url/my-ang-app/angular-fresh/browser
   const resolvesTo = `${BASE_PATH}/apple-clone`;
+  console.log("resolvesTo: ", resolvesTo);
 
   // Forward the request to S3
   proxy.web(req, res, {
