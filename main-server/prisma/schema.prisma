@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = "postgresql://postgres.xeccthspqghefxczsdwt:UZ3!x5!.YZscV5K@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @unique
+  projects  Project[]
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  gitUrl      String
+  user        User     @relation(fields: [userId], references: [userId])
+  userId      Int
+  createdAt   DateTime @default(now())
+  projectUrl String @unique
+} 

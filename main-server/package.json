@@ -1,0 +1,29 @@
+{
+  "name": "gorr-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node main.js",
+    "db:init": "node scripts/initDb.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-ecs": "^3.766.0",
+    "@prisma/client": "^6.5.0",
+    "aws-sdk": "^2.1692.0",
+    "axios": "^1.7.9",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "ioredis": "^5.x.x",
+    "pg": "^8.14.1",
+    "random-word-slugs": "^0.1.7"
+  },
+  "devDependencies": {
+    "prisma": "^6.5.0"
+  }
+}
