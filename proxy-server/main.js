@@ -18,7 +18,7 @@ app.use("/*", (req, res) => {
   console.log("pathFromUrl: ", pathFromUrl);
 
   // This constructs: http://s3-bucket-url/my-ang-app/angular-fresh/browser
-  const resolvesTo = `${BASE_PATH}/${pathFromUrl}`;
+  const resolvesTo = `${BASE_PATH}/apple-clone`;
 
   // Forward the request to S3
   proxy.web(req, res, {
