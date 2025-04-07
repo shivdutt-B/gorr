@@ -1,35 +1,51 @@
-const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const express = require("express");
+const httpProxy = require("http-proxy");
+const path = require("path");
+require("dotenv").config();
 
 const app = express();
 const PORT = 3000;
+const BASE_PATH = "https://gorr-test-bucket.s3.eu-north-1.amazonaws.com";
+const proxy = httpProxy.createProxy();
 
-const BUCKET_NAME = 'deployments-container';
-const REGION = 'eu-north-1'; // Stockholm (as per your screenshot)
+// Middleware to handle incoming requests
+app.use("/project/:projectName", (req, res) => {
+  const projectName = req.params.projectName; // extract project name from route parameter
 
-app.use('/project/:name', (req, res, next) => {
-  const projectName = req.params.name;
+  console.log('projectName', projectName)
 
-  // Construct the base S3 URL
-  const target = `https://${BUCKET_NAME}.s3.${REGION}.amazonaws.com`;
+  if (!projectName) {
+    return res.status(400).send("Project name not specified in the URL.");
+  }
 
-  // Dynamically build the proxy for this project
-  createProxyMiddleware({
-    target,
+  //   // Trim project name from URL to forward actual file path
+//   const filePath = req.path.replace(`/${projectName}`, "") || "/index.html";
+
+    // console.log('KFSLKJDFSLKFJSLFJSLJFLSFJLSJFLJSLFKJ=====================')
+  const targetUrl = `${BASE_PATH}/${projectName}/index.html`;
+
+  console.log('targetUrl', targetUrl)
+
+
+//   console.log(`🔁 Proxying to: ${targetUrl}${filePath}`);
+
+  proxy.web(req, res, {
+    target: targetUrl,
     changeOrigin: true,
-    pathRewrite: {
-      [`^/project/${projectName}`]: `/${projectName}`, // Keep path under project folder
-    },
-    onProxyReq(proxyReq, req, res) {
-      console.log(`[Proxy] ${req.method} ${req.originalUrl} → ${target}${req.originalUrl.replace(`/project/${projectName}`, `/${projectName}`)}`);
-    },
-    onError(err, req, res) {
-      console.error('Proxy error:', err);
-      res.status(500).send('Something went wrong.');
+    selfHandleResponse: false,
+    headers: {
+      host: new URL(targetUrl).host,
     }
-  })(req, res, next);
+  }, (err) => {
+    console.error("❌ Proxy Error:", err.message);
+    res.status(500).send("Proxy error");
+  });
+
+  // Rewrite path so S3 receives the correct resource path
+//   req.url = filePath;
 });
 
+// Start the server
 app.listen(PORT, () => {
   console.log(`🚀 Reverse proxy server running at http://localhost:${PORT}`);
 });
