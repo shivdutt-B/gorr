@@ -38,4 +38,16 @@ proxy.on("proxyReq", (proxyReq, req) => {
   }
 });
 
+// Log proxy errors
+proxy.on("error", (err, req, res) => {
+  console.error("Proxy error:", err);
+  res.writeHead(500, { "Content-Type": "text/plain" });
+  res.end("Proxy error: " + err.message);
+});
+
+// Log successful proxying
+proxy.on("proxyRes", (proxyRes, req, res) => {
+  console.log(`Proxied ${req.method} ${req.url} -> ${proxyRes.statusCode}`);
+});
+
 app.listen(PORT, () => console.log(`Reverse Proxy Running on port ${PORT}`));
