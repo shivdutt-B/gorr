@@ -130,12 +130,12 @@ const EnvironmentVariables: React.FC<EnvironmentVariablesProps> = ({
               <span className="mr-2">+</span> Add More
             </button>
 
-            <p className="text-sm text-gray-400">
+            {/* <p className="text-sm text-gray-400">
               Tip: Paste an .env above to populate the form.{" "}
               <a href="#" className="text-blue-400 hover:text-blue-300">
                 Learn more →
               </a>
-            </p>
+            </p> */}
           </div>
         </div>
       </div>
