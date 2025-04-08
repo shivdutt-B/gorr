@@ -31,7 +31,6 @@ export function useFetchProjects(): UseFetchProjectsReturn {
 
       const response = await axios.get(url);
 
-      console.log("response: ", response);
       if (response.status === 200) {
         setProjects(response.data);
       }

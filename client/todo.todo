@@ -1,2 +1,0 @@
-1. use subscriber function in buildProjectController.js to track the build status. and when the build is completed then stop the task(already done) and send response to the client.
-2. in deployresponse component initially show the message deployment queued and when the response is received then show the deployment completed.

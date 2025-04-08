@@ -75,7 +75,6 @@ export default function ImportRepoList() {
     setError(null);
     setIsCanceled(false);
     hasFetched.current = false;
-    console.log("RETRYING");
     fetchUser();
   };
 

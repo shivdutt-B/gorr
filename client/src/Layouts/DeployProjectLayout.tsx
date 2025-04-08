@@ -57,7 +57,6 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
     string | undefined
   >(repoSlugFromUrl || projectSlug);
 
-
   // Set project name from URL parameter on initial load
   useEffect(() => {
     // Log all parameters from URL
@@ -144,7 +143,6 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
     newVars[index] = { key, value };
     setEnvVariables(newVars);
   };
-
 
   const handleDeploy = async () => {
     try {
@@ -314,6 +312,7 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
 
           <GlobeVisualization
             projectSlug={currentProjectSlug}
+            isDeploying={currentIsLoading}
           />
         </div>
         {/* Directory Selector Modal */}

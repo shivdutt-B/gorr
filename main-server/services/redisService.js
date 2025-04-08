@@ -57,9 +57,6 @@ const createRedisClient = (name = "publisher") => {
       }
 
       const delay = Math.min(times * 50, 2000);
-      console.log(
-        `🔄 ${name}: Connection attempt ${times}, retrying in ${delay}ms`
-      );
       return delay;
     },
     maxRetriesPerRequest: 3,

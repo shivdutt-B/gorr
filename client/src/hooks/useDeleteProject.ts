@@ -39,8 +39,6 @@ export const useDeleteProject = () => {
         return null;
       }
 
-      console.log(response.data);
-
       return response.data;
     } catch (err) {
       console.log('ERROR: ', err);

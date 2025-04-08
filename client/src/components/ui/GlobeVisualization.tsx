@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
+// Add type declaration for import.meta.env
+interface ImportMeta {
+  env: {
+    VITE_SOCKET_URL?: string;
+  };
+}
+
 interface GlobeVisualizationProps {
   projectSlug?: string;
+  isDeploying?: boolean;
 }
 
 interface BuildLog {
@@ -18,9 +26,24 @@ interface BuildLog {
 
 const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
   projectSlug,
+  isDeploying = false,
 }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [logs, setLogs] = useState<BuildLog[]>([]);
+
+  // Add waiting for logs message when deploy is clicked
+  useEffect(() => {
+    if (isDeploying && logs.length === 0) {
+      const waitingLog: BuildLog = {
+        status: "pending",
+        message: "⏰Waiting for deployment logs...",
+        timestamp: new Date().toISOString(),
+        stage: "init",
+        type: "info",
+      };
+      setLogs([waitingLog]);
+    }
+  }, [isDeploying, logs.length]);
 
   const getStatusEmoji = (status: string): string => {
     switch (status.toLowerCase()) {
@@ -69,9 +92,7 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
   };
 
   useEffect(() => {
-    console.log("Connecting to socket server...");
     if (!projectSlug) return;
-
 
     // Initialize socket connection using environment variable with fallback
     const socketInstance = io(
@@ -85,10 +106,7 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
       }
     );
 
-    console.log("Connecting to socket server...");
-
     socketInstance.on("connect", () => {
-      console.log("Connected to socket server");
       // Subscribe to the project's log channel
       socketInstance.emit("subscribe", `logs:${projectSlug}`);
     });
@@ -119,7 +137,6 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
               : undefined),
         };
 
-        console.log("Received formatted log:", log);
         setLogs((prevLogs) => [...prevLogs, log]);
       } catch (error) {
         console.error("Error parsing log message:", error);
@@ -131,7 +148,6 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
     });
 
     socketInstance.on("disconnect", (reason) => {
-      console.log("Socket disconnected:", reason);
       // Attempt to reconnect if disconnected unexpectedly
       if (reason === "io server disconnect") {
         socketInstance.connect();
@@ -139,7 +155,6 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
     });
 
     socketInstance.on("reconnect", (attemptNumber) => {
-      console.log(`Reconnected after ${attemptNumber} attempts`);
       // Resubscribe to the channel after reconnection
       socketInstance.emit("subscribe", `logs:${projectSlug}`);
     });
@@ -164,7 +179,6 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
         message: `${getStageEmoji(log.stage)}${log.message}`,
       };
 
-      console.log("Received build log:", formattedLog);
       setLogs((prevLogs) => [...prevLogs, formattedLog]);
     });
 
@@ -173,7 +187,6 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
     // Cleanup on unmount
     return () => {
       if (socketInstance) {
-        console.log("Cleaning up socket connection");
         socketInstance.emit("unsubscribe", `logs:${projectSlug}`);
         socketInstance.disconnect();
       }

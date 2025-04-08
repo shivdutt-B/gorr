@@ -5,7 +5,6 @@ require("dotenv").config()
 
 const app = express()
 const PORT = parseInt(process.env.SOCKET_PORT) || 7000
-// const PORT = 7000
 
 // Redis connection string from environment variables
 const subscriber = new Redis(process.env.REDIS_URL)

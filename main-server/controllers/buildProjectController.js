@@ -55,7 +55,6 @@ const buildProject = async (req, res) => {
           await prisma.user.create({
             data: { userId: userId },
           });
-          // console.log(`✅ Created new user with ID: ${userId}`);
           await publishLog(projectSlug, {
             status: "INFO",
             message: "👤 New user created",
@@ -156,18 +155,15 @@ const buildProject = async (req, res) => {
                   reason: "Build timed out after 15 minutes",
                 });
                 await ecsClient.send(stopCommand);
-                // console.log(
-                //   `✅ Successfully stopped task due to timeout: ${taskArn}`
-                // );
               } catch (stopError) {
-                // console.error(
-                //   "❗ Failed to stop ECS task after timeout:",
-                //   stopError
-                // );
+                console.error(
+                  "❗ Failed to stop ECS task after timeout:",
+                  stopError
+                );
               }
             }
           } catch (error) {
-            // console.error("❗ Error unsubscribing:", error);
+            console.error("❗ Error unsubscribing:", error);
           }
 
           reject(new Error("Build timed out after 15 minutes"));
@@ -226,21 +222,14 @@ const buildProject = async (req, res) => {
                 isAngularProject || subscriber.isAngularProject || false;
               projectName = projectName || subscriber.projectName || null;
 
-              // console.log(
-              //   "🚀 ~ Build completed ~ isAngularProject:",
-              //   isAngularProject
-              // );
-              // console.log("🚀 ~ Build completed ~ projectName:", projectName);
-
               const baseUrl = process.env.PROXY_DOMAIN || "localhost:8000";
               let url;
 
               if (isAngularProject && projectName) {
-                url = `http://${projectSlug}.${projectName}.browser.${baseUrl}`;
+                url = `https://${projectSlug}_${projectName}_browser.${baseUrl}`;
                 // console.log(`Generated Angular URL: ${url}`);
               } else {
-                url = `http://${projectSlug}.${baseUrl}`;
-                // console.log(`Generated standard URL: ${url}`);
+                url = `https://${projectSlug}.${baseUrl}`;
               }
 
               // Now create the project in database after successful deployment
@@ -253,7 +242,6 @@ const buildProject = async (req, res) => {
                     projectUrl: url,
                   },
                 });
-                // console.log("✅ Project created in database:", createdProject);
 
                 await publishLog(projectSlug, {
                   status: "INFO",
@@ -264,10 +252,10 @@ const buildProject = async (req, res) => {
                   stage: "project_creation",
                 });
               } catch (dbError) {
-                // console.error(
-                //   "❗ Failed to create project in database:",
-                //   dbError
-                // );
+                console.error(
+                  "❗ Failed to create project in database:",
+                  dbError
+                );
                 await publishLog(projectSlug, {
                   status: "ERROR",
                   message: "❌ Failed to create project in database",
@@ -276,10 +264,6 @@ const buildProject = async (req, res) => {
                   projectId: projectSlug,
                   stage: "project_creation_failed",
                 });
-                // We'll still return success since the deployment worked, just log the database error
-                // console.log(
-                //   "⚠️ Project deployed successfully but database creation failed"
-                // );
               }
 
               res.status(200).json({
@@ -302,7 +286,7 @@ const buildProject = async (req, res) => {
             try {
               await subscriber.unsubscribe();
             } catch (error) {
-              // console.error("❗ Error unsubscribing:", error);
+              console.error("❗ Error unsubscribing:", error);
             }
 
             // Stop the ECS task if there's an error
@@ -314,14 +298,11 @@ const buildProject = async (req, res) => {
                   reason: "Build process failed with error status",
                 });
                 await ecsClient.send(stopCommand);
-                // console.log(
-                //   `✅ Successfully stopped task due to error: ${taskArn}`
-                // );
               } catch (stopError) {
-                // console.error(
-                //   "❗ Failed to stop ECS task after error:",
-                //   stopError
-                // );
+                console.error(
+                  "❗ Failed to stop ECS task after error:",
+                  stopError
+                );
               }
             }
 
@@ -342,11 +323,8 @@ const buildProject = async (req, res) => {
           }
         });
       });
-
-      // console.log("✅ Build completed successfully for project:", projectSlug);
-      // console.log("✅ Project deployment completed successfully");
     } catch (error) {
-      // console.error("❗ Build project error:", error);
+      console.error("❗ Build project error:", error);
 
       // If we have a task running, try to stop it
       if (taskArn) {
@@ -358,9 +336,8 @@ const buildProject = async (req, res) => {
             reason: "Build process failed or was terminated",
           });
           await ecsClient.send(stopCommand);
-          // console.log(`✅ Successfully stopped task: ${taskArn}`);
         } catch (stopError) {
-          // console.error("❗ Failed to stop ECS task:", stopError);
+          console.error("❗ Failed to stop ECS task:", stopError);
         }
       }
 
@@ -394,8 +371,7 @@ const buildProject = async (req, res) => {
       }
     }
   } catch (globalError) {
-    // Global error handler for any unexpected errors
-    // console.error("❗ Unexpected deployment error:", globalError);
+    console.error("❗ Unexpected deployment error:", globalError);
 
     // Only send response if headers haven't been sent yet
     if (!res.headersSent) {

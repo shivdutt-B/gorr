@@ -120,9 +120,6 @@ const redeployProject = async (req, res) => {
                   reason: "Redeployment timed out after 15 minutes",
                 });
                 await ecsClient.send(stopCommand);
-                console.log(
-                  `✅ Successfully stopped task due to timeout: ${taskArn}`
-                );
               } catch (stopError) {
                 console.error(
                   "❗ Failed to stop ECS task after timeout:",
@@ -140,16 +137,16 @@ const redeployProject = async (req, res) => {
         let subscriber = null;
 
         // Debug subscriber to monitor all log statuses
-        const debugSubscriber = subscribeToLogs(slug, async (log) => {
-          if (
-            log.status === "COMPLETED" ||
-            log.status === "FAILED" ||
-            log.status === "ERROR" ||
-            log.status === "INFO"
-          ) {
-            console.log(log);
-          }
-        });
+        // const debugSubscriber = subscribeToLogs(slug, async (log) => {
+        //   if (
+        //     log.status === "COMPLETED" ||
+        //     log.status === "FAILED" ||
+        //     log.status === "ERROR" ||
+        //     log.status === "INFO"
+        //   ) {
+        //     console.log(log);
+        //   }
+        // });
 
         // Subscribe to logs and store the subscriber reference
         subscriber = subscribeToLogs(slug, async (log) => {
@@ -167,9 +164,6 @@ const redeployProject = async (req, res) => {
               );
               if (match && match[1]) {
                 projectName = match[1];
-                console.log(
-                  `🔍 Angular project detected! Name: ${projectName}`
-                );
 
                 // Store this information at the subscriber level for later use
                 subscriber.isAngularProject = true;
@@ -197,9 +191,9 @@ const redeployProject = async (req, res) => {
               let url;
 
               if (isAngularProject && projectName) {
-                url = `http://${slug}.${projectName}.browser.${baseUrl}`;
+                url = `https://${slug}_${projectName}_browser.${baseUrl}`;
               } else {
-                url = `http://${slug}.${baseUrl}`;
+                url = `https://${slug}.${baseUrl}`;
               }
 
               // Update the project URL if needed
@@ -263,9 +257,7 @@ const redeployProject = async (req, res) => {
                   reason: "Redeployment process failed with error status",
                 });
                 await ecsClient.send(stopCommand);
-                console.log(
-                  `✅ Successfully stopped task due to error: ${taskArn}`
-                );
+                
               } catch (stopError) {
                 console.error(
                   "❗ Failed to stop ECS task after error:",
@@ -305,7 +297,6 @@ const redeployProject = async (req, res) => {
             reason: "Redeployment process failed or was terminated",
           });
           await ecsClient.send(stopCommand);
-          console.log(`✅ Successfully stopped task: ${taskArn}`);
         } catch (stopError) {
           console.error("❗ Failed to stop ECS task:", stopError);
         }

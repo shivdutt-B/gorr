@@ -59,17 +59,6 @@ export const useDeployProject = () => {
       // Encode environment variables before sending
       const encodedEnvVariables = encodeEnvVariables(envVariables);
 
-      console.log('BEFORE ENCODING: ', envVariables)
-      console.log('AFTER ENCODING ', encodedEnvVariables)
-
-      console.log('DATA: ', {
-        gitURL,
-        slug,
-        rootDirectory,
-        userId,
-        envVariables: encodedEnvVariables, // Send encoded variables
-      })
-
       const response = await axios.post<DeployResponse>(
         `${import.meta.env.VITE_API_BASE_URL}/deploy-project` || "http://localhost:5000/deploy-project",
         {
@@ -81,7 +70,6 @@ export const useDeployProject = () => {
         }
       );
 
-      console.log('RESPONSE: ', response)
       if (response.data.status == "error") {
         setError(response.data.message);
         setStatus("FAILED");

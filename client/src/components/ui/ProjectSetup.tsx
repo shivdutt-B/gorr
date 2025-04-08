@@ -33,8 +33,8 @@ const ProjectSetup: React.FC<ProjectSetupProps> = ({
 
   // Validation function for project name
   const validateProjectName = (name: string) => {
-    // Only allow lowercase letters, numbers, hyphens, and underscores
-    const validPattern = /^[a-z0-9-_]*$/;
+    // Only allow lowercase letters, numbers, and hyphens (no underscores)
+    const validPattern = /^[a-z0-9-]*$/;
     return validPattern.test(name);
   };
 
@@ -134,8 +134,8 @@ const ProjectSetup: React.FC<ProjectSetupProps> = ({
           {/* Format validation message */}
           {!isRedeploy && (
             <p className="text-xs text-gray-400 mt-1">
-              Project name can only contain lowercase letters, numbers, hyphens,
-              and underscores.
+              Project name can only contain lowercase letters, numbers, and
+              hyphens.
             </p>
           )}
 
@@ -145,8 +145,8 @@ const ProjectSetup: React.FC<ProjectSetupProps> = ({
               {isInvalidFormat && (
                 <p className="text-[13px] text-red-500 flex items-center mt-1">
                   <CrossIcon />
-                  Project name can only contain lowercase letters, numbers,
-                  hyphens, and underscores.
+                  Project name can only contain lowercase letters, numbers, and
+                  hyphens.
                 </p>
               )}
               {domainStatus === "available" && !isInvalidFormat && (

@@ -46,7 +46,6 @@ export function useFetchRepos(): UseFetchReposReturn {
         lastUpdated: repo.updated_at,
       }));
 
-      console.log('REPO RES', data)
       setRepos(filteredData);
       setError(null);
     } catch (error) {

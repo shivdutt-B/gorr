@@ -43,7 +43,6 @@ const DeploymentResponse: React.FC<DeploymentResponseProps> = ({
     // If there's no deployment activity and no data to show, hide the response
     if (!isDeploying && !isQueued && !error && !deploymentData?.data?.url) {
       setShowResponse(false);
-      console.log("URL: ", deploymentUrl);
     }
   }, [isDeploying, isQueued, error, deploymentData]);
 
@@ -58,7 +57,6 @@ const DeploymentResponse: React.FC<DeploymentResponseProps> = ({
     return "An unexpected error occurred during deployment";
   };
 
-  console.log("Deployment Data: ", deploymentData);
   const deploymentUrl = deploymentData?.data?.url;
   const projectDetails = deploymentData?.data?.project;
   const formattedTimestamp = queuedTimestamp

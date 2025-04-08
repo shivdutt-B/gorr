@@ -11,7 +11,20 @@ const proxy = httpProxy.createProxy();
 // Middleware to handle incoming requests and proxy them to the correct S3 path
 app.use((req, res) => {
   const hostname = req.hostname;
-  const subdomain = hostname.split(".").slice(0, -2).join("/");
+  let subdomain;
+  
+  // Check if the hostname contains underscores (for Angular projects)
+  if (hostname.includes('_')) {
+    // Replace underscores with slashes for proper path construction
+    // const subdomain = hostname.split(".").slice(0, -2).join("/");
+    // https://af1_angular-fresh_browser.gorrproxy.xyz
+    const parts = hostname.split('.');
+    const subdomainPart = parts[0];
+    subdomain = subdomainPart.replace(/_/g, '/');
+  } else {
+    // Handle regular subdomains
+    subdomain = hostname.split(".").slice(0, -2).join("/");
+  }
   console.log("=============================subdomain====================: ", subdomain);
   console.log("=============================hostname====================: ", hostname);
 
