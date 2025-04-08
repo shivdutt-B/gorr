@@ -56,7 +56,6 @@ export const useRedeployProject = () => {
         return null;
       }
 
-      console.log(response.data);
 
       setDeploymentData(response.data);
       setIsQueued(false);
