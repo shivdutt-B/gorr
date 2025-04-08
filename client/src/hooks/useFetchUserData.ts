@@ -21,7 +21,6 @@ export function useFetchUserData() {
     }
 
     const token = GetCookie("github_token");
-    // const token = "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";
     console.log("=============token===========", token);
     if (!token) {
       setUser(null);
