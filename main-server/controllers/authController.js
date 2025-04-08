@@ -40,7 +40,7 @@ const githubCallback = async (req, res) => {
       return res.status(400).json({ error: "Failed to get access token" });
 
     res.cookie("github_token", accessToken, {
-      httpOnly: false,
+      httpOnly: true,
       sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000,
     });

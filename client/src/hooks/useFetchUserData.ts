@@ -15,15 +15,19 @@ export function useFetchUserData() {
   const [requestMap, setRequestMap] = useRecoilState(requestMapAtom);
 
   const fetchUser = useCallback(async () => {
+    console.log("=============fetchUser===========");
     if (requestInProgress.current || isRequestLoading("FetchUser")) {
       return;
     }
 
     const token = GetCookie("github_token");
+    // const token = "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";
+    console.log("=============token===========", token);
     if (!token) {
       setUser(null);
       return;
     }
+    // console.log("=============token===========", token);
 
     requestInProgress.current = true;
     startLoading("FetchUser", true);
@@ -32,6 +36,7 @@ export function useFetchUserData() {
       const response = await axios.get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("=============response===========", response.data);
       setUser(response.data);
     } catch (error) {
       setUser(null);
