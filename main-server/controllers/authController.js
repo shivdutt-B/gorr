@@ -10,6 +10,7 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
 }
 
 const githubCallback = async (req, res) => {
+  console.log("======================== HIT CALL BACK====================");
   const code = req.query.code;
 
   console.log("=============code===========", code);
@@ -34,7 +35,7 @@ const githubCallback = async (req, res) => {
     const accessToken = tokenResponse.data.access_token;
 
     console.log("=============accessToken===========", accessToken);
-    
+
     if (!accessToken)
       return res.status(400).json({ error: "Failed to get access token" });
 
