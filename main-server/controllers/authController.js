@@ -41,7 +41,8 @@ const githubCallback = async (req, res) => {
 
     res.cookie("github_token", accessToken, {
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "none",
+      secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
 
