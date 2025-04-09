@@ -51,11 +51,11 @@ const githubCallback = async (req, res) => {
     // res.redirect(`${FRONTEND_URL}/dashboard?token=${accessToken}`);
     
     // Send JSON response first
-    res.status(200).json({ 
-      success: true, 
-      message: "GitHub authentication successful",
-      token: accessToken
-    });
+    // res.status(200).json({ 
+    //   success: true, 
+    //   message: "GitHub authentication successful",
+    //   token: accessToken
+    // });
     
     // Then redirect the user
     res.redirect(`${FRONTEND_URL}/dashboard`);
