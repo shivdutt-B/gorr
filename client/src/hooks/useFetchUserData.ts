@@ -20,25 +20,18 @@ export function useFetchUserData() {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get('token');
-    const sampleVal = queryParams.get('sampleKey');
 
     console.log("===========token======", token);
-    console.log("===========sampleVal======", sampleVal);
 
     if (token) {
       try {
         // Store token in cookies instead of localStorage
         document.cookie = `tok=${token}; path=/; max-age=${60 * 60 * 24}; SameSite=Lax`;
         console.log("Token saved to cookies");
-
-        if (sampleVal) {
-          document.cookie = `sampleKey=${sampleVal}; path=/; max-age=${60 * 60 * 24}; SameSite=Lax`;
-          console.log("sampleKey saved to cookies");
-        }
         
         // Remove token from URL (for security)
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, document.title, newUrl);
+        // const newUrl = window.location.pathname;
+        // window.history.replaceState({}, document.title, newUrl);
       } catch (error) {
         console.error("Failed to save token to cookies:", error);
       }
@@ -65,7 +58,7 @@ export function useFetchUserData() {
     try {
       const response = await axios.get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true, // 👈 Important!
+  
       });
       setUser(response.data);
     } catch (error) {

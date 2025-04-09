@@ -51,7 +51,7 @@ const githubCallback = async (req, res) => {
 
     console.log("===========accessToken======", accessToken);
 
-    res.redirect(`${FRONTEND_URL}/dashboard?token=${accessToken}?sampleKey=sampleVal`);
+    res.redirect(`${FRONTEND_URL}/dashboard?token=${accessToken}`);
     
     // Send JSON response first
     // res.status(200).json({ 
