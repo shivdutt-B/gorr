@@ -24,13 +24,17 @@ export function useFetchUserData() {
     console.log("===========token======", token);
     
     if (token) {
-      // Store token in localStorage
-      localStorage.setItem('github_token', `${token}`);
-      localStorage.setItem('sample key', 'sample value');
-      
-      // Remove token from URL (for security)
-      // const newUrl = window.location.pathname;
-      // window.history.replaceState({}, document.title, newUrl);
+      try {
+        // Store token in localStorage - make sure it's actually set
+        window.localStorage.setItem('github_token', token);
+        console.log("Token saved to localStorage:", localStorage.getItem('github_token'));
+        
+        // Remove token from URL (for security)
+        // const newUrl = window.location.pathname;
+        // window.history.replaceState({}, document.title, newUrl);
+      } catch (error) {
+        console.error("Failed to save token to localStorage:", error);
+      }
     }
   }, [location]);
 
@@ -41,6 +45,8 @@ export function useFetchUserData() {
 
     // Get token from localStorage instead of cookie
     const token = localStorage.getItem('github_token');
+    console.log("Fetching user with token:", token);
+    
     // const token = GetCookie("github_token");
     if (!token) {
       setUser(null);
