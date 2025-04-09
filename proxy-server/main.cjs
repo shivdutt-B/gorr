@@ -10,7 +10,7 @@ const proxy = httpProxy.createProxy();
 
 // Add a ping endpoint to keep the server active
 app.get("/ping", (req, res) => {
-  console.log("=============pingHandler===========");
+  console.log("=============pingHandler=============");
   const uptime = process.uptime();
   const memoryUsage = process.memoryUsage();
   const currentTime = new Date().toISOString();
@@ -39,9 +39,6 @@ app.use((req, res) => {
 
   // Check if the hostname contains underscores (for Angular projects)
   if (hostname.includes("_")) {
-    // Replace underscores with slashes for proper path construction
-    // const subdomain = hostname.split(".").slice(0, -2).join("/");
-    // https://af1_angular-fresh_browser.gorrproxy.xyz
     const parts = hostname.split(".");
     const subdomainPart = parts[0];
     subdomain = subdomainPart.replace(/_/g, "/");
@@ -61,7 +58,7 @@ app.use((req, res) => {
   // Constructing the target URL for the proxy based on the subdomain
   const resolvesTo = `${BASE_PATH}/${subdomain}`;
 
-  console.log("resolvesTo: ", resolvesTo);
+  console.log("=================resolvesTo===================: ", resolvesTo);
 
   // Proxying the request to the constructed URL
   return proxy.web(req, res, { target: resolvesTo, changeOrigin: true });
