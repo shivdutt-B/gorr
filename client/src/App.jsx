@@ -53,6 +53,7 @@ function AppWithUserCheck() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/import" element={<ImportRepo />} />
       <Route path="/deploy" element={<Deploy />} />
+      <Route path="/test" element={<div>TEST</div>} />
     </Routes>
   );
 }
