@@ -69,6 +69,7 @@ app.get("/health", (req, res) => {
 
 // Add ping endpoint to keep the server active
 app.get("/ping", (req, res) => {
+  console.log("=============pingHandler===========", process);
   const uptime = process.uptime();
   const memoryUsage = process.memoryUsage();
   const currentTime = new Date().toISOString();
