@@ -10,7 +10,7 @@
 const pingHandler = (req, res) => {
   try {
     // Get server stats
-    console.log("=============pingHandler===========", process);
+    console.log("=============pingHandler===========");
     const uptime = process.uptime();
     const memoryUsage = process.memoryUsage();
     const currentTime = new Date().toISOString();
