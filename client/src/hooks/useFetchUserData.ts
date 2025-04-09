@@ -49,7 +49,6 @@ export function useFetchUserData() {
       const response = await axios.get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("=============response===========", response.data);
       setUser(response.data);
     } catch (error) {
       // If token is invalid, remove it

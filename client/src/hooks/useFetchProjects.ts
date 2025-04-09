@@ -4,7 +4,7 @@ import { userAtom } from "../states/userAtom";
 import { projectsAtom } from "../states/projectsAtom";
 import { useLoading } from "./useLoading";
 import axios from "axios";
-import GetCookie from "../utils/GetCookie";
+// import GetCookie from "../utils/GetCookie";
 
 interface UseFetchProjectsReturn {
   fetchProjects: () => Promise<void>;
