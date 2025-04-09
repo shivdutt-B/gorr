@@ -53,7 +53,26 @@ function AppWithUserCheck() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/import" element={<ImportRepo />} />
       <Route path="/deploy" element={<Deploy />} />
-      <Route path="/test" element={<div>TEST</div>} />
+      <Route exact path="/test" element={
+        <div>
+          <div>TEST</div>
+          <button 
+            onClick={() => window.location.href = '/'} 
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+              marginTop: '20px'
+            }}
+          >
+            Back to Home
+          </button>
+        </div>
+      } />
     </Routes>
   );
 }
