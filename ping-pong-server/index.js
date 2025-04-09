@@ -25,7 +25,6 @@ async function pingMainServer() {
     const startTime = Date.now();
     const response = await axios.get(MAIN_SERVER_URL);
 
-    console.log("=============response===========", response.data);
     const endTime = Date.now();
 
     console.log(`✅ Ping successful to ${MAIN_SERVER_URL}`);
