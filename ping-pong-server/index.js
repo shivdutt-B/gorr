@@ -24,11 +24,22 @@ async function pingMainServer() {
   try {
     const startTime = Date.now();
     const response = await axios.get(MAIN_SERVER_URL);
+
+    console.log("=============response===========", response.data);
     const endTime = Date.now();
 
     console.log(`✅ Ping successful to ${MAIN_SERVER_URL}`);
     console.log(`📊 Response time: ${endTime - startTime}ms`);
     console.log(`📅 Time: ${new Date().toLocaleString()}`);
+    // Log server stats from the response
+    if (response.data && response.data.data) {
+      const { uptime, memoryUsage } = response.data.data;
+      console.log(`📈 Server uptime: ${uptime}`);
+      console.log(`🧠 Memory usage:`);
+      console.log(`   - RSS: ${memoryUsage.rss}`);
+      console.log(`   - Heap Total: ${memoryUsage.heapTotal}`);
+      console.log(`   - Heap Used: ${memoryUsage.heapUsed}`);
+    }
     return true;
   } catch (error) {
     console.error(`❌ Failed to ping ${MAIN_SERVER_URL}:`, error.message);
@@ -37,7 +48,7 @@ async function pingMainServer() {
 }
 
 // Schedule a ping every 5 minutes
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/5 * * * * *", async () => {
   console.log("⏰ Scheduled ping task running...");
   await pingMainServer();
 });
