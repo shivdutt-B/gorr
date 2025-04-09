@@ -48,11 +48,11 @@ function AppWithUserCheck() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/join" element={<Join />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/import" element={<ImportRepo />} />
-      <Route path="/deploy" element={<Deploy />} />
+      <Route exact path="/" element={<Home />} />
+      <Route exact path="/join" element={<Join />} />
+      <Route exact path="/dashboard/*" element={<Dashboard />} />
+      <Route exact path="/import" element={<ImportRepo />} />
+      <Route exact path="/deploy" element={<Deploy />} />
       <Route exact path="/test" element={
         <div>
           <div>TEST</div>
