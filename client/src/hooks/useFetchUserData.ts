@@ -30,8 +30,8 @@ export function useFetchUserData() {
         console.log("Token saved to localStorage:", localStorage.getItem('github_token'));
         
         // Remove token from URL (for security)
-        // const newUrl = window.location.pathname;
-        // window.history.replaceState({}, document.title, newUrl);
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
       } catch (error) {
         console.error("Failed to save token to localStorage:", error);
       }
@@ -70,7 +70,7 @@ export function useFetchUserData() {
       requestInProgress.current = false;
       stopLoading("FetchUser");
     }
-  }, [setUser, startLoading, stopLoading, isRequestLoading, location]);
+  }, [setUser, startLoading, stopLoading, isRequestLoading]);
 
   return fetchUser;
 }
