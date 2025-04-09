@@ -26,6 +26,7 @@ export function useFetchUserData() {
     if (token) {
       // Store token in localStorage
       localStorage.setItem('github_token', token);
+      localStorage.setItem('sample key', 'sample value');
       
       // Remove token from URL (for security)
       // const newUrl = window.location.pathname;
