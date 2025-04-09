@@ -7,6 +7,7 @@ const buildRoutes = require("./routes/buildRoutes");
 const slugRoutes = require("./routes/slugRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const deleteProjectRoutes = require("./routes/deleteProjectRoutes");
+const pingRoutes = require("./routes/pingRoutes");
 const { connectToDatabase } = require("./services/prismaService");
 const redeployProjectRoutes = require("./routes/redeployProjectRoute");
 const app = express();
@@ -24,6 +25,7 @@ app.use(cookieParser());
 
 // Routes
 app.use("/auth", authRoutes);
+app.use("/ping", pingRoutes);
 app.use("/", buildRoutes);
 app.use("/", slugRoutes);
 app.use("/", projectRoutes);
