@@ -43,7 +43,7 @@ const githubCallback = async (req, res) => {
 
     res.cookie('github_token', accessToken, {
       maxAge: 24 * 60 * 60 * 1000,
-      domain: 'localhost',
+      domain: 'https://gorr-phi.vercel.app',
       secure: false,
       sameSite:'none',
     });
@@ -56,6 +56,7 @@ const githubCallback = async (req, res) => {
     //   message: "GitHub authentication successful",
     //   token: accessToken
     // });
+
     
     // Then redirect the user
     res.redirect(`${FRONTEND_URL}/dashboard`);
