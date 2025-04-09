@@ -172,7 +172,16 @@ const buildProject = async (req, res) => {
         let subscriber = null;
 
         // Debug subscriber to monitor all log statuses
-        const debugSubscriber = subscribeToLogs(projectSlug, async (log) => {
+        // const debugSubscriber = subscribeToLogs(projectSlug, async (log) => {
+        //   if (
+        //     log.status === "COMPLETED" ||
+        //     log.status === "FAILED" ||
+        //     log.status === "ERROR" ||
+        //     log.status === "INFO"
+        //   ) {
+        //     console.log(log);
+        //   }
+        // });
 
         // Subscribe to logs and store the subscriber reference
         subscriber = subscribeToLogs(projectSlug, async (log) => {
