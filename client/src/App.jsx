@@ -10,7 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import ImportRepo from "./pages/ImportRepo";
 import Deploy from "./pages/Deploy";
 import { useLoading } from "./hooks/useLoading";
-
+import { Link } from "react-router-dom";
 function App() {
   return (
     <RecoilRoot>
@@ -56,8 +56,7 @@ function AppWithUserCheck() {
       <Route exact path="/test" element={
         <div>
           <div>TEST</div>
-          <button 
-            onClick={() => window.location.href = '/'} 
+          <Link to="/"
             style={{
               padding: '10px 20px',
               backgroundColor: '#4CAF50',
@@ -70,7 +69,7 @@ function AppWithUserCheck() {
             }}
           >
             Back to Home
-          </button>
+          </Link>
         </div>
       } />
     </Routes>

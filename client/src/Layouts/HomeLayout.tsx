@@ -5,13 +5,13 @@ import { Cover } from "../components/ui/Cover";
 import ExtraInfo from '../components/ui/ExtraInfo';
 import { Navbar } from '../components/ui/Navbar';
 import Footer from '../components/ui/Footer';
+import { Link } from "react-router-dom";
 
 function HomeLayout() {
     return (
         <>
             <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000 }}>
-                <button 
-                    onClick={() => window.location.href = '/test'} 
+                <Link to="/test"
                     style={{
                         padding: '10px 20px',
                         backgroundColor: '#4CAF50',
@@ -23,7 +23,7 @@ function HomeLayout() {
                     }}
                 >
                     Go to Test Page
-                </button>
+                </Link>
             </div>
             <Navbar />
             <FlipWords />
