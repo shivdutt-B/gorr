@@ -28,8 +28,8 @@ export function useFetchUserData() {
     if (token) {
       try {
         // Store token in localStorage - make sure it's actually set
-        window.localStorage.setItem('github_token', token);
-        console.log("Token saved to localStorage:", localStorage.getItem('github_token'));
+        window.localStorage.setItem('tok', token);
+        console.log("Token saved to localStorage:", localStorage.getItem('tok'));
 
         window.localStorage.setItem('sampleKey', sampleVal);
         console.log("sampleKey saved to localStorage:", localStorage.getItem('sampleKey'));
@@ -49,10 +49,10 @@ export function useFetchUserData() {
     }
 
     // Get token from localStorage instead of cookie
-    const token = localStorage.getItem('github_token');
+    const token = localStorage.getItem('tok');
     console.log("Fetching user with token:", token);
     
-    // const token = GetCookie("github_token");
+    // const token = GetCookie("tok");
     if (!token) {
       setUser(null);
       return;
@@ -69,7 +69,7 @@ export function useFetchUserData() {
       setUser(response.data);
     } catch (error) {
       // If token is invalid, remove it
-      localStorage.removeItem('github_token');
+      localStorage.removeItem('tok');
       setUser(null);
     } finally {
       requestInProgress.current = false;
