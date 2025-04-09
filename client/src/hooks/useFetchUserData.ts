@@ -27,18 +27,20 @@ export function useFetchUserData() {
 
     if (token) {
       try {
-        // Store token in localStorage - make sure it's actually set
-        window.localStorage.setItem('tok', token);
-        console.log("Token saved to localStorage:", localStorage.getItem('tok'));
+        // Store token in cookies instead of localStorage
+        document.cookie = `tok=${token}; path=/; max-age=${60 * 60 * 24}; SameSite=Lax`;
+        console.log("Token saved to cookies");
 
-        window.localStorage.setItem('sampleKey', sampleVal);
-        console.log("sampleKey saved to localStorage:", localStorage.getItem('sampleKey'));
+        if (sampleVal) {
+          document.cookie = `sampleKey=${sampleVal}; path=/; max-age=${60 * 60 * 24}; SameSite=Lax`;
+          console.log("sampleKey saved to cookies");
+        }
         
         // Remove token from URL (for security)
         const newUrl = window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
       } catch (error) {
-        console.error("Failed to save token to localStorage:", error);
+        console.error("Failed to save token to cookies:", error);
       }
     }
   }, [location]);
@@ -48,11 +50,10 @@ export function useFetchUserData() {
       return;
     }
 
-    // Get token from localStorage instead of cookie
-    const token = localStorage.getItem('tok');
+    // Get token from cookie instead of localStorage
+    const token = GetCookie("tok");
     console.log("Fetching user with token:", token);
     
-    // const token = GetCookie("tok");
     if (!token) {
       setUser(null);
       return;
@@ -69,7 +70,7 @@ export function useFetchUserData() {
       setUser(response.data);
     } catch (error) {
       // If token is invalid, remove it
-      localStorage.removeItem('tok');
+      document.cookie = "tok=; path=/; max-age=0";
       setUser(null);
     } finally {
       requestInProgress.current = false;
