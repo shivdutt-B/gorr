@@ -1,4 +1,5 @@
 const express = require("express");
+const http = require("http");
 const { Server } = require("socket.io");
 const Redis = require("ioredis");
 require("dotenv").config();
@@ -6,11 +7,14 @@ require("dotenv").config();
 const app = express();
 const PORT = parseInt(process.env.SOCKET_PORT) || 7000;
 
+// Create HTTP server from Express app
+const server = http.createServer(app);
+
 // Redis connection string from environment variables
 const subscriber = new Redis(process.env.REDIS_URL);
 
-// Set up Socket.io server with CORS enabled
-const io = new Server({
+// Set up Socket.io server with the HTTP server and CORS enabled
+const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
@@ -33,9 +37,6 @@ io.on("connection", (socket) => {
     console.log("Client disconnected:", socket.id);
   });
 });
-
-// Start the socket server
-io.listen(PORT, () => console.log(`✅ Socket Server running on port ${PORT}`));
 
 // Initialize Redis subscription to listen for logs
 async function initRedisSubscribe() {
@@ -69,7 +70,7 @@ app.get("/health", (req, res) => {
 
 // Add ping endpoint to keep the server active
 app.get("/ping", (req, res) => {
-  console.log("=============pingHandler===========", process);
+  console.log("=============pingHandler===========");
   const uptime = process.uptime();
   const memoryUsage = process.memoryUsage();
   const currentTime = new Date().toISOString();
@@ -92,7 +93,7 @@ app.get("/ping", (req, res) => {
   });
 });
 
-// Start a simple Express server (for health checks)
-app.listen(PORT + 1, () =>
-  console.log(`✅ Express health check server running on port ${PORT + 1}`)
-);
+// Start the HTTP server with both Socket.IO and Express
+server.listen(PORT, () => {
+  console.log(`✅ HTTP/Socket.IO Server running on port ${PORT}`);
+});

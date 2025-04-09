@@ -51,11 +51,11 @@ async function pingAllServers() {
   await pingServer(SOCKET_SERVER_URL, "Socket Server");
 }
 
-// Schedule a ping every 5 minutes
-cron.schedule("*/5 * * * *", async () => {
+// Schedule a ping every 5 seconds
+setInterval(async () => {
   console.log("⏰ Scheduled ping task running...");
   await pingAllServers();
-});
+}, 5000);
 
 // Start the server
 app.listen(PORT, () => {
