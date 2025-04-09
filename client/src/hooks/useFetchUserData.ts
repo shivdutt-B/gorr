@@ -6,6 +6,7 @@ import { useCallback, useRef, useEffect } from "react";
 import { requestMapAtom } from "../states/loadingAtom";
 import { useRecoilState } from "recoil";
 import { useLocation } from "react-router-dom";
+import GetCookie from "../utils/GetCookie";
 
 export function useFetchUserData() {
   const { startLoading, stopLoading, isRequestLoading } = useLoading();
@@ -16,19 +17,19 @@ export function useFetchUserData() {
   const location = useLocation();
 
   // Check for token in URL when component mounts
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const token = queryParams.get('token');
+  // useEffect(() => {
+  //   const queryParams = new URLSearchParams(location.search);
+  //   const token = queryParams.get('token');
     
-    if (token) {
-      // Store token in localStorage
-      localStorage.setItem('github_token', token);
+  //   if (token) {
+  //     // Store token in localStorage
+  //     localStorage.setItem('github_token', token);
       
-      // Remove token from URL (for security)
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, newUrl);
-    }
-  }, [location]);
+  //     // Remove token from URL (for security)
+  //     const newUrl = window.location.pathname;
+  //     window.history.replaceState({}, document.title, newUrl);
+  //   }
+  // }, [location]);
 
   const fetchUser = useCallback(async () => {
     if (requestInProgress.current || isRequestLoading("FetchUser")) {
@@ -36,7 +37,8 @@ export function useFetchUserData() {
     }
 
     // Get token from localStorage instead of cookie
-    const token = localStorage.getItem('github_token');
+    // const token = localStorage.getItem('github_token');
+    const token = GetCookie("github_token");
     if (!token) {
       setUser(null);
       return;

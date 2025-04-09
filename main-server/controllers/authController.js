@@ -4,6 +4,7 @@ const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
+
 // Validate required environment variables
 if (!CLIENT_ID || !CLIENT_SECRET) {
   throw new Error("Missing required GitHub OAuth environment variables");
@@ -36,12 +37,16 @@ const githubCallback = async (req, res) => {
 
     res.cookie("github_token", accessToken, {
       httpOnly: true,
-      sameSite: "none",
-      secure: true,
+      sameSite: "lax", // or "strict" if frontend and backend share domain
+      secure: false, // only use secure: true in production over HTTPS
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    res.redirect(`${FRONTEND_URL}/dashboard?token=${accessToken}`);
+    // res.redirect(`${FRONTEND_URL}/dashboard?token=${accessToken}`);
+    // Redirect to dashboard without any query parameters
+    // The token is already stored in an HTTP-only cookie that the frontend can verify
+    console.log("frontend url", FRONTEND_URL);
+    res.redirect(`${FRONTEND_URL}/dashboard`);
   } catch (error) {
     console.error("Error authenticating with GitHub:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
