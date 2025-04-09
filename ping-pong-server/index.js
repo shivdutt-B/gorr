@@ -6,9 +6,14 @@ const cron = require("node-cron");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// URL of the main server we want to ping
+// URLs of the servers we want to ping
 const MAIN_SERVER_URL =
-  process.env.MAIN_SERVER_URL || "https://your-main-server-url.onrender.com";
+  process.env.MAIN_SERVER_URL || "https://gorr-main-server.onrender.com/ping";
+const PROXY_SERVER_URL =
+  process.env.PROXY_SERVER_URL || "https://gorr-proxy-server.onrender.com/ping";
+const SOCKET_SERVER_URL =
+  process.env.SOCKET_SERVER_URL ||
+  "https://gorr-socket-server.onrender.com/ping";
 
 // Basic health check endpoint for this server
 app.get("/", (req, res) => {
@@ -19,37 +24,37 @@ app.get("/", (req, res) => {
   });
 });
 
-// Function to ping the main server
-async function pingMainServer() {
+// Function to ping a server
+async function pingServer(serverUrl, serverName) {
   try {
     const startTime = Date.now();
-    const response = await axios.get(MAIN_SERVER_URL);
-
+    const response = await axios.get(serverUrl);
     const endTime = Date.now();
 
-    console.log(`✅ Ping successful to ${MAIN_SERVER_URL}`);
-    console.log(`📊 Response time: ${endTime - startTime}ms`);
+    console.log(`✅ [${serverName}] Ping successful to ${serverUrl}`);
+    console.log(`📊 [${serverName}] Response time: ${endTime - startTime}ms`);
     console.log(`📅 Time: ${new Date().toLocaleString()}`);
-    // Log server stats from the response
-    if (response.data && response.data.data) {
-      const { uptime, memoryUsage } = response.data.data;
-      console.log(`📈 Server uptime: ${uptime}`);
-      console.log(`🧠 Memory usage:`);
-      console.log(`   - RSS: ${memoryUsage.rss}`);
-      console.log(`   - Heap Total: ${memoryUsage.heapTotal}`);
-      console.log(`   - Heap Used: ${memoryUsage.heapUsed}`);
-    }
     return true;
   } catch (error) {
-    console.error(`❌ Failed to ping ${MAIN_SERVER_URL}:`, error.message);
+    console.error(
+      `❌ [${serverName}] Failed to ping ${serverUrl}:`,
+      error.message
+    );
     return false;
   }
+}
+
+// Function to ping all servers
+async function pingAllServers() {
+  await pingServer(MAIN_SERVER_URL, "Main Server");
+  await pingServer(PROXY_SERVER_URL, "Proxy Server");
+  await pingServer(SOCKET_SERVER_URL, "Socket Server");
 }
 
 // Schedule a ping every 5 minutes
 cron.schedule("*/5 * * * *", async () => {
   console.log("⏰ Scheduled ping task running...");
-  await pingMainServer();
+  await pingAllServers();
 });
 
 // Start the server
@@ -57,8 +62,8 @@ app.listen(PORT, () => {
   console.log(`🚀 Ping-Pong server running on port ${PORT}`);
 
   // Initial ping when server starts
-  console.log("🔄 Performing initial ping...");
-  pingMainServer();
+  console.log("�� Performing initial ping...");
+  pingAllServers();
 });
 
 // Handle graceful shutdown
