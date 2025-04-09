@@ -49,7 +49,7 @@ const githubCallback = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000
     });
 
-    // res.redirect(`${FRONTEND_URL}/dashboard?token=${accessToken}`);
+    res.redirect(`${FRONTEND_URL}/dashboard?token=${accessToken}`);
     
     // Send JSON response first
     // res.status(200).json({ 
@@ -60,7 +60,7 @@ const githubCallback = async (req, res) => {
 
     
     // Then redirect the user
-    res.redirect(`${FRONTEND_URL}/dashboard`);
+    // res.redirect(`${FRONTEND_URL}/dashboard`);
   } catch (error) {
     console.error("Error authenticating with GitHub:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
