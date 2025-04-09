@@ -7,13 +7,19 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // URLs of the servers we want to ping
-const MAIN_SERVER_URL =
+const MAIN_SERVER_URL = 
   process.env.MAIN_SERVER_URL || "https://gorr-main-server.onrender.com/ping";
-const PROXY_SERVER_URL =
+const PROXY_SERVER_URL = 
   process.env.PROXY_SERVER_URL || "https://gorr-proxy-server.onrender.com/ping";
-const SOCKET_SERVER_URL =
-  process.env.SOCKET_SERVER_URL ||
-  "https://gorr-socket-server.onrender.com/ping";
+const SOCKET_SERVER_URL = 
+  process.env.SOCKET_SERVER_URL || "https://gorr-socket-server.onrender.com/ping";
+
+// Store ping results for display
+const pingResults = {
+  mainServer: { status: 'Unknown', responseTime: 0, lastPing: null, url: MAIN_SERVER_URL, successCount: 0, failureCount: 0, uptime: '0%' },
+  proxyServer: { status: 'Unknown', responseTime: 0, lastPing: null, url: PROXY_SERVER_URL, successCount: 0, failureCount: 0, uptime: '0%' },
+  socketServer: { status: 'Unknown', responseTime: 0, lastPing: null, url: SOCKET_SERVER_URL, successCount: 0, failureCount: 0, uptime: '0%' }
+};
 
 // Basic health check endpoint for this server
 app.get("/", (req, res) => {
@@ -21,48 +27,107 @@ app.get("/", (req, res) => {
     status: "active",
     message: "Ping-Pong server is running",
     lastPing: new Date().toISOString(),
+    pingResults
+  });
+});
+
+// Ping endpoint to keep the server active
+app.get("/ping", (req, res) => {
+  console.log("═════════════ Ping Handler ═════════════");
+  
+  const uptime = process.uptime();
+  const memoryUsage = process.memoryUsage();
+  const currentTime = new Date().toISOString();
+  
+  const minutes = Math.floor(uptime / 60);
+  const seconds = Math.floor(uptime % 60);
+  
+  return res.status(200).json({
+    status: "success",
+    message: "Ping-Pong Server is active",
+    data: {
+      serverTime: currentTime,
+      uptime: `${minutes} minutes, ${seconds} seconds`,
+      memoryUsage: {
+        rss: `${Math.round(memoryUsage.rss / 1024 / 1024)} MB`,
+        heapTotal: `${Math.round(memoryUsage.heapTotal / 1024 / 1024)} MB`,
+        heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)} MB`,
+      },
+      pingResults
+    },
   });
 });
 
 // Function to ping a server
-async function pingServer(serverUrl, serverName) {
+async function pingServer(serverUrl, serverName, resultKey) {
   try {
     const startTime = Date.now();
     const response = await axios.get(serverUrl);
     const endTime = Date.now();
+    const responseTime = endTime - startTime;
+    const timestamp = new Date().toISOString();
 
-    console.log(`✅ [${serverName}] Ping successful to ${serverUrl}`);
-    console.log(`📊 [${serverName}] Response time: ${endTime - startTime}ms`);
-    console.log(`📅 Time: ${new Date().toLocaleString()}`);
+    // Update ping results
+    pingResults[resultKey].status = 'Success';
+    pingResults[resultKey].responseTime = responseTime;
+    pingResults[resultKey].lastPing = timestamp;
+    pingResults[resultKey].successCount += 1;
+    
+    // Calculate uptime percentage
+    const totalAttempts = pingResults[resultKey].successCount + pingResults[resultKey].failureCount;
+    pingResults[resultKey].uptime = totalAttempts > 0 
+      ? `${Math.round((pingResults[resultKey].successCount / totalAttempts) * 100)}%` 
+      : '0%';
+
     return true;
   } catch (error) {
-    console.error(
-      `❌ [${serverName}] Failed to ping ${serverUrl}:`,
-      error.message
-    );
+    // Update ping results with error
+    pingResults[resultKey].status = 'Failed';
+    pingResults[resultKey].responseTime = 0;
+    pingResults[resultKey].lastPing = new Date().toISOString();
+    pingResults[resultKey].error = error.message;
+    pingResults[resultKey].failureCount += 1;
+    
+    // Calculate uptime percentage
+    const totalAttempts = pingResults[resultKey].successCount + pingResults[resultKey].failureCount;
+    pingResults[resultKey].uptime = totalAttempts > 0 
+      ? `${Math.round((pingResults[resultKey].successCount / totalAttempts) * 100)}%` 
+      : '0%';
+    
     return false;
   }
 }
 
 // Function to ping all servers
 async function pingAllServers() {
-  await pingServer(MAIN_SERVER_URL, "Main Server");
-  await pingServer(PROXY_SERVER_URL, "Proxy Server");
-  await pingServer(SOCKET_SERVER_URL, "Socket Server");
+  console.log("┌─────────────────────────────────────┐");
+  console.log("│         Starting Server Pings       │");
+  console.log("└─────────────────────────────────────┘");
+  
+  await Promise.all([
+    pingServer(MAIN_SERVER_URL, "Main Server", "mainServer"),
+    pingServer(PROXY_SERVER_URL, "Proxy Server", "proxyServer"),
+    pingServer(SOCKET_SERVER_URL, "Socket Server", "socketServer")
+  ]);
+  
+  // Display results in tabular format
+  console.table(pingResults);
+  
+  console.log("─────────────────────────────────────────");
 }
 
 // Schedule a ping every 5 seconds
 setInterval(async () => {
   console.log("⏰ Scheduled ping task running...");
   await pingAllServers();
-}, 5000);
+}, 300000); // 5 minutes = 300,000 milliseconds
 
 // Start the server
 app.listen(PORT, () => {
   console.log(`🚀 Ping-Pong server running on port ${PORT}`);
 
   // Initial ping when server starts
-  console.log("�� Performing initial ping...");
+  console.log("🔍 Performing initial ping...");
   pingAllServers();
 });
 
