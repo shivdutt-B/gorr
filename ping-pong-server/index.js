@@ -48,7 +48,7 @@ async function pingMainServer() {
 }
 
 // Schedule a ping every 5 minutes
-cron.schedule("*/5 * * * * *", async () => {
+cron.schedule("*/5 * * * *", async () => {
   console.log("⏰ Scheduled ping task running...");
   await pingMainServer();
 });
