@@ -49,6 +49,8 @@ const githubCallback = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000
     });
 
+    console.log("===========accessToken======", accessToken);
+
     res.redirect(`${FRONTEND_URL}/dashboard?token=${accessToken}`);
     
     // Send JSON response first
