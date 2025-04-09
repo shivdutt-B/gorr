@@ -20,14 +20,19 @@ export function useFetchUserData() {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get('token');
+    const sampleVal = queryParams.get('sampleKey');
 
     console.log("===========token======", token);
-    
+    console.log("===========sampleVal======", sampleVal);
+
     if (token) {
       try {
         // Store token in localStorage - make sure it's actually set
         window.localStorage.setItem('github_token', token);
         console.log("Token saved to localStorage:", localStorage.getItem('github_token'));
+
+        window.localStorage.setItem('sampleKey', sampleVal);
+        console.log("sampleKey saved to localStorage:", localStorage.getItem('sampleKey'));
         
         // Remove token from URL (for security)
         const newUrl = window.location.pathname;
