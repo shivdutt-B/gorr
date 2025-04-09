@@ -31,14 +31,12 @@ export function useFetchUserData() {
   }, [location]);
 
   const fetchUser = useCallback(async () => {
-    console.log("=============fetchUser===========");
     if (requestInProgress.current || isRequestLoading("FetchUser")) {
       return;
     }
 
     // Get token from localStorage instead of cookie
     const token = localStorage.getItem('github_token');
-    console.log("=============token===========", token);
     if (!token) {
       setUser(null);
       return;
