@@ -50,6 +50,7 @@ export function useFetchUserData() {
     try {
       const response = await axios.get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true, // 👈 Important!
       });
       setUser(response.data);
     } catch (error) {

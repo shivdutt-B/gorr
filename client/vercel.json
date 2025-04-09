@@ -1,6 +1,5 @@
 {
-    "rewrites": [
-      { "source": "/(.*)", "destination": "https://gorr-phi.vercel.app/" }
-    ]
-  }
-  
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}

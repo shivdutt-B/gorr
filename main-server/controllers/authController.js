@@ -41,11 +41,12 @@ const githubCallback = async (req, res) => {
     //   maxAge: 24 * 60 * 60 * 1000,
     // });
 
-    res.cookie('github_token', accessToken, {
-      maxAge: 24 * 60 * 60 * 1000,
-      domain: 'https://gorr-phi.vercel.app',
-      secure: false,
-      sameSite:'none',
+    res.cookie("github_token", accessToken, {
+      httpOnly: true,
+      secure: true,             // Required for SameSite: 'None'
+      sameSite: "None",         // Allow cross-origin (Vercel + Render)
+      domain: "gorr-phi.vercel.app", // WITHOUT 'https://'
+      maxAge: 24 * 60 * 60 * 1000
     });
 
     // res.redirect(`${FRONTEND_URL}/dashboard?token=${accessToken}`);
