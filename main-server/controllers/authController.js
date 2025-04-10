@@ -34,28 +34,7 @@ const githubCallback = async (req, res) => {
     if (!accessToken)
       return res.status(400).json({ error: "Failed to get access token" });
 
-    // res.cookie("github_token", accessToken, {
-    //   httpOnly: true,
-    //   sameSite: "lax", // or "strict" if frontend and backend share domain
-    //   secure: false, // only use secure: true in production over HTTPS
-    //   maxAge: 24 * 60 * 60 * 1000,
-    // });
-
-    res.cookie("github_tokenxxx", accessToken, {
-      httpOnly: true,
-      secure: true,             // Required for SameSite: 'None'
-      sameSite: "None",         // Allow cross-origin (Vercel + Render)
-      domain: "gorr-phi.vercel.app", // WITHOUT 'https://'
-      maxAge: 24 * 60 * 60 * 1000
-    });
-
-
-    console.log("===========accessToken======", accessToken);
-
     res.redirect(`${FRONTEND_URL}/dashboard?token=${accessToken}`);
-
-    // Then redirect the user
-    // res.redirect(`${FRONTEND_URL}/dashboard`);
   } catch (error) {
     console.error("Error authenticating with GitHub:", error.message);
     res.status(500).json({ error: "Internal Server Error" });

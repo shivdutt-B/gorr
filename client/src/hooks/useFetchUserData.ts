@@ -21,13 +21,10 @@ export function useFetchUserData() {
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get('token');
 
-    console.log("===========token======", token);
-
     if (token) {
       try {
         // Store token in cookies instead of localStorage
         document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24}; SameSite=Lax`;
-        console.log("Token saved to cookies");
         
         // Remove token from URL (for security)
         const newUrl = window.location.pathname;
@@ -45,7 +42,6 @@ export function useFetchUserData() {
 
     // Get token from cookie instead of localStorage
     const token = GetCookie("token");
-    console.log("Fetching user with token:", token);
     
     if (!token) {
       setUser(null);
