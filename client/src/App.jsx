@@ -10,7 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import ImportRepo from "./pages/ImportRepo";
 import Deploy from "./pages/Deploy";
 import { useLoading } from "./hooks/useLoading";
-import { Link } from "react-router-dom";
+
 function App() {
   return (
     <RecoilRoot>
@@ -53,25 +53,6 @@ function AppWithUserCheck() {
       <Route exact path="/dashboard/*" element={<Dashboard />} />
       <Route exact path="/import" element={<ImportRepo />} />
       <Route exact path="/deploy" element={<Deploy />} />
-      <Route exact path="/test" element={
-        <div>
-          <div>TEST</div>
-          <Link to="/"
-            style={{
-              padding: '10px 20px',
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-              boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-              marginTop: '20px'
-            }}
-          >
-            Back to Home
-          </Link>
-        </div>
-      } />
     </Routes>
   );
 }
