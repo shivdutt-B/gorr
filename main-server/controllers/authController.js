@@ -41,7 +41,7 @@ const githubCallback = async (req, res) => {
     //   maxAge: 24 * 60 * 60 * 1000,
     // });
 
-    res.cookie("github_token", accessToken, {
+    res.cookie("github_tokenxxx", accessToken, {
       httpOnly: true,
       secure: true,             // Required for SameSite: 'None'
       sameSite: "None",         // Allow cross-origin (Vercel + Render)
