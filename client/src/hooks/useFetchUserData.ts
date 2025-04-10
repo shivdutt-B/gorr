@@ -26,12 +26,12 @@ export function useFetchUserData() {
     if (token) {
       try {
         // Store token in cookies instead of localStorage
-        document.cookie = `tok=${token}; path=/; max-age=${60 * 60 * 24}; SameSite=Lax`;
+        document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24}; SameSite=Lax`;
         console.log("Token saved to cookies");
         
         // Remove token from URL (for security)
-        // const newUrl = window.location.pathname;
-        // window.history.replaceState({}, document.title, newUrl);
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
       } catch (error) {
         console.error("Failed to save token to cookies:", error);
       }
@@ -44,7 +44,7 @@ export function useFetchUserData() {
     }
 
     // Get token from cookie instead of localStorage
-    const token = GetCookie("tok");
+    const token = GetCookie("token");
     console.log("Fetching user with token:", token);
     
     if (!token) {
@@ -63,7 +63,7 @@ export function useFetchUserData() {
       setUser(response.data);
     } catch (error) {
       // If token is invalid, remove it
-      document.cookie = "tok=; path=/; max-age=0";
+      document.cookie = "token=; path=/; max-age=0";
       setUser(null);
     } finally {
       requestInProgress.current = false;

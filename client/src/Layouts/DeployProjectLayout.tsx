@@ -236,7 +236,7 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    className="bg-[#1A1A1A] p-3 rounded-md flex-grow"
+                    className="bg-[#1A1A1A] p-3 rounded-md flex-grow font-mono text-[16px]"
                     value={rootDirectory}
                     readOnly
                   />
