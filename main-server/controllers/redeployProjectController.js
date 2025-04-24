@@ -179,9 +179,11 @@ const redeployProject = async (req, res) => {
               let url;
 
               if (isAngularProject && projectName) {
-                url = `https://${slug}_${projectName}_browser.${baseUrl}`;
+                // url = `https://${slug}_${projectName}_browser.${baseUrl}`;
+                url = `http://${slug}_${projectName}_browser.localhost:8000`;
               } else {
-                url = `https://${slug}.${baseUrl}`;
+                // url = `https://${slug}.${baseUrl}`;
+                url = `http://${slug}.localhost:8000`;
               }
 
               // Update the project URL if needed
@@ -245,7 +247,6 @@ const redeployProject = async (req, res) => {
                   reason: "Redeployment process failed with error status",
                 });
                 await ecsClient.send(stopCommand);
-                
               } catch (stopError) {
                 console.error(
                   "❗ Failed to stop ECS task after error:",
@@ -271,7 +272,6 @@ const redeployProject = async (req, res) => {
           }
         });
       });
-
     } catch (error) {
       console.error("❗ Redeploy project error:", error);
 

@@ -48,7 +48,7 @@ async function initRedisSubscribe() {
 
     // Forward Redis messages to the corresponding socket channel
     subscriber.on("pmessage", (pattern, channel, message) => {
-      // console.log(`📡 Received message on ${channel}:`, message)
+      console.log(`📡 Received message on ${channel}:`, message);
       io.to(channel).emit("message", message);
     });
 
