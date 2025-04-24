@@ -55,6 +55,7 @@ app.use((req, res) => {
 // Improve database initialization
 async function startServer() {
   try {
+    console.log(`🔌 Connecting to database: ${process.env.DATABASE_URL}`);
     await connectToDatabase();
     app.listen(PORT, () =>
       console.log(`✅ API Server running on port ${PORT}`)
