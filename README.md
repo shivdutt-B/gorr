@@ -30,7 +30,6 @@ GORR is a sophisticated deployment platform built using a microservices architec
 - [Service Ports](#-service-ports)
 - [Monitoring](#-monitoring-and-health-checks)
 - [Contributing](#-contributing)
-- [License](#-license)
 
 ## 🏗 System Architecture
 
@@ -38,7 +37,7 @@ GORR is a sophisticated deployment platform built using a microservices architec
   <img src="README.ASSETS/arch.png" alt="GORR Architecture" width="100%">
 </div>
 
-The platform consists of six interconnected servers, each handling specific responsibilities:
+The platform consists of five interconnected servers, each handling specific responsibilities:
 
 ### 1. 🎯 Main Server (`main-server/`)
 
@@ -69,14 +68,7 @@ The platform consists of six interconnected servers, each handling specific resp
 - Supports custom domain and subdomain routing
 - Handles both regular and Angular-specific routing patterns
 
-### 5. 🏓 Ping-Pong Server (`ping-pong-server/`)
-
-- Health monitoring system for all services
-- Tracks uptime and performance metrics
-- Provides detailed status information for each service
-- Maintains service reliability through regular health checks
-
-### 6. 💻 Client Application (`client/`)
+### 5. 💻 Client Application (`client/`)
 
 - Frontend interface built with modern web technologies
 - Uses Vite as the build tool
@@ -89,7 +81,6 @@ The platform consists of six interconnected servers, each handling specific resp
 | ----------------------- | ----------------------------------------- |
 | 📊 Real-time Monitoring | Live build and deployment status updates  |
 | 🔄 Microservices        | Distributed architecture for scalability  |
-| 🔍 Health Checks        | Automated service monitoring and recovery |
 | ☁️ AWS Integration      | S3-based artifact storage and deployment  |
 | 📡 Real-time Logging    | Redis-powered live log streaming          |
 | 🌐 Custom Domains       | Support for custom domains and subdomains |
@@ -103,7 +94,7 @@ The platform consists of six interconnected servers, each handling specific resp
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Backend**   | ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) ![Express.js](https://img.shields.io/badge/Express.js-000000?style=flat&logo=express&logoColor=white) |
 | **Frontend**  | ![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)                        |
-| **Database**  | ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white)                                                                                                            |
+| **Database**  | ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)   |
 | **Real-time** | ![Socket.IO](https://img.shields.io/badge/Socket.IO-010101?style=flat&logo=socketdotio&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white)       |
 | **Cloud**     | ![AWS S3](https://img.shields.io/badge/AWS_S3-569A31?style=flat&logo=amazons3&logoColor=white)                                                                                                          |
 | **Styling**   | ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white)                                                                                           |
@@ -113,35 +104,170 @@ The platform consists of six interconnected servers, each handling specific resp
 
 ## ⚙️ Environment Setup
 
-Each service requires specific environment variables. Create a `.env` file in each service directory:
+Create `.env.example` files in each service directory with the following configurations:
+
+### 🎯 Main Server (`main-server/.env.example`)
 
 ```env
-# Required Environment Variables
-REDIS_URL=your_redis_url
-S3_ACCESS_KEY=your_s3_access_key
-S3_SECRET_ACCESS_KEY=your_s3_secret_key
-S3_REGION=your_s3_region
+# Server Configuration
+PORT=5000
+NODE_ENV=development
+
+# Database Configuration
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/gorr"
+REDIS_URL="redis://localhost:6379"
+
+# AWS Credentials
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+
+# AWS Region
+AWS_ECS_REGION=your_aws_region
+
+# AWS ECS Configuration
+ECS_CLUSTER=your_ecs_cluster_arn
+ECS_TASK=your_ecs_task_arn
+ECS_LAUNCH_TYPE=FARGATE
+ECS_COUNT=1
+ECS_SUBNETS_1=your_subnet_1
+ECS_SUBNETS_2=your_subnet_2
+ECS_SUBNETS_3=your_subnet_3
+ECS_SECURITY_GROUPS=your_security_group
+ECS_IMAGE=your_ecs_image_name
+
+# AWS S3 Configuration
+AWS_S3_REGION=your_s3_region
+AWS_S3_BUCKET_NAME=your_s3_bucket_name
+
+# Redis Configuration
+REDIS_URL=your_redis_connection_url
+REDIS_HOST=your_redis_host
+REDIS_PORT=your_redis_port
+REDIS_PASSWORD=your_redis_password
+
+# PostgreSQL Database
+DATABASE_URL=your_postgresql_database_url
+
+# Frontend URL
 FRONTEND_URL=your_frontend_url
 
-# Optional Environment Variables
-LOG_LEVEL=debug
-NODE_ENV=development
+# Proxy Domain
+PROXY_DOMAIN=your_proxy_domain
 ```
+
+### 🏭 Build Server (`build-server/.env.example`)
+
+```env
+# AWS S3 Configuration
+S3_ACCESS_KEY=your_aws_s3_access_key
+S3_SECRET_ACCESS_KEY=your_aws_s3_secret_access_key
+S3_REGION=your_aws_region
+S3_BUCKET=your_s3_bucket_name
+
+# Redis Configuration
+REDIS_URL=your_redis_connection_url
+
+```
+
+### 🔌 Socket Server (`socket-server/.env.example`)
+
+```env
+# Socket Server Port
+SOCKET_PORT=7000
+
+# Redis Configuration
+REDIS_URL=your_redis_connection_url
+
+```
+
+### 🔄 Proxy Server (`proxy-server/.env.example`)
+
+```env
+# S3 Base Path (Public access URL for S3 bucket)
+S3_BASE_PATH=http://your_s3_bucket_name.s3.your_region.amazonaws.com
+
+# Server Port
+PORT=8000
+
+# AWS Credentials
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+
+# AWS Region and Bucket
+AWS_ECS_REGION=your_aws_region
+AWS_S3_BUCKET_NAME=your_s3_bucket_name
+```
+
+### 💻 Client (`client/.env.example`)
+
+```env
+# GitHub OAuth Configuration
+VITE_CLIENT_ID=your_github_client_id
+VITE_CLIENT_SECRET=your_github_client_secret
+
+# Socket Server URL
+# Example: http://localhost:7000 (for development)
+VITE_SOCKET_URL=your_socket_server_url
+
+# GitHub OAuth Redirect URL
+# Example: http://localhost:5000/auth/github/callback
+VITE_GITHUB_REDIRECT_URL=your_github_redirect_url
+
+# API Base URL
+# Example: http://localhost:5000
+VITE_API_BASE_URL=your_api_base_url
+```
+
+### Environment Setup Instructions
+
+1. **Create Environment Files**
+
+   ```bash
+   # Create .env files from examples
+   cd main-server && cp .env.example .env
+   cd ../build-server && cp .env.example .env
+   cd ../socket-server && cp .env.example .env
+   cd ../proxy-server && cp .env.example .env
+   cd ../client && cp .env.example .env
+   ```
+
+2. **Update Environment Variables**
+
+   - Replace all placeholder values with your actual configuration
+   - Ensure AWS credentials are properly set
+   - Update database connection strings
+   - Set appropriate URLs for your environment
+
+3. **Development vs Production**
+
+   - For development, local URLs and ports can be used
+   - For production, update URLs to your deployed services
+   - Ensure proper security measures for production credentials
+
+4. **Security Notes**
+   - Never commit `.env` files to version control
+   - Keep production credentials secure
+   - Rotate secrets periodically
+   - Use strong JWT secrets
 
 ## 🚀 Getting Started
 
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/gorr.git
+   git clone https://github.com/shivdutt-B/gorr.git
    cd gorr
    ```
 
 2. **Set Up Environment Variables**
 
    ```bash
-   cp .env.example .env
-   # Edit .env with your configurations
+   # Copy example env files for each service
+   cd main-server && cp .env.example .env
+   cd ../build-server && cp .env.example .env
+   cd ../socket-server && cp .env.example .env
+   cd ../proxy-server && cp .env.example .env
+   cd ../client && cp .env.example .env
    ```
 
 3. **Install Dependencies**
@@ -150,9 +276,12 @@ NODE_ENV=development
    # Install dependencies for all services
    npm run install-all
 
-   # Or install individually
-   cd [service-directory]
-   npm install
+   # Or install individually for each service
+   cd main-server && npm install
+   cd ../build-server && npm install
+   cd ../socket-server && npm install
+   cd ../proxy-server && npm install
+   cd ../client && npm install
    ```
 
 4. **Start Development Servers**
@@ -162,29 +291,22 @@ NODE_ENV=development
    npm run dev
 
    # Or start individual services
-   cd [service-directory]
-   npm run dev
+   cd main-server && npm run dev
+   cd ../build-server && npm run dev
+   cd ../socket-server && npm run dev
+   cd ../proxy-server && npm run dev
+   cd ../client && npm run dev
    ```
 
 ## 🔌 Service Ports
 
-| Service          | Port | Description             |
-| ---------------- | ---- | ----------------------- |
-| Main Server      | 5000 | API and authentication  |
-| Build Server     | ENV  | Build and deployment    |
-| Socket Server    | 7000 | Real-time communication |
-| Proxy Server     | 8000 | Reverse proxy           |
-| Ping-Pong Server | 3001 | Health monitoring       |
-| Client           | 5173 | Development server      |
-
-## 📊 Monitoring and Health Checks
-
-The Ping-Pong server provides comprehensive monitoring:
-
-- 📈 Real-time service uptime tracking
-- ⏱️ Response time monitoring
-- 📊 Resource usage statistics
-- 🔍 Service health status
+| Service       | Port | Description             |
+| ------------- | ---- | ----------------------- |
+| Main Server   | 5000 | API and authentication  |
+| Build Server  | ENV  | Build and deployment    |
+| Socket Server | 7000 | Real-time communication |
+| Proxy Server  | 8000 | Reverse proxy           |
+| Client        | 5173 | Development server      |
 
 ## 🤝 Contributing
 
@@ -196,14 +318,10 @@ We welcome contributions! Here's how you can help:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is proprietary and confidential. All rights reserved.
-
 ---
 
 <div align="center">
 
-Made with ❤️ by the GORR Team
+Made by devs who CTRL+C dreams and CTRL+V life 🤓🚀
 
 </div>
