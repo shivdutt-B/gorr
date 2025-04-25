@@ -226,11 +226,11 @@ const buildProject = async (req, res) => {
               let url;
 
               if (isAngularProject && projectName) {
-                // url = `https://${projectSlug}_${projectName}_browser.${baseUrl}`;
-                url = `http://${projectSlug}_${projectName}_browser.localhost:8000`;
+                url = `https://${projectSlug}_${projectName}_browser.${baseUrl}`;
+                // url = `http://${projectSlug}_${projectName}_browser.localhost:8000`;
               } else {
-                // url = `https://${projectSlug}.${baseUrl}`;
-                url = `http://${projectSlug}.localhost:8000`;
+                url = `https://${projectSlug}.${baseUrl}`;
+                // url = `http://${projectSlug}.localhost:8000`;
               }
 
               console.log(`🔌 Generated URL: ${url}`);
