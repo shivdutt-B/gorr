@@ -179,11 +179,11 @@ const redeployProject = async (req, res) => {
               let url;
 
               if (isAngularProject && projectName) {
-                // url = `https://${slug}_${projectName}_browser.${baseUrl}`;
-                url = `http://${slug}_${projectName}_browser.localhost:8000`;
+                url = `https://${slug}_${projectName}_browser.${baseUrl}`;
+                // url = `http://${slug}_${projectName}_browser.localhost:8000`;
               } else {
-                // url = `https://${slug}.${baseUrl}`;
-                url = `http://${slug}.localhost:8000`;
+                url = `https://${slug}.${baseUrl}`;
+                // url = `http://${slug}.localhost:8000`;
               }
 
               // Update the project URL if needed
