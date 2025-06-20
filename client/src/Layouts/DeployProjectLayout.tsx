@@ -182,10 +182,10 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
           repoSlugFromUrl,
           rootDirectory,
           userId,
-          formattedEnvVars
+          formattedEnvVars // as-is
         );
       } else {
-        await deployProject(deploymentData);
+        await deployProject(deploymentData); // as-is
       }
     } catch (error) {
       console.error("Deployment error:", error);
@@ -260,21 +260,20 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
 
               {/* Deploy Button */}
               <button
-                className={`w-full py-3 rounded font-medium transition duration-200 ${
-                  isDeployButtonDisabled
+                className={`w-full py-3 rounded font-medium transition duration-200 ${isDeployButtonDisabled
                     ? "bg-gray-600 text-gray-400 cursor-not-allowed"
                     : "bg-white text-black hover:bg-gray-200"
-                }`}
+                  }`}
                 onClick={handleDeploy}
                 disabled={isDeployButtonDisabled}
                 title={
                   hasDuplicateEnvKeys
                     ? "Please fix duplicate environment variable keys"
                     : hasValueWithoutKey
-                    ? "Each value must have a corresponding key"
-                    : !isProjectNameValid
-                    ? "Please enter a valid project name"
-                    : ""
+                      ? "Each value must have a corresponding key"
+                      : !isProjectNameValid
+                        ? "Please enter a valid project name"
+                        : ""
                 }
               >
                 {currentIsLoading
@@ -282,8 +281,8 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
                     ? "Redeploying..."
                     : "Deploying..."
                   : isRedeploy
-                  ? "Redeploy"
-                  : "Deploy"}
+                    ? "Redeploy"
+                    : "Deploy"}
               </button>
 
               {hasDuplicateEnvKeys && (

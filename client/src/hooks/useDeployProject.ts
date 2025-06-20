@@ -20,14 +20,6 @@ interface DeployResponse {
   error?: string;
 }
 
-// Add a utility function to encode environment variables
-const encodeEnvVariables = (envVariables: { key: string; value: string }[]) => {
-  return envVariables.map(variable => ({
-    key: btoa(variable.key),
-    value: btoa(variable.value)
-  }));
-};
-
 export const useDeployProject = () => {
   const [isDeploying, setIsDeploying] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -56,9 +48,7 @@ export const useDeployProject = () => {
     setStatus("QUEUED");
 
     try {
-      // Encode environment variables before sending
-      const encodedEnvVariables = encodeEnvVariables(envVariables);
-
+      console.log("env vars:", envVariables);
       const response = await axios.post<DeployResponse>(
         `${import.meta.env.VITE_API_BASE_URL}/deploy-project` || "http://localhost:5000/deploy-project",
         {
@@ -66,7 +56,7 @@ export const useDeployProject = () => {
           slug,
           rootDirectory,
           userId,
-          envVariables: encodedEnvVariables, // Send encoded variables
+          envVariables,
         }
       );
 
@@ -105,4 +95,4 @@ export const useDeployProject = () => {
     logs,
     status
   };
-}; 
+};

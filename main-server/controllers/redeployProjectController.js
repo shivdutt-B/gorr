@@ -51,14 +51,9 @@ const redeployProject = async (req, res) => {
         stage: "initialization",
       });
 
-      const decodedEnvVars = envVariables.map(({ key, value }) => ({
-        key: Buffer.from(key, "base64").toString("utf-8"),
-        value: Buffer.from(value, "base64").toString("utf-8"),
-      }));
+      const FORMATTED_ENV_VARS = await JSON.stringify(envVariables);
 
       // Define ECS task command
-      const FORMATTED_ENV_VARS = await JSON.stringify(decodedEnvVars);
-
       const command = new RunTaskCommand({
         cluster: config.CLUSTER,
         taskDefinition: config.TASK,

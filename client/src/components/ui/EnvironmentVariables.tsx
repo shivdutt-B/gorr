@@ -65,9 +65,8 @@ const EnvironmentVariables: React.FC<EnvironmentVariablesProps> = ({
           onClick={onToggleExpand}
         >
           <div
-            className={`transform transition-transform duration-300 ease-in-out ${
-              isExpanded ? "rotate-90" : "rotate-0"
-            }`}
+            className={`transform transition-transform duration-300 ease-in-out ${isExpanded ? "rotate-90" : "rotate-0"
+              }`}
           >
             ▶
           </div>
@@ -75,11 +74,10 @@ const EnvironmentVariables: React.FC<EnvironmentVariablesProps> = ({
         </div>
 
         <div
-          className={`overflow-hidden transition-all duration-300 ease-in-out ${
-            isExpanded
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded
               ? "max-h-[1000px] opacity-100 mt-4"
               : "max-h-0 opacity-0 mt-0"
-          }`}
+            }`}
         >
           <div className="space-y-4">
             {Object.keys(duplicateKeys).length > 0 && (
@@ -99,10 +97,9 @@ const EnvironmentVariables: React.FC<EnvironmentVariablesProps> = ({
                     onUpdateVariable(index, e.target.value, variable.value)
                   }
                   className={`w-full min-w-[30px] bg-[#0a0a0a] px-3 py-2 rounded text-white border transition-all duration-200 
-                    ${
-                      isDuplicateKey(variable.key, index)
-                        ? "border-red-600 focus:border-red-500"
-                        : "border-[#282828] focus:border-gray-400"
+                    ${isDuplicateKey(variable.key, index)
+                      ? "border-red-600 focus:border-red-500"
+                      : "border-[#282828] focus:border-gray-400"
                     } outline-none`}
                 />
                 <input

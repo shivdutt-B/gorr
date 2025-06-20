@@ -4,14 +4,6 @@ import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { userAtom } from "../states/userAtom";
 
-// Add a utility function to encode environment variables
-const encodeEnvVariables = (envVariables: { key: string; value: string }[]) => {
-  return envVariables.map((variable) => ({
-    key: btoa(variable.key),
-    value: btoa(variable.value),
-  }));
-};
-
 export const useRedeployProject = () => {
   const [isRedeploying, setIsRedeploying] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,8 +27,8 @@ export const useRedeployProject = () => {
     setQueuedTimestamp(new Date().toISOString());
 
     try {
-      // Encode environment variables before sending
-      const encodedEnvVariables = encodeEnvVariables(envVariables);
+      console.log("env vars:", envVariables);
+      
       const url =
         `${import.meta.env.VITE_API_BASE_URL}/redeploy-project` ||
         `http://localhost:5000/redeploy-project`;
@@ -44,7 +36,7 @@ export const useRedeployProject = () => {
         gitURL,
         slug,
         rootDirectory,
-        envVariables: encodedEnvVariables,
+        envVariables,
         userId: user?.id,
       });
 
