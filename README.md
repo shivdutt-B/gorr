@@ -2,7 +2,7 @@
 
 <table align="center">
   <tr>
-    <td><img src="https://raw.githubusercontent.com/shivdutt-B/gorr/refs/heads/main/README.ASSETS/gorr-logo-transparent.png" alt="GORR Logo" height="80"/></td>
+    <td><img src="https://raw.githubusercontent.com/shivdutt-B/gorr/refs/heads/main/client/src/assets/image.png" alt="GORR Logo" height="80"/></td>
     <td><h1 style="margin: 0; padding-left: 10px;">GORR</h1></td>
   </tr>
 </table>
@@ -276,6 +276,7 @@ We welcome contributions to make GORR even better! Here's how you can help:
 7. **Push** to your branch (`git push origin feature/amazing-feature`)
 8. **Open** a Pull Request
 
+<br>
 <div align="center">
-<code>Built with ❤️ by developers who dream in microservices</code>
+<h1><code>🐻‍❄️</code></h1>
 </div>
