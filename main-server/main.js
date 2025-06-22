@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const heimdall = require('heimdall-nodejs-sdk');
 const authRoutes = require("./routes/authRoutes");
 const buildRoutes = require("./routes/buildRoutes");
 const slugRoutes = require("./routes/slugRoutes");
@@ -22,6 +23,9 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+
+// Add Heimdall ping endpoint
+heimdall.ping(app);
 
 // Routes
 app.use("/auth", authRoutes);
