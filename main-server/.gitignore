@@ -36,5 +36,3 @@ todo
 
 # Prisma
 prisma/*.db
-*.env*
-.env*
