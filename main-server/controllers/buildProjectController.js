@@ -5,11 +5,15 @@ const { publishLog, subscribeToLogs, publisher, waitForRedisConnection } = requi
 const { prisma } = require("../services/prismaService");
 
 const buildProject = async (req, res) => {
-
+  /*
+  First check if Redis is connected. If not, return an error response.
+  This ensures that we don't attempt to redeploy if we can't log the status.
+  We use a utility function to wait for Redis connection with retries.
+  */
   try {
     await waitForRedisConnection(publisher, 10, 1000);
   } catch (err) {
-    return res.status(500).json({
+    return res.status(200).json({
       status: "error",
       message: "Could not connect to Redis. Please try again later.",
       error: err.message,
