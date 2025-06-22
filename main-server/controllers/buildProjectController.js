@@ -1,10 +1,25 @@
 const { generateSlug } = require("random-word-slugs");
 const { RunTaskCommand, StopTaskCommand } = require("@aws-sdk/client-ecs");
 const { ecsClient, config } = require("../config/aws");
-const { publishLog, subscribeToLogs } = require("../services/redisService");
+const { publishLog, subscribeToLogs, publisher, waitForRedisConnection } = require("../services/redisService");
 const { prisma } = require("../services/prismaService");
 
 const buildProject = async (req, res) => {
+  /*
+  First check if Redis is connected. If not, return an error response.
+  This ensures that we don't attempt to redeploy if we can't log the status.
+  We use a utility function to wait for Redis connection with retries.
+  */
+  try {
+    await waitForRedisConnection(publisher, 10, 1000);
+  } catch (err) {
+    return res.status(200).json({
+      status: "error",
+      message: "Could not connect to Redis. Please try again later.",
+      error: err.message,
+    });
+  }
+  
   try {
     const { gitURL, slug, rootDirectory, envVariables } = req.body;
     const userId = req.body.userId ? parseInt(req.body.userId) : undefined;
@@ -167,20 +182,14 @@ const buildProject = async (req, res) => {
 
         let subscriber = null;
 
-        // Debug subscriber to monitor all log statuses
-        // const debugSubscriber = subscribeToLogs(projectSlug, async (log) => {
-        //   if (
-        //     log.status === "COMPLETED" ||
-        //     log.status === "FAILED" ||
-        //     log.status === "ERROR" ||
-        //     log.status === "INFO"
-        //   ) {
-        //     console.log(log);
-        //   }
-        // });
-
         // Subscribe to logs and store the subscriber reference
         subscriber = subscribeToLogs(projectSlug, async (log) => {
+        
+          /*
+          * This section is only to detect Angular projects
+          * and capture the project name if available.
+          * It will not affect the build process or deployment.
+          */
           let isAngularProject = false;
           let projectName = null;
 
@@ -202,6 +211,10 @@ const buildProject = async (req, res) => {
               }
             }
           }
+
+          /*
+          * Handle different log stages and statuses
+          */
 
           if (log.stage === "completed") {
             clearTimeout(timeout);

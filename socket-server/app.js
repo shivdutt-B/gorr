@@ -4,7 +4,10 @@ const { Server } = require("socket.io");
 const Redis = require("ioredis");
 require("dotenv").config();
 const heimdall = require('heimdall-nodejs-sdk');
+<<<<<<< HEAD
 
+=======
+>>>>>>> 533c9fd984cea236903ffb28c69ba981aab0707e
 
 const app = express();
 const PORT = parseInt(process.env.SOCKET_PORT) || 7000;
@@ -14,6 +17,10 @@ heimdall.ping(app);
 
 // Create HTTP server from Express app
 const server = http.createServer(app);
+
+// Add Heimdall ping endpoint
+heimdall.ping(app);
+
 
 // Redis connection string from environment variables
 const subscriber = new Redis(process.env.REDIS_URL);
@@ -68,35 +75,8 @@ async function initRedisSubscribe() {
 // Start Redis subscription
 initRedisSubscribe();
 
-// Basic health check endpoint
-app.get("/health", (req, res) => {
-  res.status(200).send("✅ Socket server is running");
-});
 
-// Add ping endpoint to keep the server active
-app.get("/ping", (req, res) => {
-  console.log("=============pingHandler===========");
-  const uptime = process.uptime();
-  const memoryUsage = process.memoryUsage();
-  const currentTime = new Date().toISOString();
 
-  return res.status(200).json({
-    status: "success",
-    message: "Socket Server is active",
-    data: {
-      serverTime: currentTime,
-      uptime: `${Math.floor(uptime / 60)} minutes, ${Math.floor(
-        uptime % 60
-      )} seconds`,
-      memoryUsage: {
-        rss: `${Math.round(memoryUsage.rss / 1024 / 1024)} MB`,
-        heapTotal: `${Math.round(memoryUsage.heapTotal / 1024 / 1024)} MB`,
-        heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)} MB`,
-      },
-      socketConnections: io.engine.clientsCount,
-    },
-  });
-});
 
 // Start the HTTP server with both Socket.IO and Express
 server.listen(PORT, () => {

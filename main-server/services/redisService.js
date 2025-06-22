@@ -35,6 +35,33 @@ require("dotenv").config();
 // Use environment variables instead of hardcoded credentials
 const redisUrl = process.env.REDIS_URL;
 
+const waitForRedisConnection = async (client, maxRetries = 10, retryDelay = 1000) => {
+  let retries = 0;
+  return new Promise((resolve, reject) => {
+    if (client.status === "ready") return resolve();
+    const onConnect = () => {
+      client.off("error", onError);
+      resolve();
+    };
+    const onError = (err) => {
+      retries++;
+      if (retries >= maxRetries) {
+        client.off("connect", onConnect);
+        reject(new Error("Could not connect to Redis after max retries"));
+      } else {
+        setTimeout(() => {
+          if (client.status === "ready") {
+            client.off("error", onError);
+            resolve();
+          }
+        }, retryDelay);
+      }
+    };
+    client.once("connect", onConnect);
+    client.on("error", onError);
+  });
+};
+
 // Setup Redis client with improved retry strategy and error handling
 const createRedisClient = (name = "publisher") => {
   if (!redisUrl) {
@@ -102,8 +129,26 @@ const publishLog = async (projectId, log) => {
     throw new Error("Project ID is required");
   }
 
+  // If Redis is not ready, also send a special error log for build controller to catch
   if (!publisher || publisher.status !== "ready") {
     console.error("Redis publisher is not ready");
+    // Attempt to send a fallback error log to the build log handler
+    // This is a no-op if Redis is truly down, but allows for local error handling
+    try {
+      if (log && log.status !== "ERROR") {
+        await publisher?.publish?.(
+          `logs:${projectId}`,
+          JSON.stringify({
+            status: "ERROR",
+            message: "Could not connect to Redis. Could not deploy your project.",
+            details: "Redis publisher is not ready",
+            timestamp: new Date().toISOString(),
+            projectId,
+            stage: "failed",
+          })
+        );
+      }
+    } catch (e) {}
     return false;
   }
 
@@ -112,6 +157,20 @@ const publishLog = async (projectId, log) => {
     return true;
   } catch (error) {
     console.error("❗ Error publishing log:", error.message);
+    // Attempt to send a fallback error log
+    try {
+      await publisher.publish(
+        `logs:${projectId}`,
+        JSON.stringify({
+          status: "ERROR",
+          message: "Could not connect to Redis. Could not deploy your project.",
+          details: error.message,
+          timestamp: new Date().toISOString(),
+          projectId,
+          stage: "failed",
+        })
+      );
+    } catch (e) {}
     return false;
   }
 };
@@ -165,4 +224,4 @@ const subscribeToLogs = (projectId, callback) => {
 };
 
 // Update exports to include subscribeToLogs
-module.exports = { publishLog, publisher, subscribeToLogs };
+module.exports = { publishLog, publisher, subscribeToLogs, waitForRedisConnection };
