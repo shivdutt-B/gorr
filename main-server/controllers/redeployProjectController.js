@@ -1,7 +1,8 @@
 const { prisma } = require("../services/prismaService");
 const { RunTaskCommand, StopTaskCommand } = require("@aws-sdk/client-ecs");
 const { ecsClient, config } = require("../config/aws");
-const { subscribeToLogs, publishLog } = require("../services/redisService");
+const { publishLog, subscribeToLogs, publisher, waitForRedisConnection } = require("../services/redisService");
+
 
 const redeployProject = async (req, res) => {
   /*
