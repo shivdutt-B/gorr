@@ -440,6 +440,7 @@ process.on("SIGINT", async () => {
     console.error(`Stack trace: ${error.stack}`);
   }
   process.exit(0);
-});
+}); 
+
 
 init();

@@ -3,9 +3,14 @@ const http = require("http");
 const { Server } = require("socket.io");
 const Redis = require("ioredis");
 require("dotenv").config();
+const heimdall = require('heimdall-nodejs-sdk');
+
 
 const app = express();
 const PORT = parseInt(process.env.SOCKET_PORT) || 7000;
+
+// Add Heimdall ping endpoint
+heimdall.ping(app);
 
 // Create HTTP server from Express app
 const server = http.createServer(app);

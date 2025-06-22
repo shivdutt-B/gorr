@@ -1,6 +1,7 @@
 const express = require("express");
 const httpProxy = require("http-proxy");
 require("dotenv").config();
+const heimdall = require('heimdall-nodejs-sdk');
 
 // Initialize Express and set up the proxy
 const app = express();
@@ -8,29 +9,8 @@ const PORT = process.env.PORT || 8000;
 const BASE_PATH = process.env.S3_BASE_PATH;
 const proxy = httpProxy.createProxy();
 
-// Add a ping endpoint to keep the server active
-app.get("/ping", (req, res) => {
-  console.log("=============pingHandler=============");
-  const uptime = process.uptime();
-  const memoryUsage = process.memoryUsage();
-  const currentTime = new Date().toISOString();
-
-  return res.status(200).json({
-    status: "success",
-    message: "Proxy Server is active",
-    data: {
-      serverTime: currentTime,
-      uptime: `${Math.floor(uptime / 60)} minutes, ${Math.floor(
-        uptime % 60
-      )} seconds`,
-      memoryUsage: {
-        rss: `${Math.round(memoryUsage.rss / 1024 / 1024)} MB`,
-        heapTotal: `${Math.round(memoryUsage.heapTotal / 1024 / 1024)} MB`,
-        heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)} MB`,
-      },
-    },
-  });
-});
+// Add Heimdall ping endpoint
+heimdall.ping(app);
 
 // Middleware to handle incoming requests and proxy them to the correct S3 path
 app.use((req, res) => {
@@ -46,19 +26,9 @@ app.use((req, res) => {
     // Handle regular subdomains
     subdomain = hostname.split(".").slice(0, -2).join("/");
   }
-  console.log(
-    "=============================subdomain====================: ",
-    subdomain
-  );
-  console.log(
-    "=============================hostname====================: ",
-    hostname
-  );
 
   // Constructing the target URL for the proxy based on the subdomain
   const resolvesTo = `${BASE_PATH}/${subdomain}`;
-
-  console.log("=================resolvesTo===================: ", resolvesTo);
 
   // Proxying the request to the constructed URL
   return proxy.web(req, res, { target: resolvesTo, changeOrigin: true });
