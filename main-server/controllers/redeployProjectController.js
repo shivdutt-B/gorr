@@ -12,7 +12,7 @@ const redeployProject = async (req, res) => {
   try {
     await waitForRedisConnection(publisher, 10, 1000);
   } catch (err) {
-    return res.status(500).json({
+    return res.status(200).json({
       status: "error",
       message: "Could not connect to Redis. Please try again later.",
       error: err.message,
