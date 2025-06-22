@@ -199,6 +199,18 @@ function getStatusBadge(log, type) {
 }
 
 async function init() {
+  try {
+    await waitForRedisConnection(10, 1000);
+  } catch (err) {
+    console.error("❗ Could not connect to Redis:", err.message);
+    // Try to publish error log if possible
+    try {
+      publishLog("Could not connect to Redis. Could not deploy your project.", "error");
+    } catch (e) {}
+    // Exit with a specific code so ECS knows this is a fatal error
+    process.exit(42);
+  }
+
   publishLog("Starting build process");
 
   try {
@@ -441,5 +453,32 @@ process.on("SIGINT", async () => {
   }
   process.exit(0);
 });
+
+async function waitForRedisConnection(maxRetries = 10, retryDelay = 1000) {
+  let retries = 0;
+  return new Promise((resolve, reject) => {
+    if (publisher.status === "ready") return resolve();
+    const onConnect = () => {
+      publisher.off("error", onError);
+      resolve();
+    };
+    const onError = (err) => {
+      retries++;
+      if (retries >= maxRetries) {
+        publisher.off("connect", onConnect);
+        reject(new Error("Could not connect to Redis after max retries"));
+      } else {
+        setTimeout(() => {
+          if (publisher.status === "ready") {
+            publisher.off("error", onError);
+            resolve();
+          }
+        }, retryDelay);
+      }
+    };
+    publisher.once("connect", onConnect);
+    publisher.on("error", onError);
+  });
+}
 
 init();
