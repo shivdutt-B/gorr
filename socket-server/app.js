@@ -4,10 +4,6 @@ const { Server } = require("socket.io");
 const Redis = require("ioredis");
 require("dotenv").config();
 const heimdall = require('heimdall-nodejs-sdk');
-<<<<<<< HEAD
-
-=======
->>>>>>> 533c9fd984cea236903ffb28c69ba981aab0707e
 
 const app = express();
 const PORT = parseInt(process.env.SOCKET_PORT) || 7000;

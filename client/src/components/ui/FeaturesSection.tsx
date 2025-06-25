@@ -7,7 +7,7 @@ import { IconBrandYoutubeFilled } from "@tabler/icons-react";
 import { EvervaultCard } from "./evervault-card"
 
 // Assets
-import Code from "../../assets/FeatureHero/image.png"
+import Code from "../../assets/FeatureHero/yt-thumbnail.jpeg";
 
 
 export function FeaturesSection() {
@@ -99,7 +99,7 @@ export const SkeletonOne = () => (
 
 
 export const SkeletonThree = () => (
-  <a href="https://www.youtube.com/watch?v=RPa3_AD1_Vs" target="_blank" className=" relative flex gap-10 h-full group/image">
+  <a href="https://www.youtube.com/watch?v=kSnP80ctjlw" target="_blank" className=" relative flex gap-10 h-full group/image">
     <IconBrandYoutubeFilled className="h-20 w-20 absolute z-10 inset-0 text-red-500 m-auto" />
     <img src={Code} alt="header" className="h-full w-full object-cover rounded-sm transition-all duration-200" />
   </a>
