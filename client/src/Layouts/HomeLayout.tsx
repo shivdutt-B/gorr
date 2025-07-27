@@ -12,7 +12,8 @@ function HomeLayout() {
             <Navbar />
             <FlipWords />
             <Cover />
-            <FeaturesSection />
+            {/* Commenting this component as it is irrelevent and too much of graphics and medias. */}
+            {/* <FeaturesSection /> */}
             <ExtraInfo />
             <Footer />
         </>

@@ -217,6 +217,11 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
           <div className="w-full bg-[#0a0a0a] rounded-lg overflow-hidden">
             <div className="p-8">
               <h2 className="text-3xl font-bold mb-6 space-x-1">New Project</h2>
+              {isRedeploy ? (
+                <p className="text-red-500 font-semibold text-[14px] mb-4">
+                  * Enter the env variables for the project .
+                </p>
+              ) : null}
 
               <ProjectSetup
                 projectName={projectName}
@@ -260,20 +265,21 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
 
               {/* Deploy Button */}
               <button
-                className={`w-full py-3 rounded font-medium transition duration-200 ${isDeployButtonDisabled
+                className={`w-full py-3 rounded font-medium transition duration-200 ${
+                  isDeployButtonDisabled
                     ? "bg-gray-600 text-gray-400 cursor-not-allowed"
                     : "bg-white text-black hover:bg-gray-200"
-                  }`}
+                }`}
                 onClick={handleDeploy}
                 disabled={isDeployButtonDisabled}
                 title={
                   hasDuplicateEnvKeys
                     ? "Please fix duplicate environment variable keys"
                     : hasValueWithoutKey
-                      ? "Each value must have a corresponding key"
-                      : !isProjectNameValid
-                        ? "Please enter a valid project name"
-                        : ""
+                    ? "Each value must have a corresponding key"
+                    : !isProjectNameValid
+                    ? "Please enter a valid project name"
+                    : ""
                 }
               >
                 {currentIsLoading
@@ -281,8 +287,8 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
                     ? "Redeploying..."
                     : "Deploying..."
                   : isRedeploy
-                    ? "Redeploy"
-                    : "Deploy"}
+                  ? "Redeploy"
+                  : "Deploy"}
               </button>
 
               {hasDuplicateEnvKeys && (
