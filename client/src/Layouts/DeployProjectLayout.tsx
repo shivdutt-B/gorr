@@ -216,9 +216,9 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
         <div className="flex flex-col items-center justify-center w-full min-h-screen bg-black text-white">
           <div className="w-full bg-[#0a0a0a] rounded-lg overflow-hidden">
             <div className="p-8">
-              <h2 className="text-3xl font-bold mb-6 space-x-1">New Project</h2>
+              <h2 className="text-3xl font-bold mb-1 space-x-1">New Project</h2>
               {isRedeploy ? (
-                <p className="text-red-500 font-semibold text-[14px] mb-4">
+                <p className="text-red-500 font-[400] text-[14px] mb-4">
                   * Enter the env variables for the project .
                 </p>
               ) : null}
