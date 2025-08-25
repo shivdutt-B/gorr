@@ -8,13 +8,13 @@ import { EvervaultCard } from "./evervault-card"
 
 // Assets
 import Code from "../../assets/FeatureHero/yt-thumbnail.jpeg";
-
+import S3 from "../../assets/FeatureHero/aws-s3-bucket.jpeg";
 
 export function FeaturesSection() {
   const features = [
     {
-      title: "Track issues effectively",
-      description: "Track and manage your project issues with ease using our intuitive interface.",
+      title: "Backed with AWS S3 bucket",
+      description: "Store and retrieve any amount of data at any time, from anywhere on the web.",
       skeleton: <SkeletonOne />,
       className: "col-span-1 lg:col-span-4 border-b lg:border-r dark:border-neutral-800",
     },
@@ -86,7 +86,7 @@ const FeatureDescription = ({ children }) => (
 export const SkeletonOne = () => (
   <div className="relative flex h-full">
     <img
-      src={Code}
+      src={S3}
       alt="header"
       className="h-full w-full object-contain rounded-sm"
     />
