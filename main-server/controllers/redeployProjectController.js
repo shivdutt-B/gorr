@@ -3,7 +3,18 @@ const { RunTaskCommand, StopTaskCommand } = require("@aws-sdk/client-ecs");
 const { ecsClient, config } = require("../config/aws");
 const { publishLog, subscribeToLogs, publisher, waitForRedisConnection } = require("../services/redisService");
 
-
+/*
+  * Redeploy a project by its slug
+  * Validate that the slug is provided
+  * Check if the project exists in the database
+  * If the project does not exist, return an error response
+  * If the project exists, verify user permissions
+  * Publish initial log to Redis indicating the redeployment has been queued
+  * Prepare the ECS task command with necessary environment variables
+  * Run the ECS task to start the redeployment process
+  * Subscribe to logs to check if its an Angular project and other status updates
+  * If the redeployment is successful, update the project URL in the database 
+*/
 const redeployProject = async (req, res) => {
   /*
   First check if Redis is connected. If not, return an error response.

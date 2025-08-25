@@ -11,6 +11,20 @@ const s3 = new AWS.S3({
   },
 });
 
+/*
+  * Get the userId and slug from the request body
+  * Validate that both userId and slug are provided
+  * Check if the project exists in the database for the given userId and slug
+  * If the project does not exist, return an error response
+  * If the project exists, proceed to delete the project files from S3
+  * List all objects in the S3 bucket under the project slug
+  * If no objects are found, log a message and continue
+  * If objects are found, prepare a delete request for all objects in the project folder
+  * Send the delete request to S3 to remove all project files
+  * After deleting the files from S3, delete the project record from the database
+  * Return a success response with the project slug
+  * If any error occurs during the process, log the error and return an error response
+*/
 const deleteProject = async (req, res) => {
   try {
     const { userId, slug } = req.body;

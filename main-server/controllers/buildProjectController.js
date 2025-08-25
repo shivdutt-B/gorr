@@ -150,6 +150,19 @@ const buildProject = async (req, res) => {
         taskArn: taskArn,
       });
 
+      /*
+       * Till this point:
+       * make sure we are connected to the redis using waitForRedisConnection()
+       * Validated the response data like gitURL, slug, rootDirectory, envVariables on any invalidation send error response
+       * Checked if the slug already exists in the database if it does send error response
+       * Check if user with the provided userId exists, if not create the user
+       * Created a temporary project object to store project details
+       * Stringify the envVariables to pass them to ECS
+       * Defined the ECS task command with necessary overrides
+       * Ran the ECS task and stored the taskArn
+       * Updated the temporary project status to "STARTED"
+      */
+
       const buildResult = await new Promise((resolve, reject) => {
         const timeout = setTimeout(async () => {
           try {
@@ -394,6 +407,12 @@ const buildProject = async (req, res) => {
       });
     }
   }
+  /*
+   * Till this point:
+   * We created a timeout as a clean up functon which will be fired after 15 minutes and stop the container, this is done to prevent the container from running forever but if everything goes right then we will terminate this timeout.
+   * Checking for angular project by subscribing to logs:<projectId> channel if its an angular project then we set the name for the project and store it in the subscriber object.
+   * We are also checking for the status of the build process and if its completed then we first clear the timeout and send response to client.
+  */
 };
 
 module.exports = { buildProject };
