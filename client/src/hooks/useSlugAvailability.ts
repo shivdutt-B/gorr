@@ -37,7 +37,7 @@ export const useSlugAvailability = (slug: string) => {
         setDomainStatus(response.data.available ? "available" : "unavailable");
       } catch (error) {
         console.error("Error checking domain availability:", error);
-        setDomainStatus("unavailable");
+        setDomainStatus("available");
       }
     }, 500);
 
