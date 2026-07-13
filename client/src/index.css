@@ -10,7 +10,7 @@
     --color-4: 195 100% 63%;
     --color-5: 90 100% 63%;
 
-    --bg: 0 0% 0%;
+    --bg: 222 47% 6%;
     --bg-elevated: 0 0% 6%;
     --bg-surface: 0 0% 9%;
     --bg-surface-strong: 0 0% 13%;
@@ -43,7 +43,8 @@
   }
 
   body {
-    @apply bg-black text-white antialiased;
+    @apply text-white antialiased;
+    background: hsl(var(--bg));
     color: hsl(var(--text-primary));
   }
 

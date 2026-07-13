@@ -44,22 +44,26 @@ export default {
         md: "var(--radius-md)",
         lg: "var(--radius-lg)",
         xl: "var(--radius-xl)",
-        2xl: "var(--radius-2xl)",
+        "2xl": "var(--radius-2xl)",
       },
       animation: {
         rainbow: "rainbow var(--speed, 2s) infinite linear",
       },
       keyframes: {
         rainbow: {
-          "0%": { "background-position": "0%" },
-          "100%": { "background-position": "200%" },
+          "0%": {
+            backgroundPosition: "0%",
+          },
+          "100%": {
+            backgroundPosition: "200%",
+          },
         },
       },
       screens: {
-        'mob': '390px',   // mobile screen
-        'xmob': '350px',  
-      }
+        xmob: "350px",
+        mob: "390px",
+      },
     },
   },
   plugins: [],
-}
+};

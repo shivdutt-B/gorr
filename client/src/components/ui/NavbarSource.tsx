@@ -38,47 +38,52 @@ export const NavbarSource = ({ navItems, className }) => {
         animate={{ y: visible ? 0 : -100, opacity: visible ? 1 : 0 }}
         transition={{ duration: 0.2 }}
         className={cn(
-          "flex max-w-fit fixed top-10 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-[16px] dark:bg-black bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] z-[5000] pr-2 pl-8 py-2 items-center justify-center space-x-4",
+          "fixed inset-x-0 top-6 z-[5000] mx-auto flex w-[min(92vw,58rem)] items-center justify-between gap-3 rounded-2xl border border-border/70 bg-surface/80 px-4 py-3 text-foreground shadow-panel backdrop-blur-xl",
           className
         )}
       >
-        {navItems.map((navItem, idx) => {
-          if (navItem.name.toLowerCase() === 'about' || navItem.name.toLowerCase() === 'contact') {
+        <div className="flex items-center gap-2 sm:gap-3">
+          {navItems.map((navItem, idx) => {
+            const isExternalAnchor = navItem.name.toLowerCase() === "about" || navItem.name.toLowerCase() === "contact";
+
+            const navClassName = cn(
+              "inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-foreground-muted transition-colors hover:bg-elevated/80 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
+              navItem.link === "/" && "bg-elevated/60 text-foreground"
+            );
+
+            if (isExternalAnchor) {
             return (
               <a
                 key={`link=${idx}`}
                 href={navItem.link}
-                className="relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
+                className={navClassName}
               >
                 <span className="block sm:hidden">{navItem.icon}</span>
-                <span className="hidden sm:block text-sm">{navItem.name}</span>
+                <span className="hidden sm:block">{navItem.name}</span>
               </a>
             );
-          }
-          return (
-            <Link
-              key={`link=${idx}`}
-              to={navItem.link}
-              className="relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
-            >
-              <span className="block sm:hidden">{navItem.icon}</span>
-              <span className="hidden sm:block text-sm">{navItem.name}</span>
-            </Link>
-          );
-        })}
+            }
+
+            return (
+              <Link key={`link=${idx}`} to={navItem.link} className={navClassName}>
+                <span className="block sm:hidden">{navItem.icon}</span>
+                <span className="hidden sm:block">{navItem.name}</span>
+              </Link>
+            );
+          })}
+        </div>
 
         {isLoading ? (
-          <div className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-[12px] flex items-center gap-2">
+          <div className="ui-button ui-button-ghost whitespace-nowrap px-4 py-2 text-sm">
             <Loader2 className="animate-spin" size={18} />
-            {/* <span>Loading...</span> */}
+            <span className="hidden sm:block">Loading</span>
           </div>
         ) : (
           <Link
             to={user ? "/dashboard" : "/join"}
-            className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-[12px] hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            className="ui-button ui-button-primary whitespace-nowrap px-4 py-2 text-sm shadow-sm"
           >
             <span>{user ? "Dashboard" : "Join"}</span>
-            <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent h-px" />
           </Link>
         )}
       </motion.div>
