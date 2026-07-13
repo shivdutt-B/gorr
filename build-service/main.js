@@ -459,10 +459,12 @@ async function waitForRedisConnection(maxRetries = 10, retryDelay = 1000) {
   let retries = 0;
   return new Promise((resolve, reject) => {
     if (publisher.status === "ready") return resolve();
+
     const onConnect = () => {
       publisher.off("error", onError);
       resolve();
     };
+
     const onError = (err) => {
       retries++;
       if (retries >= maxRetries) {
@@ -477,6 +479,7 @@ async function waitForRedisConnection(maxRetries = 10, retryDelay = 1000) {
         }, retryDelay);
       }
     };
+    
     publisher.once("connect", onConnect);
     publisher.on("error", onError);
   });
