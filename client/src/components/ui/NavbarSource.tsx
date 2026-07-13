@@ -1,92 +1,126 @@
-"use client";
-import React, { useState } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useMotionValueEvent,
-} from "framer-motion";
-import { cn } from "../../utils/cn";
-import { Link } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import { userAtom } from "../../states/userAtom";
-import { useLoading } from "../../hooks/useLoading";
-import { Loader2 } from "lucide-react";
+// "use client";
+// import React, { useEffect, useRef, useState } from "react";
+// import { cn } from "../../utils/cn";
+// import { Link } from "react-router-dom";
+// import { useRecoilValue } from "recoil";
+// import { userAtom } from "../../states/userAtom";
+// import { useLogout } from "../../hooks/useLogout";
+// import { IconHome, IconLogout2, IconUser } from "@tabler/icons-react";
 
-export const NavbarSource = ({ navItems, className }) => {
-  const user = useRecoilValue(userAtom);
-  const { isRequestLoading } = useLoading();
-  const isLoading = isRequestLoading("FetchUser");
+// type NavbarSourceProps = {
+//   navItems?: unknown;
+//   className?: string;
+// };
 
-  const { scrollYProgress } = useScroll();
-  const [visible, setVisible] = useState(true);
+// export const NavbarSource = ({ className }: NavbarSourceProps) => {
+//   const gorrLogo = new URL("../../assets/Logo/gorr_logo.svg", import.meta.url).href;
+//   const user = useRecoilValue(userAtom);
+//   const { logout } = useLogout();
+//   const dropdownRef = useRef<HTMLDivElement | null>(null);
+//   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  useMotionValueEvent(scrollYProgress, "change", (current) => {
-    if (typeof current === "number") {
-      let previous = scrollYProgress.getPrevious();
-      if (typeof previous === "number") {
-        const direction = current - previous;
-        setVisible(scrollYProgress.get() < 0.05 || direction < 0);
-      }
-    }
-  });
+//   useEffect(() => {
+//     const handlePointerDown = (event: globalThis.MouseEvent) => {
+//       if (
+//         dropdownRef.current &&
+//         event.target instanceof Node &&
+//         !dropdownRef.current.contains(event.target)
+//       ) {
+//         setIsProfileOpen(false);
+//       }
+//     };
 
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        initial={{ opacity: 1, y: 0 }}
-        animate={{ y: visible ? 0 : -100, opacity: visible ? 1 : 0 }}
-        transition={{ duration: 0.2 }}
-        className={cn(
-          "fixed inset-x-0 top-6 z-[5000] mx-auto flex w-[min(92vw,58rem)] items-center justify-between gap-3 rounded-2xl border border-border/70 bg-surface/80 px-4 py-3 text-foreground shadow-panel backdrop-blur-xl",
-          className
-        )}
-      >
-        <div className="flex items-center gap-2 sm:gap-3">
-          {navItems.map((navItem, idx) => {
-            const isExternalAnchor = navItem.name.toLowerCase() === "about" || navItem.name.toLowerCase() === "contact";
+//     document.addEventListener("mousedown", handlePointerDown);
 
-            const navClassName = cn(
-              "inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-foreground-muted transition-colors hover:bg-elevated/80 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
-              navItem.link === "/" && "bg-elevated/60 text-foreground"
-            );
+//     return () => document.removeEventListener("mousedown", handlePointerDown);
+//   }, []);
 
-            if (isExternalAnchor) {
-            return (
-              <a
-                key={`link=${idx}`}
-                href={navItem.link}
-                className={navClassName}
-              >
-                <span className="block sm:hidden">{navItem.icon}</span>
-                <span className="hidden sm:block">{navItem.name}</span>
-              </a>
-            );
-            }
+//   useEffect(() => {
+//     if (!user) {
+//       setIsProfileOpen(false);
+//     }
+//   }, [user]);
 
-            return (
-              <Link key={`link=${idx}`} to={navItem.link} className={navClassName}>
-                <span className="block sm:hidden">{navItem.icon}</span>
-                <span className="hidden sm:block">{navItem.name}</span>
-              </Link>
-            );
-          })}
-        </div>
+//   const handleLogout = async () => {
+//     setIsProfileOpen(false);
+//     await logout();
+//   };
 
-        {isLoading ? (
-          <div className="ui-button ui-button-ghost whitespace-nowrap px-4 py-2 text-sm">
-            <Loader2 className="animate-spin" size={18} />
-            <span className="hidden sm:block">Loading</span>
-          </div>
-        ) : (
-          <Link
-            to={user ? "/dashboard" : "/join"}
-            className="ui-button ui-button-primary whitespace-nowrap px-4 py-2 text-sm shadow-sm"
-          >
-            <span>{user ? "Dashboard" : "Join"}</span>
-          </Link>
-        )}
-      </motion.div>
-    </AnimatePresence>
-  );
-};
+//   return (
+//     <header
+//       className={cn(
+//         "fixed inset-x-4 top-4 z-[5000] mx-auto flex w-[min(100%-2rem,80rem)] items-center justify-between rounded-2xl border border-white/10 bg-surface/75 px-4 py-3 text-foreground shadow-panel backdrop-blur-[10px]",
+//         className
+//       )}
+//     >
+//       <Link to="/" className="flex items-center gap-3 rounded-xl px-2 py-1 transition-colors hover:bg-white/5">
+//         <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 p-2">
+//           <img src={gorrLogo} alt="Gorr" className="h-full w-full object-contain" />
+//         </span>
+//       </Link>
+
+//       <div className="flex items-center gap-2 sm:gap-3">
+//         <Link
+//           to="/"
+//           className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-white/10"
+//         >
+//           <IconHome className="h-4 w-4" />
+//           <span>Home</span>
+//         </Link>
+
+//         {user ? (
+//           <div className="relative" ref={dropdownRef}>
+//             <button
+//               type="button"
+//               onClick={() => setIsProfileOpen((open) => !open)}
+//               className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-white/10"
+//               aria-expanded={isProfileOpen}
+//               aria-haspopup="menu"
+//             >
+//               <IconUser className="h-4 w-4" />
+//               <span>Profile</span>
+//             </button>
+
+//             {isProfileOpen && (
+//               <div className="absolute right-0 top-[calc(100%+0.75rem)] w-72 overflow-hidden rounded-2xl border border-white/10 bg-surface/90 p-3 text-left shadow-panel backdrop-blur-[10px]">
+//                 <div className="border-b border-white/10 px-3 pb-3">
+//                   <p className="text-sm font-semibold text-foreground">
+//                     {user.name || user.login}
+//                   </p>
+//                   <p className="text-xs text-foreground-muted">{user.login}</p>
+//                 </div>
+
+//                 <div className="flex flex-col gap-2 pt-3">
+//                   <Link
+//                     to="/dashboard"
+//                     onClick={() => setIsProfileOpen(false)}
+//                     className="inline-flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-white/10"
+//                   >
+//                     <span>Dashboard</span>
+//                     <span>↗</span>
+//                   </Link>
+//                   <button
+//                     type="button"
+//                     onClick={handleLogout}
+//                     className="inline-flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300"
+//                   >
+//                     <span>Logout</span>
+//                     <IconLogout2 className="h-4 w-4" />
+//                   </button>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+//         ) : (
+//           <Link
+//             to="/join"
+//             className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-accent-strong"
+//           >
+//             <IconUser className="h-4 w-4" />
+//             <span>Auth</span>
+//           </Link>
+//         )}
+//       </div>
+//     </header>
+//   );
+// };

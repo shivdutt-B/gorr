@@ -1,6 +1,6 @@
 import React from "react";
 import { FeaturesSection } from '../components/ui/FeaturesSection';
-import { FlipWords } from "../components/ui/FlipWords";
+import { HomeHero } from "../components/HomeHero";
 import { Cover } from "../components/ui/Cover";
 import ExtraInfo from '../components/ui/ExtraInfo';
 import { Navbar } from '../components/ui/Navbar';
@@ -10,7 +10,7 @@ function HomeLayout() {
     return (
         <>
             <Navbar />
-            <FlipWords />
+            <HomeHero />
             <Cover />
             {/* Commenting this component as it is irrelevent and too much of graphics and medias. */}
             <FeaturesSection />

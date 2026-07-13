@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,8 +21,8 @@
     --text-primary: 0 0% 100%;
     --text-secondary: 0 0% 78%;
     --text-muted: 0 0% 62%;
-    --accent: 195 100% 63%;
-    --accent-strong: 210 100% 63%;
+    --accent: 337 100% 59%;
+    --accent-strong: 337 100% 52%;
     --success: 142 71% 45%;
     --warning: 38 92% 55%;
     --danger: 0 84% 60%;
@@ -42,8 +44,13 @@
     min-height: 100%;
   }
 
+  html {
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
   body {
     @apply text-white antialiased;
+    font-family: inherit;
     background: hsl(var(--bg));
     color: hsl(var(--text-primary));
   }
