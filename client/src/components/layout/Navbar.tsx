@@ -1,18 +1,18 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { cn } from "../utils/cn";
+import { useEffect, useRef, useState } from "react";
+import { cn } from "../../utils/cn";
 import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { userAtom } from "../states/userAtom";
-import { useLogout } from "../hooks/useLogout";
-import { IconBook2, IconLogout2, IconUser  } from "@tabler/icons-react";
+import { userAtom } from "../../states/userAtom";
+import { useLogout } from "../../hooks/useLogout";
+import { IconLogout2, IconUser  } from "@tabler/icons-react";
 
 type NavbarProps = {
 	className?: string;
 };
 
 export function Navbar({ className }: NavbarProps) {
-	const gorrLogo = new URL("../assets/Logo/gorr_logo.svg", import.meta.url).href;
+	const gorrLogo = new URL("../../assets/Logo/gorr_logo.svg", import.meta.url).href;
 	const user = useRecoilValue(userAtom);
 	const { logout } = useLogout();
 	const dropdownRef = useRef<HTMLDivElement | null>(null);

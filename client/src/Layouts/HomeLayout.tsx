@@ -1,11 +1,17 @@
-import { HomeHero } from "../components/HomeHero";
-import { Navbar } from "../components/Navbar";
+import { Hero} from "../components/landing/Hero";
+import Footer from "../components/layout/Footer";
+import { Navbar } from "../components/layout/Navbar";
 
 function HomeLayout() {
     return (
         <>
             <Navbar />
-            <HomeHero />
+            <Hero />
+            {/* <Features />
+            <Architecture />
+            <TechStack />
+            <CTA /> */}
+            <Footer />
         </>
     );
 }

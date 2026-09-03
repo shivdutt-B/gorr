@@ -1,15 +1,15 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
 import { userAtom } from "../states/userAtom";
-import { TryAgainSource } from "../components/TryAgainSource";
+import { TryAgain } from "../components/common/TryAgain";
 import { useLoading } from "../hooks/useLoading";
-import SearchProjectInput from "../components/SearchProjectInput";
-import DashBoardHeader from "../components/DashBoardHeader";
-import { ProjectsList } from "../components/ProjectsList";
+import SearchProjectInput from "../components/dashboard/SearchProjectInput";
+import DashBoardHeader from "../components/dashboard/DashBoardHeader";
+import { ProjectsList } from "../components/dashboard/ProjectsList";
 import { useFetchProjects } from "../hooks/useFetchProjects";
 import { useEffect, useRef } from "react";
 import { useFetchUserData } from "../hooks/useFetchUserData";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+import { LoadingSpinner } from "../components/common/LoadingSpinner";
 import { projectsAtom } from "../states/projectsAtom";
 
 function DashboardLayout() {
@@ -49,7 +49,7 @@ function DashboardLayout() {
 
   // Show canceled or error state for user fetch
   if (!user && !isUserLoading) {
-    return <TryAgainSource message="User not found" onClick={handleRetry} />;
+    return <TryAgain message="User not found" onClick={handleRetry} />;
   }
 
   // Show main dashboard content
@@ -101,7 +101,7 @@ function DashboardLayout() {
               ))}
             </div>
           ) : !projects && !isProjectsLoading ? (
-            <TryAgainSource
+            <TryAgain
               message="Error fetching projects"
               onClick={handleRetryProject}
             />

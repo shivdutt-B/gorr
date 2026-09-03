@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
-import { useFetchRepos } from "../hooks/useFetchRepos";
-import { reposAtom } from "../states/reposAtom";
-import { TryAgainSource } from "./TryAgainSource";
-import { useLoading } from "../hooks/useLoading";
+import { useFetchRepos } from "../../hooks/useFetchRepos";
+import { reposAtom } from "../../states/reposAtom";
+import { TryAgain } from "../common/TryAgain";
+import { useLoading } from "../../hooks/useLoading";
 import { Link } from "react-router-dom";
-import { userAtom } from "../states/userAtom";
+import { userAtom } from "../../states/userAtom";
 import { ImportRepoListSkeleton } from "./ImportRepoListSkeleton";
-import { useFetchUserData } from "../hooks/useFetchUserData";
-import { LoadingSpinner } from "./LoadingSpinner";
+import { useFetchUserData } from "../../hooks/useFetchUserData";
+import { LoadingSpinner } from "../common/LoadingSpinner";
 
 export default function ImportRepoList() {
   const repos = useRecoilValue(reposAtom);
@@ -128,7 +128,7 @@ export default function ImportRepoList() {
     }
 
     if (!user && !isUserLoading) {
-      return <TryAgainSource message="User not found" onClick={handleRetry} />;
+      return <TryAgain message="User not found" onClick={handleRetry} />;
     }
 
     if (isRepoLoading) {
@@ -138,7 +138,7 @@ export default function ImportRepoList() {
     if (repos.length === 0 && !isRepoLoading) {
       if (repoError) {
         return (
-          <TryAgainSource
+          <TryAgain
             message="Error loading repositories"
             onClick={handleRetry}
           />

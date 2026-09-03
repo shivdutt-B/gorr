@@ -1,6 +1,6 @@
 import React from "react";
-import { RainbowButton } from "./ui/RainbowButton";
-import useGitHubOAuth from "../hooks/useAuth";
+import { RainbowButton } from "../ui/RainbowButton";
+import useGitHubOAuth from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
 
 export function Join() {

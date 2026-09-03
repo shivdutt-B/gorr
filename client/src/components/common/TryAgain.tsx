@@ -1,14 +1,14 @@
 import React from "react";
-import { Button } from "./ui/button";
-import Failed from "../assets/Loading/failed.svg";
+import { Button } from "../ui/button";
+import Failed from "../../assets/Loading/failed.svg";
 import { Link } from "react-router-dom";
 
-interface TryAgainSourceProps {
+interface TryAgainProps {
   onClick?: () => void;
   message?: string;
 }
 
-export function TryAgainSource({ onClick, message = "Request cannot be processed." }: TryAgainSourceProps) {
+export function TryAgain({ onClick, message = "Request cannot be processed." }: TryAgainProps) {
   return (
     <div className="flex gap-4 flex-col flex-wrap justify-center items-center h-screen">
       <div className="flex flex-col gap-3 items-center h-[450px] w-[380px] justify-center rounded-lg">

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import HomeLayout from "./Layouts/HomeLayout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Join } from "./components/Join";
+import { Join } from "./components/auth/Join";
 import { RecoilRoot } from "recoil";
 import { useRecoilValue } from "recoil";
 import { useFetchUserData } from "../src/hooks/useFetchUserData";

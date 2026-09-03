@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
-import { userAtom } from "../states/userAtom";
-import GorrLogo from "../assets/Logo/gorr_logo.svg";
+import { userAtom } from "../../states/userAtom";
+import GorrLogo from "../../assets/Logo/gorr_logo.svg";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLogout } from "../hooks/useLogout";
+import { useLogout } from "../../hooks/useLogout";
 
 function DashBoardHeader() {
   const user = useRecoilValue(userAtom);

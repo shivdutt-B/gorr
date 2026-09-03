@@ -1,10 +1,10 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
-import { projectsAtom } from "../states/projectsAtom";
-import { searchQueryAtom } from "../states/searchQueryAtom";
+import { projectsAtom } from "../../states/projectsAtom";
+import { searchQueryAtom } from "../../states/searchQueryAtom";
 import { Link } from "react-router-dom";
 import { ProjectCard } from "./ProjectCard";
-import { userAtom } from "../states/userAtom";
+import { userAtom } from "../../states/userAtom";
 
 export interface Project {
   id: string;

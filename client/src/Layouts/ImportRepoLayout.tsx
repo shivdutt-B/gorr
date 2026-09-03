@@ -1,6 +1,5 @@
-import React from "react";
-import { Navbar } from "../components/Navbar";
-import ImportRepoList from "../components/ImportRepoList";
+import { Navbar } from "../components/layout/Navbar";
+import ImportRepoList from "../components/import/ImportRepoList";
 
 function ImportRepoLayout() {
   return (

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { useSlugAvailability } from "../hooks/useSlugAvailability";
+import { useSlugAvailability } from "../../hooks/useSlugAvailability";
 
 interface ProjectSetupProps {
   projectName: string;

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { GitBranch } from "lucide-react";
-import { useDeleteProject } from "../hooks/useDeleteProject";
+import { useDeleteProject } from "../../hooks/useDeleteProject";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { projectsAtom, Project } from "../states/projectsAtom";
+import { projectsAtom, Project } from "../../states/projectsAtom";
 import { Link } from "react-router-dom";
-import { userAtom } from "../states/userAtom";
+import { userAtom } from "../../states/userAtom";
 
 interface ProjectCardProps {
   project: Project;
