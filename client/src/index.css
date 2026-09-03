@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -24,7 +24,7 @@
     /* --accent: 337 100% 59%;
     --accent-strong: 337 100% 52%; */
     --accent: 72 99% 55%;
---accent-strong: 72 99% 50%;
+    --accent-strong: 72 99% 50%;
     --success: 142 71% 45%;
     --warning: 38 92% 55%;
     --danger: 0 84% 60%;
@@ -38,6 +38,8 @@
 
     --shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.35);
     --shadow-panel-strong: 0 32px 80px rgba(0, 0, 0, 0.45);
+
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   }
 
   html,
@@ -114,7 +116,10 @@
     background: hsl(var(--bg-elevated) / 0.94);
     color: hsl(var(--text-primary));
     border-radius: var(--radius-lg);
-    transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease,
+      box-shadow 150ms ease;
   }
 
   .ui-control:focus-visible {
@@ -147,7 +152,11 @@
     font-size: 0.875rem;
     line-height: 1.25rem;
     font-weight: 500;
-    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      border-color 150ms ease,
+      box-shadow 150ms ease;
   }
 
   .ui-button-primary {
@@ -184,4 +193,17 @@
   .steps-container {
     display: none;
   }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
 }
