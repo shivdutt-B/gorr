@@ -9,10 +9,9 @@ export function HomeHero() {
 
       <div className="relative z-10 w-full max-w-7xl">
         <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
-          <h1 className="mt-6 text-[clamp(3rem,6.5vw,5.6rem)] font-semibold leading-[0.95] tracking-[-0.05em] text-foreground">
+          <h1 className="mt-6 text-[clamp(3rem,6.5vw,5.6rem)] font-normal leading-[0.95] tracking-[-0.03em] text-foreground">
             The Foundation for your Design System
           </h1>
-
           <p className="mt-6 max-w-3xl text-[1.05rem] leading-relaxed text-foreground-muted sm:text-[1.2rem]">
             A set of beautifully designed components that you can customize,
             extend, and build on. Start here then make it your own. Open Source.
