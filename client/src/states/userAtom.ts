@@ -6,6 +6,7 @@ interface GitHubUser {
     repos_url: string;
     html_url: string;
     name?: string;
+    id?: string;
 }
 
 export const userAtom = atom<GitHubUser | null>({

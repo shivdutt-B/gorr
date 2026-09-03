@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import ImportRepoListSource from "./ImportRepoListSource";
 import { useRecoilValue } from "recoil";
 import { useFetchRepos } from "../hooks/useFetchRepos";
 import { reposAtom } from "../states/reposAtom";
-import { ButtonLoading } from "./LoadingBtn";
 import { TryAgainSource } from "./TryAgainSource";
 import { useLoading } from "../hooks/useLoading";
 import { Link } from "react-router-dom";
@@ -15,11 +13,9 @@ import { LoadingSpinner } from "./LoadingSpinner";
 export default function ImportRepoList() {
   const repos = useRecoilValue(reposAtom);
   const { FetchRepos, error: repoError } = useFetchRepos();
-  const { stopLoading, isRequestLoading } = useLoading();
+  const { isRequestLoading } = useLoading();
   const user = useRecoilValue(userAtom);
   const hasFetched = useRef(false);
-  const [isCanceled, setIsCanceled] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -29,51 +25,29 @@ export default function ImportRepoList() {
 
   const fetchUser = useFetchUserData();
 
-  // Reset states when component unmounts or on hard refresh
   useEffect(() => {
-    // Reset states on mount
     hasFetched.current = false;
-    setIsCanceled(false);
-    setError(null);
-
-    // Cleanup on unmount
     return () => {
       hasFetched.current = false;
-      setIsCanceled(false);
-      setError(null);
     };
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   useEffect(() => {
     const shouldFetch =
       user &&
       !hasFetched.current &&
-      !isCanceled &&
       (!repos || repos.length === 0) &&
       !isRequestLoading("FetchRepos");
 
     if (shouldFetch) {
-      setError(null);
       hasFetched.current = true;
       FetchRepos().catch((err) => {
         console.error("Failed to fetch repos:", err);
-        setError(err.message || "Failed to fetch repositories");
       });
     }
-  }, [user, isCanceled, repos, FetchRepos, isRequestLoading]);
-
-  const handleCancel = () => {
-    stopLoading("FetchRepos");
-    setIsCanceled(true);
-    hasFetched.current = true;
-    setError(null);
-  };
+  }, [user, repos, FetchRepos, isRequestLoading]);
 
   const handleRetry = () => {
-    // setIsCanceled(false);
-    // hasFetched.current = false;
-    setError(null);
-    setIsCanceled(false);
     hasFetched.current = false;
     fetchUser();
   };
@@ -83,7 +57,6 @@ export default function ImportRepoList() {
       repo.name.toLowerCase().includes(searchQuery.toLowerCase())
     ) || [];
 
-  // Render header section
   const renderHeader = () => (
     <>
       <h2 className="text-xl font-semibold mb-4">Import Git Repository</h2>
@@ -108,14 +81,13 @@ export default function ImportRepoList() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="bg-transparent outline-none w-full text-sm"
-            disabled={isLoading || isCanceled || !repos}
+            disabled={isLoading || !repos}
           />
         </div>
       </div>
     </>
   );
 
-  // Render footer section
   const renderFooter = () => (
     <div className="mt-4">
       {visibleCount < filteredRepos.length && (
@@ -132,22 +104,13 @@ export default function ImportRepoList() {
               xmlns="http://www.w3.org/2000/svg"
               stroke="#00000"
             >
-              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-              <g
-                id="SVGRepo_tracerCarrier"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              ></g>
-              <g id="SVGRepo_iconCarrier">
-                {" "}
-                <path
-                  d="M7 10L12 15L17 10"
-                  stroke="#fff"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></path>{" "}
-              </g>
+              <path
+                d="M7 10L12 15L17 10"
+                stroke="#fff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </span>
         </div>
@@ -155,7 +118,6 @@ export default function ImportRepoList() {
     </div>
   );
 
-  // Render main content based on state
   const renderContent = () => {
     if (isUserLoading) {
       return (
@@ -225,10 +187,50 @@ export default function ImportRepoList() {
       );
     }
 
+    const displayedRepos = filteredRepos.slice(0, visibleCount);
+
     return (
-      <ImportRepoListSource
-        repositories={filteredRepos.slice(0, visibleCount)}
-      />
+      <div className="rounded-md border border-gray-800 flex gap-2 flex-col">
+        {displayedRepos.map((repo: any, index: number) => (
+          <div
+            key={index}
+            className="flex flex-col gap-4 mob:flex mob:flex-row justify-between items-center p-5 border-b border-gray-800 last:border-0"
+          >
+            <div className="w-full mob:w-auto flex justify-between gap-4 d:inline text-md">
+              <div className="rounded-full flex items-center justify-center truncate">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="mr-2"
+                  fill="currentColor"
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 1024 1024"
+                >
+                  <path d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9a127.5 127.5 0 0 1 38.1 91v112.5c.8 9 0 17.9 15 17.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z" />
+                </svg>
+                <span className="truncate">{repo.name}</span>
+              </div>
+              <div className="text-gray-500 text-sm">
+                {repo.lastUpdated
+                  ? new Date(repo.lastUpdated).toLocaleDateString()
+                  : "N/A"}
+              </div>
+            </div>
+            <Link
+              to={`/deploy?repo=${encodeURIComponent(
+                repo.name
+              )}&git_url=${encodeURIComponent(
+                repo.html_url || ""
+              )}&user_id=${encodeURIComponent(
+                user?.id || ""
+              )}&owner=${encodeURIComponent(user?.login || "")}&redeploy=${encodeURIComponent(false)}`}
+              className="w-full mob:w-auto bg-white text-black text-sm font-medium px-3 py-2 rounded-[4px]"
+            >
+              Import
+            </Link>
+          </div>
+        ))}
+      </div>
     );
   };
 
@@ -236,7 +238,7 @@ export default function ImportRepoList() {
     <div className="bg-[#0a0a0a] text-white p-6 rounded-xl border border-gray-800 max-w-[800px] w-full m-4 mx-auto shadow-lg">
       {renderHeader()}
       {renderContent()}
-      {!isLoading && !isCanceled && filteredRepos.length > 0 && renderFooter()}
+      {!isLoading && filteredRepos.length > 0 && renderFooter()}
     </div>
   );
 }

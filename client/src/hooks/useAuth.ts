@@ -1,9 +1,7 @@
-import { v4 as uuidv4 } from "uuid"; // For generating random strings
-
-const useGitHubOAuth = (clientId, redirectUri, scope = "repo") => {
+const useGitHubOAuth = (clientId: string, redirectUri: string, scope = "repo") => {
     const initiateOAuth = () => {
-        // Generate a random string for the CSRF token using uuid
-        const state = uuidv4();
+        // Generate a random string for the CSRF token
+        const state = crypto.randomUUID();
         localStorage.setItem("latestCSRFToken", state);
 
         // Construct the GitHub OAuth URL

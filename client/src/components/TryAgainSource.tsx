@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "./LoadingBtnSource";
+import { Button } from "./ui/button";
 import Failed from "../assets/Loading/failed.svg";
 import { Link } from "react-router-dom";
 

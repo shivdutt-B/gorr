@@ -1,14 +1,14 @@
 import { useEffect, useRef } from "react";
-import Home from "./pages/Home";
+import HomeLayout from "./Layouts/HomeLayout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Join from "./pages/Join";
+import { Join } from "./components/Join";
 import { RecoilRoot } from "recoil";
 import { useRecoilValue } from "recoil";
 import { useFetchUserData } from "../src/hooks/useFetchUserData";
 import { userAtom } from "./states/userAtom";
-import Dashboard from "./pages/Dashboard";
-import ImportRepo from "./pages/ImportRepo";
-import Deploy from "./pages/Deploy";
+import DashboardLayout from "./Layouts/DashboardLayout";
+import ImportRepoLayout from "./Layouts/ImportRepoLayout";
+import DeployProjectLayout from "./Layouts/DeployProjectLayout";
 import { useLoading } from "./hooks/useLoading";
 
 function App() {
@@ -48,11 +48,11 @@ function AppWithUserCheck() {
 
   return (
     <Routes>
-      <Route exact path="/" element={<Home />} />
+      <Route exact path="/" element={<HomeLayout />} />
       <Route exact path="/join" element={<Join />} />
-      <Route exact path="/dashboard/*" element={<Dashboard />} />
-      <Route exact path="/import" element={<ImportRepo />} />
-      <Route exact path="/deploy" element={<Deploy />} />
+      <Route exact path="/dashboard/*" element={<DashboardLayout />} />
+      <Route exact path="/import" element={<ImportRepoLayout />} />
+      <Route exact path="/deploy" element={<DeployProjectLayout />} />
     </Routes>
   );
 }

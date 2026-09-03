@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Dock, DockIcon } from "./FooterSource"
+import { Dock, DockIcon } from "./ui/dock"
 
 export type IconProps = React.HTMLAttributes<SVGElement>
 
