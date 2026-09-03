@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import ImportRepoListSource from "./ImportRepoListSource";
 import { useRecoilValue } from "recoil";
-import { useFetchRepos } from "../../hooks/useFetchRepos";
-import { reposAtom } from "../../states/reposAtom";
-import { ButtonLoading } from "../ui/LoadingBtn";
-import { TryAgainSource } from "../ui/TryAgainSource";
-import { useLoading } from "../../hooks/useLoading";
+import { useFetchRepos } from "../hooks/useFetchRepos";
+import { reposAtom } from "../states/reposAtom";
+import { ButtonLoading } from "./LoadingBtn";
+import { TryAgainSource } from "./TryAgainSource";
+import { useLoading } from "../hooks/useLoading";
 import { Link } from "react-router-dom";
-import { userAtom } from "../../states/userAtom";
+import { userAtom } from "../states/userAtom";
 import { ImportRepoListSkeleton } from "./ImportRepoListSkeleton";
-import { useFetchUserData } from "../../hooks/useFetchUserData";
-import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { useFetchUserData } from "../hooks/useFetchUserData";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 export default function ImportRepoList() {
   const repos = useRecoilValue(reposAtom);

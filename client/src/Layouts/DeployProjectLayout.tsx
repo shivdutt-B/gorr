@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import EnvironmentVariables from "../components/ui/EnvironmentVariables";
-import ProjectSetup from "../components/ui/ProjectSetup";
-import GlobeVisualization from "../components/ui/GlobeVisualization";
-import { Navbar } from "../components/ui/Navbar";
+import EnvironmentVariables from "../components/EnvironmentVariables";
+import ProjectSetup from "../components/ProjectSetup";
+import GlobeVisualization from "../components/GlobeVisualization";
+import { Navbar } from "../components/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
 
-import DirectorySelector from "../components/ui/DirectorySelector";
+import DirectorySelector from "../components/DirectorySelector";
 import { useDeployProject } from "../hooks/useDeployProject";
 import { useRedeployProject } from "../hooks/useRedeployProject";
 import { useSearchParams } from "react-router-dom";
-import DeploymentResponse from "../components/ui/DeploymentResponse";
+import DeploymentResponse from "../components/DeploymentResponse";
 
 interface DeployProjectLayoutProps {
   initialValidationComplete?: boolean;

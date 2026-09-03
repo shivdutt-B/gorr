@@ -1,6 +1,6 @@
 import React from "react";
 import { JoinBtn } from "./JoinBtn";
-import useGitHubOAuth from "../../hooks/useAuth";
+import useGitHubOAuth from "../hooks/useAuth";
 import { Link } from "react-router-dom";
 
 export function Join() {

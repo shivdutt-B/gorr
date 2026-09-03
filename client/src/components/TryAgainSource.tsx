@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "./LoadingBtnSource";
-import Failed from "../../assets/Loading/failed.svg";
+import Failed from "../assets/Loading/failed.svg";
 import { Link } from "react-router-dom";
 
 interface TryAgainSourceProps {

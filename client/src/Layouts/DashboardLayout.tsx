@@ -1,15 +1,15 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
 import { userAtom } from "../states/userAtom";
-import { TryAgainSource } from "../components/ui/TryAgainSource";
+import { TryAgainSource } from "../components/TryAgainSource";
 import { useLoading } from "../hooks/useLoading";
-import SearchProjectInput from "../components/ui/SearchProjectInput";
-import DashBoardHeader from "../components/ui/DashBoardHeader";
-import { ProjectsList } from "../components/ui/ProjectsList";
+import SearchProjectInput from "../components/SearchProjectInput";
+import DashBoardHeader from "../components/DashBoardHeader";
+import { ProjectsList } from "../components/ProjectsList";
 import { useFetchProjects } from "../hooks/useFetchProjects";
 import { useEffect, useRef } from "react";
 import { useFetchUserData } from "../hooks/useFetchUserData";
-import { LoadingSpinner } from "../components/ui/LoadingSpinner";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 import { projectsAtom } from "../states/projectsAtom";
 
 function DashboardLayout() {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { userAtom } from "../../states/userAtom";
+import { userAtom } from "../states/userAtom";
 import { useRecoilValue } from "recoil";
 
 interface Repository {

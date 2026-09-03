@@ -2,11 +2,11 @@ import React from "react";
 import { Search, ChevronDown, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { searchQueryAtom } from "../../states/searchQueryAtom";
-import { useLoading } from "../../hooks/useLoading";
+import { searchQueryAtom } from "../states/searchQueryAtom";
+import { useLoading } from "../hooks/useLoading";
 import axios from "axios";
-import { userAtom } from "../../states/userAtom";
-import { projectsAtom } from "../../states/projectsAtom";
+import { userAtom } from "../states/userAtom";
+import { projectsAtom } from "../states/projectsAtom";
 import { useSetRecoilState } from "recoil";
 
 function SearchProjectInput() {
