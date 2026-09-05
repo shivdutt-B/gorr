@@ -29,48 +29,20 @@ export function Hero() {
   const items = [...techStack, ...techStack];
 
   return (
-    <section className="relative flex min-h-[520px] w-full items-center overflow-hidden px-6 py-20 sm:px-12 lg:px-20">
-      {/* Base background */}
-      <div className="absolute inset-0 bg-[hsl(var(--bg))]" />
-
-      {/* Top-down light spread */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            radial-gradient(
-              ellipse 160% 120% at 50% 0%,
-              hsl(var(--accent) / 0.10) 0%,
-              hsl(var(--accent) / 0.075) 30%,
-              hsl(var(--accent) / 0.045) 55%,
-              hsl(var(--accent) / 0.02) 75%,
-              transparent 100%
-            ),
-            linear-gradient(
-              180deg,
-              hsl(var(--bg-elevated)) 0%,
-              hsl(var(--bg)) 100%
-            )
-          `,
-        }}
-      />
-
+    <section className="relative flex min-h-[520px] w-full items-center overflow-hidden py-8 sm:py-12 bg-transparent">
       {/* Subtle ambient vignette */}
       <div
-        className="absolute inset-0"
+        className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse 90% 80% at 50% 40%, transparent 30%, hsl(var(--bg) / 0.6) 100%)`,
+          background: `radial-gradient(ellipse 90% 80% at 50% 40%, transparent 40%, hsl(var(--bg) / 0.4) 100%)`,
         }}
       />
 
-      {/* Fine grid overlay */}
-      <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:96px_96px]" />
-
-      <div className="relative z-10 w-full max-w-7xl">
-        <div className="flex max-w-4xl flex-col items-start text-left">
+      <div className="container-gutter relative z-10">
+        <div className="flex max-w-3xl flex-col items-start text-left">
           {/* Heading */}
           <h1 className="text-[clamp(2.2rem,4vw,4rem)] font-normal leading-[1.05] tracking-[-0.02em] text-[hsl(var(--text-primary))] font-serif">
-            Microservices Deployment Platform
+            Microservices Based <span className="text-accent">Deployment Platform</span>
           </h1>
 
           {/* Subtitle */}
@@ -80,7 +52,17 @@ export function Hero() {
           </p>
 
           {/* Tech stack marquee */}
-          <div className="mt-8 w-full overflow-hidden">
+          <div
+            className="
+  mt-8 w-full overflow-hidden
+  shadow-[
+    inset_20px_0_20px_-20px_rgba(0,0,0,0.8),
+    inset_-20px_0_20px_-20px_rgba(0,0,0,0.8),
+    -20px_0_20px_-20px_rgba(0,0,0,0.8),
+    20px_0_20px_-20px_rgba(0,0,0,0.8)
+  ]
+"
+          >
             <div
               className="flex w-max animate-marquee items-center gap-x-8"
               style={{
@@ -93,14 +75,14 @@ export function Hero() {
               {items.map((tech, i) => (
                 <div
                   key={`${tech.name}-${i}`}
-                  className="flex items-center gap-2.5 text-[0.9rem] text-[hsl(var(--text-muted))] whitespace-nowrap"
+                  className="flex items-center gap-2.5 whitespace-nowrap text-[0.9rem] text-[hsl(var(--text-muted))]"
                 >
                   <img
                     src={tech.logo}
                     alt={`${tech.name} logo`}
-                    className="h-4 w-4 object-contain flex-shrink-0"
+                    className="h-4 w-4 flex-shrink-0 object-contain"
                   />
-                  <span className="font-medium text-sm">{tech.name}</span>
+                  <span className="text-sm font-medium">{tech.name}</span>
                 </div>
               ))}
             </div>

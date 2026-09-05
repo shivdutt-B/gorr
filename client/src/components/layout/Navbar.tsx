@@ -49,27 +49,28 @@ export function Navbar({ className }: NavbarProps) {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-[5000] flex h-20 w-full items-center justify-between bg-transparent px-6 text-foreground backdrop-blur-[10px] sm:px-8",
+        "fixed inset-x-0 top-0 z-[5000] flex h-20 w-full items-center bg-transparent text-foreground backdrop-blur-[10px]",
         className,
       )}
     >
-      <Link
-        to="/"
-        className="flex items-center transition-opacity hover:opacity-80"
-      >
-        <span className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-white">
-          <img
-            src={gorrLogo}
-            alt="Gorr"
-            className="h-full w-full object-contain p-1"
-          />
-        </span>
-      </Link>
-
-      <div className="flex items-center gap-3 sm:gap-4">
+      <div className="container-gutter flex items-center justify-between">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 border border-white/20 bg-white/0 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/5 rounded-full"
+          className="flex items-center transition-opacity hover:opacity-80"
+        >
+          <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white">
+            <img
+              src={gorrLogo}
+              alt="Gorr"
+              className="h-full w-full object-contain p-1"
+            />
+          </span>
+        </Link>
+
+        <div className="flex items-center gap-3 sm:gap-4">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 border border-white/20 bg-white/0 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-white/5 rounded-full"
         >
           <span>Dashboard</span>
         </Link>
@@ -79,16 +80,16 @@ export function Navbar({ className }: NavbarProps) {
             <button
               type="button"
               onClick={() => setIsProfileOpen((open) => !open)}
-              className="inline-flex items-center gap-2 border border-emerald-400/20 bg-emerald-500 px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-emerald-400"
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500 px-4 py-2 text-xs font-medium text-black transition-colors hover:bg-emerald-400"
               aria-expanded={isProfileOpen}
               aria-haspopup="menu"
             >
-              <IconUser className="h-4 w-4" />
+              <IconUser className="h-3 w-3" />
               <span>Profile</span>
             </button>
 
             {isProfileOpen && (
-              <div className="absolute right-0 top-[calc(100%+0.75rem)] w-72 overflow-hidden border border-white/10 bg-[#0b0c11]/95 p-3 text-left shadow-panel backdrop-blur-[10px]">
+              <div className="absolute right-0 top-[calc(100%+0.75rem)] w-72 overflow-hidden rounded-2xl border border-white/10 bg-[#0b0c11]/95 p-3 text-left shadow-panel backdrop-blur-[10px]">
                 <div className="border-b border-white/10 px-3 pb-3">
                   <p className="text-sm font-semibold text-foreground">
                     {user.name || user.login}
@@ -120,12 +121,13 @@ export function Navbar({ className }: NavbarProps) {
         ) : (
           <Link
             to="/join"
-            className="inline-flex items-center justify-center rounded-full bg-[hsl(var(--accent))] py-2 px-4 text-[0.85rem] font-medium text-[#030303] transition-all hover:bg-[hsl(var(--accent-strong))] gap-1"
+            className="inline-flex items-center justify-center rounded-full bg-[hsl(var(--accent))] py-2 px-4 text-xs font-medium text-[#030303] transition-all hover:bg-[hsl(var(--accent-strong))] gap-1"
           >
             <span>Auth</span>
-            <IconUser className="h-4 w-4" />
+            <IconUser className="h-3 w-3" />
           </Link>
         )}
+      </div>
       </div>
     </header>
   );

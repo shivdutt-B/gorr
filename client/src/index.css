@@ -177,6 +177,29 @@
   .ui-button-ghost:hover {
     background: hsl(var(--bg-elevated) / 0.9);
   }
+
+  .container-gutter {
+    width: 100%;
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .container-gutter {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-gutter {
+      padding-left: 5rem;
+      padding-right: 5rem;
+    }
+  }
 }
 
 @media only screen and (max-width: 400px) {
@@ -206,4 +229,32 @@
 
 .animate-marquee {
   animation: marquee 25s linear infinite;
+}
+
+@keyframes build-logs {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-144px);
+  }
+}
+
+.animate-build-logs {
+  animation: build-logs 7s linear infinite;
+}
+
+@keyframes github-beam {
+  0% {
+    transform: translateX(-150%);
+  }
+
+  100% {
+    transform: translateX(450%);
+  }
+}
+
+.animate-github-beam {
+  animation: github-beam 1.8s linear infinite;
 }

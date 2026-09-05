@@ -9,7 +9,8 @@ export type IconProps = React.HTMLAttributes<SVGElement>
 export default function Footer() {
     return (
         <div className="relative py-10" id='contact'>
-            <Dock iconMagnification={60} iconDistance={100} className="border-gray-600">
+            <div className="container-gutter">
+                <Dock iconMagnification={60} iconDistance={100} className="border-gray-600">
                 <DockIcon className="bg-black/10 dark:bg-white/10">
                     <a href="https://github.com/shivdutt-B" target="_blank">
                         <Icons.gitHub className="size-full hover:scale-150 transition-transform duration-200" />
@@ -31,6 +32,7 @@ export default function Footer() {
                     </a>
                 </DockIcon>
             </Dock>
+            </div>
         </div>
     )
 }
