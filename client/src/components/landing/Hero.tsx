@@ -29,7 +29,7 @@ export function Hero() {
   const items = [...techStack, ...techStack];
 
   return (
-    <section className="relative flex min-h-[520px] w-full items-center overflow-hidden py-8 sm:py-12 bg-transparent">
+    <section className="relative flex min-h-[420px] w-full items-center overflow-hidden py-8 sm:py-12 mt-16 bg-transparent">
       {/* Subtle ambient vignette */}
       <div
         className="pointer-events-none absolute inset-0"

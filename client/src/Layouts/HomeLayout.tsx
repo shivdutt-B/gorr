@@ -3,6 +3,7 @@ import Footer from "../components/layout/Footer";
 import { Navbar } from "../components/layout/Navbar";
 import { Stats } from "../components/landing/Stats";
 import { DeploymentSteps } from "../components/landing/DeploymentSteps"
+import { QnASection } from "../components/landing/QnA";
 
 function HomeLayout() {
   return (
@@ -17,12 +18,8 @@ function HomeLayout() {
       <div className="relative z-10 flex flex-col">
         <Navbar />
         <Hero />
-        {/* <Stats /> */}
         <DeploymentSteps />
-        {/* <Features />
-        <Architecture />
-        <TechStack />
-        <CTA /> */}
+        <QnASection />
         <Footer />
       </div>
     </div>

@@ -33,7 +33,7 @@ export function DeploymentSteps() {
   }, []);
 
   return (
-    <section className="relative w-full overflow-hidden bg-transparent">
+    <section className="relative w-full overflow-hidden bg-transparent py-8 sm:py-12">
       {/* Ambient background */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -82,7 +82,7 @@ export function DeploymentSteps() {
         </div>
 
         {/* Steps */}
-        <div className="grid gap-3 lg:grid-cols-4">
+        <div className="grid gap-14 lg:grid-cols-4 mt-12">
           {/* =====================================================
               STEP 01 — PUSH YOUR CODE
           ===================================================== */}
@@ -92,18 +92,10 @@ export function DeploymentSteps() {
                 group
                 h-full
                 rounded-2xl
-                bg-[hsl(var(--card)/0.35)]
-                p-6
-                ring-1
-                ring-[hsl(var(--border)/0.25)]
-                transition-all
-                duration-300
-                hover:bg-[hsl(var(--card)/0.55)]
               "
             >
               <h3
                 className="
-                  mt-10
                   font-serif
                   text-[1.35rem]
                   font-normal
@@ -262,18 +254,10 @@ export function DeploymentSteps() {
                 group
                 h-full
                 rounded-2xl
-                bg-[hsl(var(--card)/0.35)]
-                p-6
-                ring-1
-                ring-[hsl(var(--border)/0.25)]
-                transition-all
-                duration-300
-                hover:bg-[hsl(var(--card)/0.55)]
               "
             >
               <h3
                 className="
-                  mt-10
                   font-serif
                   text-[1.35rem]
                   font-normal
@@ -408,18 +392,10 @@ export function DeploymentSteps() {
                 group
                 h-full
                 rounded-2xl
-                bg-[hsl(var(--card)/0.35)]
-                p-6
-                ring-1
-                ring-[hsl(var(--border)/0.25)]
-                transition-all
-                duration-300
-                hover:bg-[hsl(var(--card)/0.55)]
               "
             >
               <h3
                 className="
-                  mt-10
                   font-serif
                   text-[1.35rem]
                   font-normal
@@ -560,18 +536,10 @@ export function DeploymentSteps() {
                 group
                 h-full
                 rounded-2xl
-                bg-[hsl(var(--card)/0.35)]
-                p-6
-                ring-1
-                ring-[hsl(var(--border)/0.25)]
-                transition-all
-                duration-300
-                hover:bg-[hsl(var(--card)/0.55)]
               "
             >
               <h3
                 className="
-                  mt-10
                   font-serif
                   text-[1.35rem]
                   font-normal
