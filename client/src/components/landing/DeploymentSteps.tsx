@@ -103,7 +103,7 @@ export function DeploymentSteps() {
                   text-[hsl(var(--text-primary))]
                 "
               >
-                01. Push your code
+                01. <span className="text-accent">Code</span>
               </h3>
 
               <p
@@ -265,7 +265,7 @@ export function DeploymentSteps() {
                   text-[hsl(var(--text-primary))]
                 "
               >
-                02. Build
+                02. <span className="text-accent">Build</span>
               </h3>
 
               <p
@@ -403,7 +403,7 @@ export function DeploymentSteps() {
                   text-[hsl(var(--text-primary))]
                 "
               >
-                03. Deploy
+                03. <span className="text-accent"> Deploy</span>
               </h3>
 
               <p
@@ -547,7 +547,7 @@ export function DeploymentSteps() {
                   text-[hsl(var(--text-primary))]
                 "
               >
-                04. Go live
+                04. <span className="text-accent">Live</span>
               </h3>
 
               <p

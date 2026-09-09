@@ -4,6 +4,8 @@ import { Navbar } from "../components/layout/Navbar";
 import { Stats } from "../components/landing/Stats";
 import { DeploymentSteps } from "../components/landing/DeploymentSteps"
 import { QnASection } from "../components/landing/QnA";
+import { Features } from "../components/landing/Features";
+import { SmallCTA } from "../components/landing/SmallCTA";
 
 function HomeLayout() {
   return (
@@ -19,6 +21,8 @@ function HomeLayout() {
         <Navbar />
         <Hero />
         <DeploymentSteps />
+        <Features />
+        <SmallCTA />
         <QnASection />
         <Footer />
       </div>

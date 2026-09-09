@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronRight } from "lucide-react";
+import { ArrowUpRight, ChevronRight } from "lucide-react";
 
 // Import tech logos
 import reactLogo from "../../assets/tech/react.svg";
@@ -93,10 +93,10 @@ export function Hero() {
             href="#"
             className="mt-10 inline-flex min-w-[150px] items-center rounded-full bg-[hsl(var(--accent))] px-2 py-2 text-[0.85rem] font-medium text-[#030303] transition-all hover:bg-[hsl(var(--accent-strong))]"
           >
-            <span className="flex-1 text-center">Start Free Trial</span>
+            <span className="flex-1 text-center">Start For Free</span>
 
-            <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-white">
-              <ChevronRight className="h-4 w-4" />
+            <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-black">
+              <ArrowUpRight className="h-3 w-3 text-[hsl(var(--accent))]" />
             </span>
           </a>
         </div>
