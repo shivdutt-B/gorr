@@ -61,8 +61,6 @@ export function useFetchUserData() {
         timeout: 10000,
       });
 
-      // throw new Error('user error')
-
       setUser(response.data);
     } catch (error) {
       // If error occurs or timeout occurs (10s), remove invalid token cookie and fallback to no user state
