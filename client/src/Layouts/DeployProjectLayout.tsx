@@ -210,155 +210,160 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
     isRedeploying;
 
   return (
-  <>
-    <Navbar />
+    <div className="relative min-h-screen w-full bg-[hsl(var(--bg))] text-foreground selection:bg-[hsl(var(--accent)/0.2)] selection:text-white">
+      {/* Global Continuous Ambient Light & Grid Overlay */}
+      <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.035] [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:96px_96px]" />
 
-    <div className="max-w-[750px] w-full m-auto mt-24 mb-20">
-      <div className="flex flex-col items-center justify-center w-full min-h-screen bg-[hsl(var(--bg))] text-[hsl(var(--text-primary))]">
-        <div className="w-full bg-[hsl(var(--bg))] overflow-hidden">
-          <div className="pb-8">
+      {/* Ambient Global Glow Accents */}
+      <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 h-[700px] w-full max-w-7xl bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,hsl(var(--accent)/0.10),transparent_70%)]" />
 
-            <h2
-              className="
-                text-3xl
-                font-serif
-                font-normal
-                mb-1
-                tracking-[-0.025em]
-                text-[hsl(var(--text-primary))]
-              "
-            >
-              New{" "}
-              <span className="text-accent">
-                Project
-              </span>
-            </h2>
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Navbar />
 
-            {isRedeploy ? (
-              <p className="text-red-500 font-normal text-[14px] mb-4">
-                * Enter the env variables for the project again.
-              </p>
-            ) : null}
+        <main className="container-gutter pt-28 pb-20 flex-grow">
+          <div className="max-w-[750px] w-full mx-auto">
+            <div className="pb-8">
 
-            <ProjectSetup
-              projectName={projectName}
-              onProjectNameChange={setProjectName}
-              isRedeploy={isRedeploy}
-              onValidationChange={setIsProjectNameValid}
-              initialValidationOnMount={true}
-            />
+              <h2
+                className="
+                  text-3xl
+                  font-serif
+                  font-normal
+                  mb-1
+                  tracking-[-0.025em]
+                  text-[hsl(var(--text-primary))]
+                "
+              >
+                New{" "}
+                <span className="text-accent">
+                  Project
+                </span>
+              </h2>
 
-            {/* <div className="border-t border-white/[0.07] my-6 mt-4"></div> */}
+              {isRedeploy ? (
+                <p className="text-red-500 font-normal text-[14px] mb-4">
+                  * Enter the env variables for the project again.
+                </p>
+              ) : null}
 
-            {/* Root Directory */}
-            <div className="mb-6">
-              <label className="block text-md mb-2">
-                Root Directory
-              </label>
+              <ProjectSetup
+                projectName={projectName}
+                onProjectNameChange={setProjectName}
+                isRedeploy={isRedeploy}
+                onValidationChange={setIsProjectNameValid}
+                initialValidationOnMount={true}
+              />
 
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  className="
-                    bg-white/[0.025]
-                    border
-                    border-white/[0.07]
-                    px-[13px]
-                    py-[6px]
-                    rounded-[4px]
-                    flex-grow
-                    font-mono
-                    text-[13px]
-                    text-[hsl(var(--text-primary))]
-                    outline-none
-                    focus:white/30
-                  "
-                  value={rootDirectory}
-                  readOnly
-                />
+              {/* Root Directory */}
+              <div className="mb-6">
+                <label className="block text-md mb-2">
+                  Root Directory
+                </label>
 
-                <button
-                  className="
-                    bg-white/[0.025]
-                    border
-                    border-white/[0.07]
-                    px-4
-                    py-2
-                    rounded-[4px]
-                    hover:bg-white/[0.035]
-                    hover:border-white/[0.08]
-                  "
-                  onClick={() => setIsDirectorySelectorOpen(true)}
-                >
-                  Edit
-                </button>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    className="
+                      bg-white/[0.025]
+                      border
+                      border-white/[0.07]
+                      px-[13px]
+                      py-[6px]
+                      rounded-[4px]
+                      flex-grow
+                      font-mono
+                      text-[13px]
+                      text-[hsl(var(--text-primary))]
+                      outline-none
+                      focus:white/30
+                    "
+                    value={rootDirectory}
+                    readOnly
+                  />
+
+                  <button
+                    className="
+                      bg-white/[0.025]
+                      border
+                      border-white/[0.07]
+                      px-4
+                      py-2
+                      rounded-[4px]
+                      hover:bg-white/[0.035]
+                      hover:border-white/[0.08]
+                    "
+                    onClick={() => setIsDirectorySelectorOpen(true)}
+                  >
+                    Edit
+                  </button>
+                </div>
               </div>
+
+              <EnvironmentVariables
+                envVariables={envVariables}
+                isExpanded={isEnvExpanded}
+                onToggleExpand={() => setIsEnvExpanded(!isEnvExpanded)}
+                onAddVariable={addEnvVariable}
+                onRemoveVariable={removeEnvVariable}
+                onUpdateVariable={handleUpdateEnvVariable}
+              />
+
+              {/* Deploy Button */}
+              <button
+                className={`w-full py-3 rounded-[4px] font-medium transition duration-200 ${
+                  isDeployButtonDisabled
+                    ? "bg-white/[0.05] text-white/25 cursor-not-allowed"
+                    : "bg-accent text-black hover:bg-[hsl(var(--accent-strong))]"
+                }`}
+                onClick={handleDeploy}
+                disabled={isDeployButtonDisabled}
+                title={
+                  hasDuplicateEnvKeys
+                    ? "Please fix duplicate environment variable keys"
+                    : hasValueWithoutKey
+                    ? "Each value must have a corresponding key"
+                    : !isProjectNameValid
+                    ? "Please enter a valid project name"
+                    : ""
+                }
+              >
+                {currentIsLoading
+                  ? isRedeploy
+                    ? "Redeploying..."
+                    : "Deploying..."
+                  : isRedeploy
+                  ? "Redeploy"
+                  : "Deploy"}
+              </button>
+
+              {hasDuplicateEnvKeys && (
+                <p className="text-red-400/80 text-sm mt-2">
+                  Please fix duplicate environment variable keys before
+                  deploying.
+                </p>
+              )}
+
+              {hasValueWithoutKey && (
+                <p className="text-red-400/80 text-sm mt-2">
+                  Each environment variable value must have a corresponding key.
+                </p>
+              )}
+
+              <DeploymentResponse
+                isDeploying={currentIsLoading}
+                error={currentError}
+                deploymentData={currentDeploymentData}
+                isQueued={currentIsQueued}
+                queuedTimestamp={currentQueuedTimestamp}
+              />
             </div>
 
-            <EnvironmentVariables
-              envVariables={envVariables}
-              isExpanded={isEnvExpanded}
-              onToggleExpand={() => setIsEnvExpanded(!isEnvExpanded)}
-              onAddVariable={addEnvVariable}
-              onRemoveVariable={removeEnvVariable}
-              onUpdateVariable={handleUpdateEnvVariable}
-            />
-
-            {/* Deploy Button */}
-            <button
-              className={`w-full py-3 rounded-[4px] font-medium transition duration-200 ${
-                isDeployButtonDisabled
-                  ? "bg-white/[0.05] text-white/25 cursor-not-allowed"
-                  : "bg-accent text-black hover:bg-[hsl(var(--accent-strong))]"
-              }`}
-              onClick={handleDeploy}
-              disabled={isDeployButtonDisabled}
-              title={
-                hasDuplicateEnvKeys
-                  ? "Please fix duplicate environment variable keys"
-                  : hasValueWithoutKey
-                  ? "Each value must have a corresponding key"
-                  : !isProjectNameValid
-                  ? "Please enter a valid project name"
-                  : ""
-              }
-            >
-              {currentIsLoading
-                ? isRedeploy
-                  ? "Redeploying..."
-                  : "Deploying..."
-                : isRedeploy
-                ? "Redeploy"
-                : "Deploy"}
-            </button>
-
-            {hasDuplicateEnvKeys && (
-              <p className="text-red-400/80 text-sm mt-2">
-                Please fix duplicate environment variable keys before
-                deploying.
-              </p>
-            )}
-
-            {hasValueWithoutKey && (
-              <p className="text-red-400/80 text-sm mt-2">
-                Each environment variable value must have a corresponding key.
-              </p>
-            )}
-
-            <DeploymentResponse
+            <GlobeVisualization
+              projectSlug={currentProjectSlug}
               isDeploying={currentIsLoading}
-              error={currentError}
-              deploymentData={currentDeploymentData}
-              isQueued={currentIsQueued}
-              queuedTimestamp={currentQueuedTimestamp}
             />
           </div>
-        </div>
-
-        <GlobeVisualization
-          projectSlug={currentProjectSlug}
-          isDeploying={currentIsLoading}
-        />
+        </main>
       </div>
 
       {/* Directory Selector Modal */}
@@ -380,8 +385,7 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
         )}
       </AnimatePresence>
     </div>
-  </>
-);
+  );
 };
 
 export default DeployProjectLayout;

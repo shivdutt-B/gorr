@@ -51,7 +51,7 @@ function DashBoardHeader() {
 
   return (
     <>
-      <div className="relative flex items-center justify-between p-3  text-white container-gutter relative">
+      <div className="relative flex items-center justify-between py-4 text-white container-gutter">
         {/* Left Section */}
         <div className="flex items-center space-x-2">
           <Link

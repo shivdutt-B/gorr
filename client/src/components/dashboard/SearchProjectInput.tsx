@@ -40,7 +40,7 @@ function SearchProjectInput() {
   };
 
   return (
-    <div className="flex items-center rounded-lg space-x-2 max-w-[1300px] mx-auto">
+    <div className="flex items-center rounded-lg space-x-2 w-full">
       {/* Refresh Button */}
       <button
         onClick={() => handleRefresh()}
