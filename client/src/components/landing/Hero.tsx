@@ -1,5 +1,8 @@
 import React from "react";
 import { ArrowUpRight, ChevronRight } from "lucide-react";
+import { useRecoilValue } from "recoil";
+import { userAtom } from "../../states/userAtom";
+import { Link } from "react-router-dom";
 
 // Import tech logos
 import reactLogo from "../../assets/tech/react.svg";
@@ -25,6 +28,8 @@ const techStack = [
 ];
 
 export function Hero() {
+  const user = useRecoilValue(userAtom);
+
   // Duplicate once for seamless loop
   const items = [...techStack, ...techStack];
 
@@ -42,7 +47,8 @@ export function Hero() {
         <div className="flex max-w-3xl flex-col items-start text-left">
           {/* Heading */}
           <h1 className="text-[clamp(2.2rem,4vw,4rem)] font-normal leading-[1.05] tracking-[-0.02em] text-[hsl(var(--text-primary))] font-serif">
-            Microservices Based <span className="text-accent">Deployment Platform</span>
+            Microservices Based{" "}
+            <span className="text-accent">Deployment Platform</span>
           </h1>
 
           {/* Subtitle */}
@@ -89,16 +95,16 @@ export function Hero() {
           </div>
 
           {/* CTA Button */}
-          <a
-            href="#"
-            className="mt-10 inline-flex min-w-[150px] items-center rounded-full bg-[hsl(var(--accent))] px-2 py-2 text-[0.85rem] font-medium text-[#030303] transition-all hover:bg-[hsl(var(--accent-strong))]"
+          <Link
+            to={user ? "/dashboard" : "/join"}
+            className="mt-10 inline-flex min-w-[150px] items-center rounded-[4px] bg-[hsl(var(--accent))] px-2 py-2 text-[0.85rem] font-medium text-[#030303] transition-all hover:bg-[hsl(var(--accent-strong))]"
           >
             <span className="flex-1 text-center">Start For Free</span>
 
-            <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-black">
+            <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-[3px] bg-black">
               <ArrowUpRight className="h-3 w-3 text-[hsl(var(--accent))]" />
             </span>
-          </a>
+          </Link>
         </div>
       </div>
     </section>

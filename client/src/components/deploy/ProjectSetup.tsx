@@ -86,11 +86,13 @@ const ProjectSetup: React.FC<ProjectSetupProps> = ({
 
   return (
     <>
+    <hr className="border-gray-700 my-5" />
       {/* GitHub Import Section */}
-      <div className="bg-[#1a1a1a] p-3 rounded mb-6">
+      <div className="p-3 rounded-[4px] mb-6 bg-white/[0.025] border border-white/[0.07]">
         <p className="text-gray-400 mb-2 tracking-wide text-sm font-semibold">
           Importing from GitHub
         </p>
+
         <div className="flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -109,10 +111,12 @@ const ProjectSetup: React.FC<ProjectSetupProps> = ({
         </div>
       </div>
 
+      <hr className="border-gray-700 my-5" />
+
       {/* Project Name Input Section */}
       <div className="flex mb-6">
         <div className="w-full">
-          <label className="block text-gray-400 mb-2 text-[13px]">
+          <label className="block text-md mb-2">
             Project Name
           </label>
           <input
@@ -120,13 +124,13 @@ const ProjectSetup: React.FC<ProjectSetupProps> = ({
             value={projectName}
             onChange={(e) => handleProjectNameChange(e.target.value)}
             placeholder={isRedeploy ? "" : "Enter project name"}
-            className={`w-full bg-transparent px-[13px] py-[6px] rounded text-white border border-[#282828] focus:border-gray-400 outline-none transition-all duration-200 ${
+            className={`w-full bg-white/[0.025] px-[13px] py-[6px] rounded-[4px] text-white border border-white/[0.07] focus:border-gray-400 outline-none transition-all duration-200 ${
               isRedeploy ? "opacity-70 cursor-not-allowed" : ""
             } ${isInvalidFormat ? "border-red-500" : ""}`}
             disabled={isRedeploy}
           />
           {isRedeploy && (
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[hsl(var(--accent))] mt-1">
               Project name cannot be changed during redeployment.
             </p>
           )}

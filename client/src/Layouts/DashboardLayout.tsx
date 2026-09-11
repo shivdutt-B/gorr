@@ -1,26 +1,33 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
+
 import { userAtom } from "../states/userAtom";
+import { projectsAtom } from "../states/projectsAtom";
+
 import { TryAgain } from "../components/common/TryAgain";
-import { useLoading } from "../hooks/useLoading";
+import { LoadingSpinner } from "../components/common/LoadingSpinner";
+
 import SearchProjectInput from "../components/dashboard/SearchProjectInput";
 import DashBoardHeader from "../components/dashboard/DashBoardHeader";
 import { ProjectsList } from "../components/dashboard/ProjectsList";
+
+import { useLoading } from "../hooks/useLoading";
 import { useFetchProjects } from "../hooks/useFetchProjects";
-import { useEffect, useRef } from "react";
 import { useFetchUserData } from "../hooks/useFetchUserData";
-import { LoadingSpinner } from "../components/common/LoadingSpinner";
-import { projectsAtom } from "../states/projectsAtom";
 
 function DashboardLayout() {
   const user = useRecoilValue(userAtom);
-  const { isRequestLoading, stopLoading } = useLoading();
+  const projects = useRecoilValue(projectsAtom);
+
+  const { isRequestLoading } = useLoading();
+
   const isUserLoading = isRequestLoading("FetchUser");
   const isProjectsLoading = isRequestLoading("FetchProjects");
+
   const { fetchProjects } = useFetchProjects();
-  const fetchUser = useFetchUserData();
-  const projects = useRecoilValue(projectsAtom);
   const { error: projectsError } = useFetchProjects();
+
+  const fetchUser = useFetchUserData();
 
   const hasFetchedRef = useRef(false);
 
@@ -30,7 +37,6 @@ function DashboardLayout() {
       hasFetchedRef.current = true;
     }
   }, [user, fetchProjects]);
-
 
   const handleRetry = () => {
     fetchUser();
@@ -42,73 +48,253 @@ function DashboardLayout() {
     hasFetchedRef.current = true;
   };
 
-  // Show loading state for initial user fetch
+  /* ───────────────────── USER LOADING ───────────────────── */
+
   if (isUserLoading) {
-    return <LoadingSpinner message="Loading user..." />;
+    return (
+      <div className="min-h-screen bg-[hsl(var(--bg))]">
+        <LoadingSpinner message="Loading user..." />
+      </div>
+    );
   }
 
-  // Show canceled or error state for user fetch
+  /* ───────────────────── USER ERROR ───────────────────── */
+
   if (!user && !isUserLoading) {
-    return <TryAgain message="User not found" onClick={handleRetry} />;
+    return (
+      <div className="min-h-screen bg-[hsl(var(--bg))]">
+        <TryAgain
+          message="User not found"
+          onClick={handleRetry}
+        />
+      </div>
+    );
   }
 
-  // Show main dashboard content
+  /* ───────────────────── DASHBOARD ───────────────────── */
+
   if (user) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a]">
-        <DashBoardHeader />
-        <main className="container mx-auto px-4 py-8">
+      <div
+        className="
+          relative
+          min-h-screen
+          w-full
+          overflow-x-hidden
+          bg-[hsl(var(--bg))]
+        "
+      >
+        {/* ───────────────────── BACKGROUND ───────────────────── */}
+
+        {/* Very subtle center glow */}
+        <div
+          className="
+            pointer-events-none
+            fixed
+            left-1/2
+            top-0
+            z-0
+            h-[500px]
+            w-[900px]
+            -translate-x-1/2
+            opacity-30
+            blur-[120px]
+          "
+          style={{
+            background:
+              "radial-gradient(ellipse at center, hsl(var(--accent) / 0.055), transparent 70%)",
+          }}
+        />
+
+        {/* Subtle center grid */}
+        <div
+          className="
+            pointer-events-none
+            fixed
+            left-1/2
+            top-0
+            z-0
+            h-[700px]
+            w-[1000px]
+            -translate-x-1/2
+            opacity-[0.025]
+          "
+          style={{
+            backgroundImage: `
+              linear-gradient(
+                to right,
+                hsl(var(--text-primary) / 0.35) 1px,
+                transparent 1px
+              ),
+              linear-gradient(
+                to bottom,
+                hsl(var(--text-primary) / 0.35) 1px,
+                transparent 1px
+              )
+            `,
+            backgroundSize: "48px 48px",
+            maskImage:
+              "radial-gradient(ellipse 60% 70% at center, black, transparent 85%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 60% 70% at center, black, transparent 85%)",
+          }}
+        />
+
+        {/* ───────────────────── HEADER ───────────────────── */}
+
+        <div className="relative z-10">
+          <DashBoardHeader />
+        </div>
+
+        {/* ───────────────────── MAIN CONTENT ───────────────────── */}
+
+        <main
+          className="
+            relative
+            w-full
+            container-gutter
+            pt-8
+            pb-16
+            sm:pt-10
+          "
+        >
+          {/* Search / actions */}
           <SearchProjectInput />
+
+          {/* ───────────────────── PROJECTS ───────────────────── */}
+
           {isProjectsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center justify-center mt-10">
+            <div
+              className="
+                mt-10
+                grid
+                grid-cols-1
+                gap-6
+                sm:grid-cols-2
+                xl:grid-cols-3
+              "
+            >
               {[...Array(6)].map((_, index) => (
                 <div
                   key={index}
-                  className="bg-[#1a1a1a] p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow max-w-[400px] w-full mx-auto"
+                  className="
+                    w-full
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-white/[0.07]
+                    bg-white/[0.005]
+                    p-4
+                  "
                 >
-                  {/* Gradient banner skeleton */}
-                  <div className="h-[120px] w-full mb-4 rounded-md bg-[gray] animate-pulse" />
+                  {/* Banner */}
+                  <div
+                    className="
+                      h-[120px]
+                      w-full
+                      rounded-xl
+                      bg-white/[0.06]
+                      animate-pulse
+                    "
+                  />
 
-                  {/* Project title area */}
-                  <div className="flex flex-col gap-2.5">
+                  {/* Content */}
+                  <div className="mt-5 flex flex-col gap-3">
+                    {/* Project title */}
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-[gray] rounded-full animate-pulse" />
-                      <div className="h-5 w-24 bg-[gray] rounded animate-pulse" />
+                      <div
+                        className="
+                          h-7
+                          w-7
+                          rounded-full
+                          bg-white/[0.07]
+                          animate-pulse
+                        "
+                      />
+
+                      <div
+                        className="
+                          h-4
+                          w-28
+                          rounded-md
+                          bg-white/[0.07]
+                          animate-pulse
+                        "
+                      />
                     </div>
 
-                    {/* Git URL skeleton */}
-                    <div className="mt-1">
-                      <div className="h-7 w-36 bg-[gray] rounded animate-pulse" />
-                    </div>
+                    {/* Git URL */}
+                    <div
+                      className="
+                        mt-1
+                        h-6
+                        w-40
+                        rounded-md
+                        bg-white/[0.07]
+                        animate-pulse
+                      "
+                    />
 
-                    {/* Domain URL skeleton */}
-                    <div>
-                      <div className="h-4 w-32 bg-[gray] rounded animate-pulse" />
-                    </div>
+                    {/* Domain */}
+                    <div
+                      className="
+                        h-4
+                        w-32
+                        rounded-md
+                        bg-white/[0.05]
+                        animate-pulse
+                      "
+                    />
 
-                    {/* Date skeleton */}
-                    <div className="mb-2">
-                      <div className="h-3 w-44 bg-[gray] rounded animate-pulse" />
-                    </div>
+                    {/* Date */}
+                    <div
+                      className="
+                        mt-1
+                        h-3
+                        w-44
+                        rounded-md
+                        bg-white/[0.05]
+                        animate-pulse
+                      "
+                    />
 
-                    {/* Action buttons skeleton */}
-                    <div className="flex gap-2">
-                      <div className="h-8 w-24 bg-[gray] rounded animate-pulse" />
-                      <div className="h-8 w-24 bg-[gray] rounded animate-pulse" />
+                    {/* Buttons */}
+                    <div className="mt-2 flex gap-2">
+                      <div
+                        className="
+                          h-9
+                          w-24
+                          rounded-lg
+                          bg-white/[0.06]
+                          animate-pulse
+                        "
+                      />
+
+                      <div
+                        className="
+                          h-9
+                          w-24
+                          rounded-lg
+                          bg-white/[0.06]
+                          animate-pulse
+                        "
+                      />
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : !projects && !isProjectsLoading ? (
-            <TryAgain
-              message="Error fetching projects"
-              onClick={handleRetryProject}
-            />
+            <div className="mt-10">
+              <TryAgain
+                message="Error fetching projects"
+                onClick={handleRetryProject}
+              />
+            </div>
           ) : (
-            <>
+            <div className="mt-10">
               <ProjectsList />
-            </>
+            </div>
           )}
         </main>
       </div>

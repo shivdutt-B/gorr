@@ -31,7 +31,7 @@ export function ProjectsList() {
 
   if (!projects || projects.length === 0) {
     return (
-      <div className="mt-5 flex flex-col items-center justify-center min-h-[450px] text-center p-8 bg-[#0a0a0a] rounded-lg border border-[#1a1a1a] shadow-lg">
+      <div className="mt-5 flex flex-col items-center justify-center min-h-[450px] text-center p-8 bg-[hsl(var(--bg))]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="80"
@@ -98,7 +98,7 @@ export function ProjectsList() {
   // Show no results message when search yields no matches
   if (projects.length > 0 && filteredProjects.length === 0) {
     return (
-      <div className="mt-5 flex flex-col items-center justify-center min-h-[450px] text-center p-8 bg-[#0a0a0a] rounded-lg border border-[#1a1a1a] shadow-lg">
+      <div className="mt-5 flex flex-col items-center justify-center min-h-[450px] text-center p-8 bg-[hsl(var(--bg))]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="80"

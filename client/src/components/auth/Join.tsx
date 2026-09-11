@@ -27,75 +27,6 @@ export function Join() {
         py-10
       "
     >
-      {/* ───────────────────── CENTER BACKGROUND ───────────────────── */}
-
-      {/* Small centered grid behind the content */}
-      <div
-        className="
-    pointer-events-none
-    absolute
-    left-1/2
-    top-1/2
-    h-[650px]
-    w-[650px]
-    -translate-x-1/2
-    -translate-y-1/2
-    opacity-[0.045]
-  "
-        style={{
-          backgroundImage: `
-      linear-gradient(
-        to right,
-        hsl(var(--text-primary) / 0.35) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        to bottom,
-        hsl(var(--text-primary) / 0.35) 1px,
-        transparent 1px
-      )
-    `,
-          backgroundSize: "48px 48px",
-          maskImage:
-            "radial-gradient(ellipse 55% 55% at center, black 0%, black 45%, transparent 100%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 55% 55% at center, black 0%, black 45%, transparent 100%)",
-        }}
-      />
-
-      {/* Very subtle accent glow behind content */}
-      <div
-        className="
-    pointer-events-none
-    absolute
-    left-1/2
-    top-1/2
-    h-[420px]
-    w-[420px]
-    -translate-x-1/2
-    -translate-y-1/2
-    rounded-full
-    bg-accent/[0.045]
-    blur-[100px]
-  "
-      />
-
-      {/* Very subtle accent glow behind content */}
-      <div
-        className="
-          pointer-events-none
-          absolute
-          left-1/2
-          top-1/2
-          h-[420px]
-          w-[420px]
-          -translate-x-1/2
-          -translate-y-1/2
-          rounded-full
-          bg-accent/[0.045]
-          blur-[100px]
-        "
-      />
 
       {/* ───────────────────── CONTENT ───────────────────── */}
 
@@ -200,8 +131,6 @@ export function Join() {
           className="
             mt-8
             w-[300px]
-            border-t
-            border-white/[0.07]
             pt-5
           "
         >
@@ -216,7 +145,7 @@ export function Join() {
               items-center
               justify-center
               gap-2.5
-              rounded-full
+              rounded-[4px]
               bg-accent
               px-5
               text-sm

@@ -137,7 +137,7 @@ export function DeploymentSteps() {
                         w-10
                         items-center
                         justify-center
-                        rounded-lg
+                        rounded-full
                         bg-white
                       "
                     >
@@ -172,7 +172,7 @@ export function DeploymentSteps() {
 
                   {/* GORR */}
                   <div className="flex shrink-0 flex-col items-center gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
                       <img
                         src={gorrLogo}
                         alt="GORR"

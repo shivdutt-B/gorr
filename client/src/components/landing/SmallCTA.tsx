@@ -89,7 +89,7 @@ export function SmallCTA() {
                 shrink-0
                 items-center
                 gap-3
-                rounded-full
+                rounded-[4px]
                 bg-[hsl(var(--accent))]
                 py-2
                 pl-5
@@ -108,7 +108,7 @@ export function SmallCTA() {
                   w-7
                   items-center
                   justify-center
-                  rounded-full
+                  rounded-[3px]
                   bg-[#030303]
                   transition-transform
                   duration-300

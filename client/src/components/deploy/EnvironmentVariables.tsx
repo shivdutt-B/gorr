@@ -59,7 +59,10 @@ const EnvironmentVariables: React.FC<EnvironmentVariablesProps> = ({
 
   return (
     <>
-      <div className="mb-6 border border-[#282828] p-3 rounded-md">
+    <div className="block text-md mb-2">
+          Environment Variable
+        </div>
+      <div className="mb-6 border border-white/[0.07] bg-white/[0.025] p-3 rounded-[4px]">
         <div
           className="flex items-center text-[#929292] font-semibold rounded cursor-pointer"
           onClick={onToggleExpand}
@@ -80,12 +83,6 @@ const EnvironmentVariables: React.FC<EnvironmentVariablesProps> = ({
             }`}
         >
           <div className="space-y-4">
-            {Object.keys(duplicateKeys).length > 0 && (
-              <div className="p-3 bg-red-900/30 border border-red-700 rounded-md text-red-400 text-sm mb-4">
-                Warning: Duplicate environment variable keys detected. Each key
-                should be unique.
-              </div>
-            )}
 
             {envVariables.map((variable, index) => (
               <div key={index} className="flex gap-2 min-w-0">
@@ -96,11 +93,7 @@ const EnvironmentVariables: React.FC<EnvironmentVariablesProps> = ({
                   onChange={(e) =>
                     onUpdateVariable(index, e.target.value, variable.value)
                   }
-                  className={`w-full min-w-[30px] bg-[#0a0a0a] px-3 py-2 rounded text-white border transition-all duration-200 
-                    ${isDuplicateKey(variable.key, index)
-                      ? "border-red-600 focus:border-red-500"
-                      : "border-[#282828] focus:border-gray-400"
-                    } outline-none`}
+                  className={`w-full min-w-[30px] bg-white/[0.025] px-3 py-2 rounded text-white border border-[#282828] outline-none transition-all duration-200`}
                 />
                 <input
                   type="text"
@@ -109,7 +102,7 @@ const EnvironmentVariables: React.FC<EnvironmentVariablesProps> = ({
                   onChange={(e) =>
                     onUpdateVariable(index, variable.key, e.target.value)
                   }
-                  className="w-full min-w-[30px] bg-[#0a0a0a] px-3 py-2 rounded text-white border border-[#282828] focus:border-gray-400 outline-none transition-all duration-200"
+                  className="w-full min-w-[30px] bg-white/[0.025] px-3 py-2 rounded text-white border border-[#282828] outline-none transition-all duration-200"
                 />
                 <button
                   onClick={() => onRemoveVariable(index)}

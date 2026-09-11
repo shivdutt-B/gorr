@@ -64,7 +64,7 @@ function DashBoardHeader() {
 
           {/* Project Name */}
           <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-yellow-500 rounded-full"></div>
+            {/* <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-yellow-500 rounded-full"></div> */}
             <span className="font-medium truncate max-w-[200px] inline-block">{user?.login}'s projects</span>
           </div>
         </div>
@@ -94,7 +94,7 @@ function DashBoardHeader() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: -10 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="absolute right-0 mt-2 w-60 bg-[#0a0a0a] border border-gray-700 shadow-lg rounded-md p-3 z-10"
+                  className="absolute right-0 mt-2 w-60 bg-[hsl(var(--bg))] border border-gray-800 shadow-lg rounded-md p-3 z-999"
                 >
                   <div className="text-white">
                     {/* User Info */}
