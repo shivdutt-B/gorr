@@ -194,18 +194,18 @@ const DirectorySelector: React.FC<DirectorySelectorProps> = ({
         {/* Header Section */}
         <div className="p-5 pb-4 border-b border-white/10 flex flex-col gap-2 bg-[#090A0F]">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold text-white">
+            <h2 className="text-[22px] font-semibold text-white">
               Select Root Directory
             </h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white p-1 rounded hover:bg-white/10 transition-colors"
             >
-              <CloseIcon className="h-4 w-4" />
+              <CloseIcon className="h-5 w-5" />
             </button>
           </div>
-          <p className="text-xs text-gray-400 leading-relaxed">
-            Select the directory where your project source code is located.
+          <p className="text-sm text-gray-400 leading-relaxed">
+            Select the directory that contains your project code.
           </p>
 
           {/* GitHub Repository Info Badge */}

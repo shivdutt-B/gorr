@@ -15,6 +15,7 @@ import { useLoading } from "../hooks/useLoading";
 import { useFetchProjects } from "../hooks/useFetchProjects";
 import { useFetchUserData } from "../hooks/useFetchUserData";
 
+
 function DashboardLayout() {
   const user = useRecoilValue(userAtom);
   const projects = useRecoilValue(projectsAtom);
@@ -84,61 +85,11 @@ function DashboardLayout() {
           bg-[hsl(var(--bg))]
         "
       >
-        {/* ───────────────────── BACKGROUND ───────────────────── */}
+        {/* Global Continuous Ambient Light & Grid Overlay */}
+        <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.035] [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:96px_96px]" />
 
-        {/* Very subtle center glow */}
-        <div
-          className="
-            pointer-events-none
-            fixed
-            left-1/2
-            top-0
-            z-0
-            h-[500px]
-            w-[900px]
-            -translate-x-1/2
-            opacity-30
-            blur-[120px]
-          "
-          style={{
-            background:
-              "radial-gradient(ellipse at center, hsl(var(--accent) / 0.055), transparent 70%)",
-          }}
-        />
-
-        {/* Subtle center grid */}
-        <div
-          className="
-            pointer-events-none
-            fixed
-            left-1/2
-            top-0
-            z-0
-            h-[700px]
-            w-[1000px]
-            -translate-x-1/2
-            opacity-[0.025]
-          "
-          style={{
-            backgroundImage: `
-              linear-gradient(
-                to right,
-                hsl(var(--text-primary) / 0.35) 1px,
-                transparent 1px
-              ),
-              linear-gradient(
-                to bottom,
-                hsl(var(--text-primary) / 0.35) 1px,
-                transparent 1px
-              )
-            `,
-            backgroundSize: "48px 48px",
-            maskImage:
-              "radial-gradient(ellipse 60% 70% at center, black, transparent 85%)",
-            WebkitMaskImage:
-              "radial-gradient(ellipse 60% 70% at center, black, transparent 85%)",
-          }}
-        />
+        {/* Ambient Global Glow Accent */}
+        <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 h-[700px] w-full max-w-7xl bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,hsl(var(--accent)/0.10),transparent_70%)]" />
 
         {/* ───────────────────── HEADER ───────────────────── */}
 
