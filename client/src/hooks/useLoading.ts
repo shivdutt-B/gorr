@@ -1,37 +1,50 @@
 import { useRecoilState } from "recoil";
 import { requestMapAtom } from "../states/loadingAtom";
 
-export const useLoading = () => {
-  const [requestMap, setRequestMap] = useRecoilState(requestMapAtom);
+interface RequestEntry {
+  controller: AbortController;
+  timeoutId?: NodeJS.Timeout | number;
+}
 
-  const startLoading = (key: string, persistent: boolean = false) => {
+export const useLoading = () => {
+  const [requestMap, setRequestMap] = useRecoilState<Map<string, RequestEntry>>(requestMapAtom);
+
+  const startLoading = (key: string, persistent: boolean = false, timeoutMs: number = 10000) => {
     const controller = new AbortController();
 
+    const timeoutId = setTimeout(() => {
+      console.warn(`Request [${key}] timed out after ${timeoutMs}ms. Aborting request.`);
+      controller.abort("Timeout");
+    }, timeoutMs);
+
     setRequestMap((prev) => {
-      const existingController = prev.get(key);
-      if (existingController && !persistent) {
-        existingController.abort();
+      const existing = prev.get(key);
+      if (existing && !persistent) {
+        if (existing.timeoutId) clearTimeout(existing.timeoutId);
+        existing.controller.abort();
       }
 
       const newMap = new Map(prev);
-      newMap.set(key, controller);
+      newMap.set(key, { controller, timeoutId });
       return newMap;
     });
 
     return controller;
   };
 
-
   const stopLoading = (key: string) => {
     let wasAborted = false;
 
     setRequestMap((prev) => {
       const newMap = new Map(prev);
-      const controller = newMap.get(key);
+      const entry = newMap.get(key);
 
-      if (controller) {
+      if (entry) {
+        if (entry.timeoutId) {
+          clearTimeout(entry.timeoutId);
+        }
         try {
-          controller.abort();
+          entry.controller.abort();
           wasAborted = true;
         } catch (error) {
           console.error("Error aborting request:", error);

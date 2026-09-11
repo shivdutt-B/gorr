@@ -4,17 +4,15 @@ import { Link } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { searchQueryAtom } from "../../states/searchQueryAtom";
 import { useLoading } from "../../hooks/useLoading";
-import axios from "axios";
 import { userAtom } from "../../states/userAtom";
-import { projectsAtom } from "../../states/projectsAtom";
-import { useSetRecoilState } from "recoil";
+import { useFetchProjects } from "../../hooks/useFetchProjects";
 import { cn } from "../../utils/cn";
 
 function SearchProjectInput() {
   const [searchQuery, setSearchQuery] = useRecoilState(searchQueryAtom);
-  const { startLoading, stopLoading, isRequestLoading } = useLoading();
+  const { isRequestLoading } = useLoading();
   const user = useRecoilValue(userAtom);
-  const setProjects = useSetRecoilState(projectsAtom);
+  const { fetchProjects } = useFetchProjects();
 
   const isUserLoading = isRequestLoading("FetchUser");
   const isProjectsLoading = isRequestLoading("FetchProjects");
@@ -22,23 +20,7 @@ function SearchProjectInput() {
 
   const handleRefresh = async () => {
     if (isLoading || !user) return;
-    try {
-      startLoading("FetchProjects");
-
-      const url = `${
-        import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
-      }/projects?userId=${user?.id}`;
-
-      const response = await axios.get(url);
-
-      if (response.status === 200) {
-        setProjects(response.data);
-      }
-    } catch (error: any) {
-      setProjects(null);
-    } finally {
-      stopLoading("FetchProjects");
-    }
+    await fetchProjects(true);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

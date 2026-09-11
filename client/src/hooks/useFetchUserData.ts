@@ -49,19 +49,21 @@ export function useFetchUserData() {
     }
 
     requestInProgress.current = true;
-    startLoading("FetchUser", true);
+    const controller = startLoading("FetchUser", true, 10000);
 
     try {
       // 5-second delay and error mimicing mechanism before calling the API
-      // await new Promise((resolve) => setTimeout(resolve, 5000));
+      // await new Promise((resolve) => setTimeout(resolve, 20000));
       // throw new Error('my error');
 
       const response = await axios.get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
+        timeout: 10000,
       });
       setUser(response.data);
     } catch (error) {
-      // If token is invalid, remove it
+      // If error occurs or timeout occurs (10s), remove invalid token cookie and fallback to no user state
       document.cookie = "token=; path=/; max-age=0";
       setUser(null);
     } finally {

@@ -1,7 +1,6 @@
 import { Hero } from "../components/landing/Hero";
 import Footer from "../components/layout/Footer";
 import { Navbar } from "../components/layout/Navbar";
-import { Stats } from "../components/landing/Stats";
 import { DeploymentSteps } from "../components/landing/DeploymentSteps"
 import { QnASection } from "../components/landing/QnA";
 import { Features } from "../components/landing/Features";

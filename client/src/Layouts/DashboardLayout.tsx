@@ -7,6 +7,7 @@ import { projectsAtom } from "../states/projectsAtom";
 import SearchProjectInput from "../components/dashboard/SearchProjectInput";
 import DashBoardHeader from "../components/dashboard/DashBoardHeader";
 import { ProjectsList } from "../components/dashboard/ProjectsList";
+import { TryAgain } from "../components/common/TryAgain";
 
 import { useLoading } from "../hooks/useLoading";
 import { useFetchProjects } from "../hooks/useFetchProjects";
@@ -22,7 +23,6 @@ function DashboardLayout() {
   const isProjectsLoading = isRequestLoading("FetchProjects");
 
   const { fetchProjects } = useFetchProjects();
-  const { error: projectsError } = useFetchProjects();
 
   const fetchUser = useFetchUserData();
 
@@ -41,22 +41,16 @@ function DashboardLayout() {
   };
 
   const handleRetryProject = () => {
-    fetchProjects();
-    hasFetchedRef.current = true;
+    hasFetchedRef.current = false;
+    fetchProjects(true);
   };
 
   /* ───────────────────── USER ERROR (if finished loading user and no user) ───────────────────── */
 
   if (!user && !isUserLoading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[hsl(var(--bg))] p-4 text-center">
-        <p className="mb-4 text-lg font-medium text-red-500">User not found</p>
-        <button
-          onClick={handleRetry}
-          className="rounded-[4px] bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20"
-        >
-          Try Again
-        </button>
+      <div className="min-h-screen bg-[hsl(var(--bg))]">
+        <TryAgain message="User not found" onClick={handleRetry} />
       </div>
     );
   }
@@ -226,16 +220,11 @@ function DashboardLayout() {
             ))}
           </div>
         ) : !projects && !isProjectsLoading ? (
-          <div className="mt-10 flex flex-col items-center justify-center rounded-[4px] border border-white/10 p-8 text-center">
-            <p className="mb-4 text-sm text-red-400">
-              Error fetching projects
-            </p>
-            <button
+          <div className="mt-10">
+            <TryAgain
+              message="Error fetching projects"
               onClick={handleRetryProject}
-              className="rounded-[4px] bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20"
-            >
-              Try Again
-            </button>
+            />
           </div>
         ) : (
           <div className="mt-10">
