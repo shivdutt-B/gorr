@@ -79,8 +79,12 @@ function DashBoardHeader() {
               <span className="font-medium truncate max-w-[200px] inline-block">
                 {user.login}'s projects
               </span>
-            ) : (
+            ) : isUserLoading ? (
               <div className="h-5 w-36 bg-white/20 rounded-[4px] animate-pulse" />
+            ) : (
+              <span className="font-medium text-gray-400 inline-block">
+                Projects
+              </span>
             )}
           </div>
         </div>
@@ -107,8 +111,25 @@ function DashBoardHeader() {
                   className="w-full h-full rounded-full object-cover"
                   alt="User Avatar"
                 />
-              ) : (
+              ) : isUserLoading ? (
                 <div className="w-full h-full bg-white/20 animate-pulse rounded-full" />
+              ) : (
+                <div className="w-full h-full bg-white/10 flex items-center justify-center text-gray-400">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
               )}
             </div>
 

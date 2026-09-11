@@ -27,15 +27,17 @@ function SearchProjectInput() {
     setSearchQuery(e.target.value);
   };
 
+  const isUserDisabled = isUserLoading || !user;
+
   return (
     <div className="flex items-center rounded-lg space-x-2 w-full">
       {/* Refresh Button */}
       <button
-        disabled={isLoading}
-        onClick={() => !isLoading && handleRefresh()}
+        disabled={isLoading || !user}
+        onClick={() => !isLoading && user && handleRefresh()}
         className={cn(
           "p-2 bg-[hsl(var(--accent))] text-black rounded-[4px] flex items-center justify-center transition-all",
-          isLoading && "opacity-50 cursor-not-allowed"
+          (isLoading || !user) && "opacity-50 cursor-not-allowed"
         )}
         title="Refresh projects"
       >
@@ -65,23 +67,23 @@ function SearchProjectInput() {
           value={searchQuery}
           onChange={handleSearchChange}
           placeholder="Search Repositories and Projects..."
-          disabled={isUserLoading}
+          disabled={isUserDisabled}
           className={cn(
             "pl-10 pr-3 py-[8px] bg-[hsl(var(--bg))] text-white placeholder-gray-500 border border-gray-600 rounded-[4px] focus:border-gray-400 focus:outline-none w-full text-[15px]",
-            isUserLoading && "opacity-60 cursor-not-allowed"
+            isUserDisabled && "opacity-60 cursor-not-allowed"
           )}
         />
       </div>
 
       {/* Add New Button - Changes to '+' on small screens */}
       <Link
-        to={isUserLoading ? "#" : "/import"}
+        to={isUserDisabled ? "#" : "/import"}
         onClick={(e) => {
-          if (isUserLoading) e.preventDefault();
+          if (isUserDisabled) e.preventDefault();
         }}
         className={cn(
           "p-2 flex items-center space-x-1 bg-[hsl(var(--accent))] text-black rounded-[4px] transition-all",
-          isUserLoading && "opacity-50 cursor-not-allowed"
+          isUserDisabled && "opacity-50 cursor-not-allowed"
         )}
       >
         <Plus className="w-5 h-5" strokeWidth={1.5} />

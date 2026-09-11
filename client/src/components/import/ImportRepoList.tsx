@@ -78,7 +78,7 @@ export default function ImportRepoList() {
             </svg>
           </div>
           <span className="truncate text-sm font-medium text-black ">
-            {user?.login || "Loading..."}
+            {user?.login ? user.login : isUserLoading ? "Loading..." : "User"}
           </span>
         </div>
 
@@ -89,7 +89,7 @@ export default function ImportRepoList() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="bg-transparent outline-none w-full text-sm text-gray-200 placeholder-gray-500"
-            disabled={isLoading || !repos}
+            disabled={isLoading || !user || !repos}
           />
         </div>
       </div>

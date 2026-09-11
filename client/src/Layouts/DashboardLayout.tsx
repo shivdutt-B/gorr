@@ -45,16 +45,6 @@ function DashboardLayout() {
     fetchProjects(true);
   };
 
-  /* ───────────────────── USER ERROR (if finished loading user and no user) ───────────────────── */
-
-  if (!user && !isUserLoading) {
-    return (
-      <div className="min-h-screen bg-[hsl(var(--bg))]">
-        <TryAgain message="User not found" onClick={handleRetry} />
-      </div>
-    );
-  }
-
   /* ───────────────────── DASHBOARD ───────────────────── */
 
   const isCardSkeletonVisible = isUserLoading || isProjectsLoading;
@@ -96,9 +86,13 @@ function DashboardLayout() {
         {/* Search / actions */}
         <SearchProjectInput />
 
-        {/* ───────────────────── PROJECTS ───────────────────── */}
+        {/* ───────────────────── PROJECTS CONTENT ───────────────────── */}
 
-        {isCardSkeletonVisible ? (
+        {!user && !isUserLoading ? (
+          <div className="mt-10">
+            <TryAgain message="User not found" onClick={handleRetry} />
+          </div>
+        ) : isCardSkeletonVisible ? (
           <div
             className="
               mt-10

@@ -43,8 +43,6 @@ export function useFetchProjects(): UseFetchProjectsReturn {
           timeout: 10000,
         });
 
-        // throw new Error('my error');
-
         if (response.status === 200) {
           setProjects(response.data);
         }

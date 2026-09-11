@@ -54,13 +54,15 @@ export function useFetchUserData() {
     try {
       // 5-second delay and error mimicing mechanism before calling the API
       // await new Promise((resolve) => setTimeout(resolve, 20000));
-      // throw new Error('my error');
 
       const response = await axios.get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${token}` },
         signal: controller.signal,
         timeout: 10000,
       });
+
+      // throw new Error('user error')
+
       setUser(response.data);
     } catch (error) {
       // If error occurs or timeout occurs (10s), remove invalid token cookie and fallback to no user state

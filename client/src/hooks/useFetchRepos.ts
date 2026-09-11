@@ -45,8 +45,6 @@ export function useFetchRepos(): UseFetchReposReturn {
           timeout: 10000,
         });
 
-        // throw new Error('test error')
-
         const data = response.data;
 
         const filteredData = Array.isArray(data)

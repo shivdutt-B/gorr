@@ -24,12 +24,13 @@ function App() {
 function AppWithUserCheck() {
   const user = useRecoilValue(userAtom);
   const fetchUser = useFetchUserData();
-  const { isLoading } = useLoading();
+  const { isRequestLoading } = useLoading();
+  const isUserLoading = isRequestLoading("FetchUser");
   const hasFetched = useRef(false);
 
   useEffect(() => {
     const initiateFetch = async () => {
-      if (!hasFetched.current && !user && !isLoading) {
+      if (!hasFetched.current && !user && !isUserLoading) {
         hasFetched.current = true;
         try {
           await fetchUser();
@@ -40,11 +41,7 @@ function AppWithUserCheck() {
     };
 
     initiateFetch();
-  }, [fetchUser, user, isLoading]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  }, [fetchUser, user, isUserLoading]);
 
   return (
     <Routes>
