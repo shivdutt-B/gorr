@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { userAtom } from "../../states/userAtom";
 import { ImportRepoListSkeleton } from "./ImportRepoListSkeleton";
 import { useFetchUserData } from "../../hooks/useFetchUserData";
+import { TryAgain } from "../common/TryAgain";
 
 export default function ImportRepoList() {
   const repos = useRecoilValue(reposAtom);
@@ -45,9 +46,14 @@ export default function ImportRepoList() {
     }
   }, [user, repos, FetchRepos, isRequestLoading]);
 
-  const handleRetry = () => {
+  const handleRetryUser = () => {
     hasFetched.current = false;
     fetchUser();
+  };
+
+  const handleRetryRepo = () => {
+    hasFetched.current = false;
+    FetchRepos(true);
   };
 
   const filteredRepos =
@@ -126,14 +132,8 @@ export default function ImportRepoList() {
 
     if (!user && !isUserLoading) {
       return (
-        <div className="flex flex-col items-center justify-center p-8 text-center rounded-[4px] border border-gray-800 my-4">
-          <p className="text-sm text-red-500 mb-4">User not found</p>
-          <button
-            onClick={handleRetry}
-            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-[4px] text-sm font-medium transition-colors"
-          >
-            Try Again
-          </button>
+        <div className="py-4">
+          <TryAgain message="User not found" onClick={handleRetryUser} />
         </div>
       );
     }
@@ -142,22 +142,15 @@ export default function ImportRepoList() {
       return <ImportRepoListSkeleton />;
     }
 
-    if (repos.length === 0 && !isRepoLoading) {
-      if (repoError) {
-        return (
-          <div className="flex flex-col items-center justify-center p-8 text-center rounded-[4px] border border-gray-800 my-4">
-            <p className="text-sm text-red-500 mb-4">
-              Error loading repositories
-            </p>
-            <button
-              onClick={handleRetry}
-              className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-[4px] text-sm font-medium transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
-        );
-      }
+    if ((repoError || repos === null) && !isRepoLoading) {
+      return (
+        <div className="py-4">
+          <TryAgain message="Error loading repositories" onClick={handleRetryRepo} />
+        </div>
+      );
+    }
+
+    if (repos && repos.length === 0 && !isRepoLoading) {
       return (
         <div className="text-center py-8">
           <svg
