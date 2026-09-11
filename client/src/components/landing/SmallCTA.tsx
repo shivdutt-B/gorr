@@ -1,12 +1,16 @@
 import React from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { userAtom } from "../../states/userAtom";
+import { useLoading } from "../../hooks/useLoading";
+import { cn } from "../../utils/cn";
 
 export function SmallCTA() {
   const user = useRecoilValue(userAtom);
-  const link = user ? "/dashboard" : "/join";
+  const { isRequestLoading } = useLoading();
+  const isUserLoading = isRequestLoading("FetchUser");
+
   return (
     <section className="relative w-full overflow-hidden bg-transparent py-8 sm:py-12">
       <div className="container-gutter">
@@ -87,22 +91,14 @@ export function SmallCTA() {
 
             {/* CTA */}
             <Link
-              to={user ? "/dashboard" : "/join"}
-              className="
-                group
-                inline-flex
-                shrink-0
-                items-center
-                gap-3
-                rounded-[4px]
-                bg-[hsl(var(--accent))]
-                py-2
-                pl-5
-                pr-2
-                text-[0.85rem]
-                font-medium
-                text-[#030303]
-              "
+              to={isUserLoading ? "#" : (user ? "/dashboard" : "/join")}
+              onClick={(e) => {
+                if (isUserLoading) e.preventDefault();
+              }}
+              className={cn(
+                "group inline-flex shrink-0 items-center gap-3 rounded-[4px] bg-[hsl(var(--accent))] py-2 pl-5 pr-2 text-[0.85rem] font-medium text-[#030303]",
+                isUserLoading && "opacity-80 cursor-not-allowed"
+              )}
             >
               <span>Start deploying</span>
 
@@ -121,10 +117,14 @@ export function SmallCTA() {
                   group-hover:-translate-y-0.5
                 "
               >
-                <ArrowUpRight
-                  className="h-4 w-4 text-[hsl(var(--accent))]"
-                  strokeWidth={1.7}
-                />
+                {isUserLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-[hsl(var(--accent))]" />
+                ) : (
+                  <ArrowUpRight
+                    className="h-4 w-4 text-[hsl(var(--accent))]"
+                    strokeWidth={1.7}
+                  />
+                )}
               </span>
             </Link>
           </div>

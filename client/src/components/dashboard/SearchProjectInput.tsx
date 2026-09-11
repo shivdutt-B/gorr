@@ -8,14 +8,20 @@ import axios from "axios";
 import { userAtom } from "../../states/userAtom";
 import { projectsAtom } from "../../states/projectsAtom";
 import { useSetRecoilState } from "recoil";
+import { cn } from "../../utils/cn";
 
 function SearchProjectInput() {
   const [searchQuery, setSearchQuery] = useRecoilState(searchQueryAtom);
-  const { startLoading, stopLoading } = useLoading();
+  const { startLoading, stopLoading, isRequestLoading } = useLoading();
   const user = useRecoilValue(userAtom);
   const setProjects = useSetRecoilState(projectsAtom);
 
+  const isUserLoading = isRequestLoading("FetchUser");
+  const isProjectsLoading = isRequestLoading("FetchProjects");
+  const isLoading = isUserLoading || isProjectsLoading;
+
   const handleRefresh = async () => {
+    if (isLoading || !user) return;
     try {
       startLoading("FetchProjects");
 
@@ -43,8 +49,12 @@ function SearchProjectInput() {
     <div className="flex items-center rounded-lg space-x-2 w-full">
       {/* Refresh Button */}
       <button
-        onClick={() => handleRefresh()}
-        className="p-2 bg-[hsl(var(--accent))] text-black rounded-[4px] flex items-center justify-center transition-colors"
+        disabled={isLoading}
+        onClick={() => !isLoading && handleRefresh()}
+        className={cn(
+          "p-2 bg-[hsl(var(--accent))] text-black rounded-[4px] flex items-center justify-center transition-all",
+          isLoading && "opacity-50 cursor-not-allowed"
+        )}
         title="Refresh projects"
       >
         <svg
@@ -57,6 +67,7 @@ function SearchProjectInput() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          className={cn(isLoading && "animate-spin")}
         >
           <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
           <path d="M21 3v5h-5" />
@@ -72,14 +83,24 @@ function SearchProjectInput() {
           value={searchQuery}
           onChange={handleSearchChange}
           placeholder="Search Repositories and Projects..."
-          className="pl-10 pr-3 py-[8px] bg-[hsl(var(--bg))] text-white placeholder-gray-500 border border-gray-600 rounded-[4px] focus:border-gray-400 focus:outline-none w-full text-[15px]"
+          disabled={isUserLoading}
+          className={cn(
+            "pl-10 pr-3 py-[8px] bg-[hsl(var(--bg))] text-white placeholder-gray-500 border border-gray-600 rounded-[4px] focus:border-gray-400 focus:outline-none w-full text-[15px]",
+            isUserLoading && "opacity-60 cursor-not-allowed"
+          )}
         />
       </div>
 
       {/* Add New Button - Changes to '+' on small screens */}
       <Link
-        to="/import"
-        className="p-2 flex items-center space-x-1 bg-[hsl(var(--accent))] text-black rounded-[4px]"
+        to={isUserLoading ? "#" : "/import"}
+        onClick={(e) => {
+          if (isUserLoading) e.preventDefault();
+        }}
+        className={cn(
+          "p-2 flex items-center space-x-1 bg-[hsl(var(--accent))] text-black rounded-[4px] transition-all",
+          isUserLoading && "opacity-50 cursor-not-allowed"
+        )}
       >
         <Plus className="w-5 h-5" strokeWidth={1.5} />
       </Link>

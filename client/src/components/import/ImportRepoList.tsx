@@ -2,13 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
 import { useFetchRepos } from "../../hooks/useFetchRepos";
 import { reposAtom } from "../../states/reposAtom";
-import { TryAgain } from "../common/TryAgain";
 import { useLoading } from "../../hooks/useLoading";
 import { Link } from "react-router-dom";
 import { userAtom } from "../../states/userAtom";
 import { ImportRepoListSkeleton } from "./ImportRepoListSkeleton";
 import { useFetchUserData } from "../../hooks/useFetchUserData";
-import { LoadingSpinner } from "../common/LoadingSpinner";
 
 export default function ImportRepoList() {
   const repos = useRecoilValue(reposAtom);
@@ -127,7 +125,17 @@ export default function ImportRepoList() {
     }
 
     if (!user && !isUserLoading) {
-      return <TryAgain message="User not found" onClick={handleRetry} />;
+      return (
+        <div className="flex flex-col items-center justify-center p-8 text-center rounded-[4px] border border-gray-800 my-4">
+          <p className="text-sm text-red-500 mb-4">User not found</p>
+          <button
+            onClick={handleRetry}
+            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-[4px] text-sm font-medium transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      );
     }
 
     if (isRepoLoading) {
@@ -137,10 +145,17 @@ export default function ImportRepoList() {
     if (repos.length === 0 && !isRepoLoading) {
       if (repoError) {
         return (
-          <TryAgain
-            message="Error loading repositories"
-            onClick={handleRetry}
-          />
+          <div className="flex flex-col items-center justify-center p-8 text-center rounded-[4px] border border-gray-800 my-4">
+            <p className="text-sm text-red-500 mb-4">
+              Error loading repositories
+            </p>
+            <button
+              onClick={handleRetry}
+              className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-[4px] text-sm font-medium transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
         );
       }
       return (
@@ -196,7 +211,7 @@ export default function ImportRepoList() {
             className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 gap-3 bg-transparent hover:bg-[#1a1a1a]/40 transition-colors"
           >
             <div className="flex items-center gap-3 min-w-0 w-full sm:w-auto">
-              <div className="w-8 h-8  rounded-full flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -229,7 +244,9 @@ export default function ImportRepoList() {
                 repo.html_url || ""
               )}&user_id=${encodeURIComponent(
                 user?.id || ""
-              )}&owner=${encodeURIComponent(user?.login || "")}&redeploy=${encodeURIComponent(false)}`}
+              )}&owner=${encodeURIComponent(
+                user?.login || ""
+              )}&redeploy=${encodeURIComponent(false)}`}
               className="w-full sm:w-auto text-center text-[12px] px-3 py-1 font-medium rounded-[3px] bg-[hsl(var(--accent))] text-black transition-colors shrink-0"
             >
               Import

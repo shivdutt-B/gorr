@@ -1,8 +1,10 @@
 import React from "react";
-import { ArrowUpRight, ChevronRight } from "lucide-react";
+import { ArrowUpRight, ChevronRight, Loader2 } from "lucide-react";
 import { useRecoilValue } from "recoil";
 import { userAtom } from "../../states/userAtom";
+import { useLoading } from "../../hooks/useLoading";
 import { Link } from "react-router-dom";
+import { cn } from "../../utils/cn";
 
 // Import tech logos
 import reactLogo from "../../assets/tech/react.svg";
@@ -29,6 +31,8 @@ const techStack = [
 
 export function Hero() {
   const user = useRecoilValue(userAtom);
+  const { isRequestLoading } = useLoading();
+  const isUserLoading = isRequestLoading("FetchUser");
 
   // Duplicate once for seamless loop
   const items = [...techStack, ...techStack];
@@ -96,13 +100,23 @@ export function Hero() {
 
           {/* CTA Button */}
           <Link
-            to={user ? "/dashboard" : "/join"}
-            className="mt-10 inline-flex min-w-[150px] items-center rounded-[4px] bg-[hsl(var(--accent))] px-2 py-2 text-[0.85rem] font-medium text-[#030303] transition-all hover:bg-[hsl(var(--accent-strong))]"
+            to={isUserLoading ? "#" : (user ? "/dashboard" : "/join")}
+            onClick={(e) => {
+              if (isUserLoading) e.preventDefault();
+            }}
+            className={cn(
+              "mt-10 inline-flex min-w-[150px] items-center rounded-[4px] bg-[hsl(var(--accent))] px-2 py-2 text-[0.85rem] font-medium text-[#030303] transition-all hover:bg-[hsl(var(--accent-strong))]",
+              isUserLoading && "opacity-80 cursor-not-allowed"
+            )}
           >
             <span className="flex-1 text-center">Start For Free</span>
 
             <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-[3px] bg-black">
-              <ArrowUpRight className="h-3 w-3 text-[hsl(var(--accent))]" />
+              {isUserLoading ? (
+                <Loader2 className="h-3 w-3 animate-spin text-[hsl(var(--accent))]" />
+              ) : (
+                <ArrowUpRight className="h-3 w-3 text-[hsl(var(--accent))]" />
+              )}
             </span>
           </Link>
         </div>

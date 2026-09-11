@@ -5,17 +5,28 @@ import GorrLogo from "../../assets/Logo/gorr_logo.svg";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLogout } from "../../hooks/useLogout";
+import { useLoading } from "../../hooks/useLoading";
+import { cn } from "../../utils/cn";
 
 function DashBoardHeader() {
   const user = useRecoilValue(userAtom);
   const { logout } = useLogout();
+  const { isRequestLoading } = useLoading();
+  const isUserLoading = isRequestLoading("FetchUser");
+
   const [isOpen, setIsOpen] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
+  // Close dropdown on outside click or when user is loading
+  useEffect(() => {
+    if (isUserLoading) {
+      setIsOpen(false);
+    }
+  }, [isUserLoading]);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -64,10 +75,13 @@ function DashBoardHeader() {
 
           {/* Project Name */}
           <div className="flex items-center space-x-1">
-            {/* <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-yellow-500 rounded-full"></div> */}
-            <span className="font-medium truncate max-w-[200px] inline-block">
-              {user?.login}'s projects
-            </span>
+            {user?.login ? (
+              <span className="font-medium truncate max-w-[200px] inline-block">
+                {user.login}'s projects
+              </span>
+            ) : (
+              <div className="h-5 w-36 bg-white/20 rounded-[4px] animate-pulse" />
+            )}
           </div>
         </div>
 
@@ -77,19 +91,30 @@ function DashBoardHeader() {
           <div className="relative">
             <div
               ref={avatarRef}
-              className="w-[45px] h-[45px] bg-gradient-to-r from-purple-500 to-pink-500 rounded-full cursor-pointer"
-              onClick={() => setIsOpen((prev) => !prev)}
+              className={cn(
+                "w-[45px] h-[45px] bg-white/20 rounded-full overflow-hidden flex items-center justify-center transition-opacity",
+                isUserLoading || !user
+                  ? "cursor-not-allowed pointer-events-none opacity-80"
+                  : "cursor-pointer",
+              )}
+              onClick={() =>
+                !isUserLoading && user && setIsOpen((prev) => !prev)
+              }
             >
-              <img
-                src={user?.avatar_url}
-                className="w-full h-full rounded-full"
-                alt="User Avatar"
-              />
+              {user?.avatar_url ? (
+                <img
+                  src={user.avatar_url}
+                  className="w-full h-full rounded-full object-cover"
+                  alt="User Avatar"
+                />
+              ) : (
+                <div className="w-full h-full bg-white/20 animate-pulse rounded-full" />
+              )}
             </div>
 
             {/* Dropdown Menu */}
             <AnimatePresence>
-              {isOpen && (
+              {isOpen && user && !isUserLoading && (
                 <motion.div
                   ref={dropdownRef}
                   initial={{ opacity: 0, scale: 0.95, y: -8 }}
@@ -136,7 +161,7 @@ function DashBoardHeader() {
                     <button
                       type="button"
                       onClick={handleLogoutClick}
-                      className="inline-flex items-center justify-between px-4 py-2 text-[0.85rem] font-medium text-white bg-red-500 rounded-[4px] transition-all hover:bg-red-600"
+                      className="inline-flex items-center justify-between px-4 py-2 text-[0.85rem] font-medium text-white bg-red-600 rounded-[4px] transition-all hover:bg-red-700"
                     >
                       <span>Logout</span>
 
@@ -167,7 +192,7 @@ function DashBoardHeader() {
       {/* Confirmation Dialog */}
       {showConfirmation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center backdrop-blur-sm">
-          <div className="bg-[#0a0a0a] rounded-md p-6 py-10 max-w-md w-full">
+          <div className="bg-[hsl(var(--bg))] border border-gray-800 rounded-[4px] p-6 py-10 max-w-md w-full">
             <h3 className="text-lg font-semibold text-white mb-4">
               Confirm Logout
             </h3>
@@ -177,14 +202,14 @@ function DashBoardHeader() {
             <div className="flex justify-end space-x-3">
               <button
                 onClick={handleCancel}
-                className="px-4 py-2 bg-gray-200 text-gray-900 rounded-md text-sm font-medium hover:bg-gray-300 transition-colors"
+                className="px-4 py-2 bg-gray-200 text-gray-900 rounded-[4px] text-sm font-medium hover:bg-gray-300 transition-colors"
                 disabled={isLoggingOut}
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirm}
-                className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors flex items-center"
+                className="px-4 py-2 bg-red-600 text-white rounded-[4px] text-sm font-medium hover:bg-red-700 transition-colors flex items-center"
                 disabled={isLoggingOut}
               >
                 {isLoggingOut ? (
@@ -224,4 +249,3 @@ function DashBoardHeader() {
 }
 
 export default DashBoardHeader;
- 

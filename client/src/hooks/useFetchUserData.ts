@@ -52,9 +52,12 @@ export function useFetchUserData() {
     startLoading("FetchUser", true);
 
     try {
+      // 5-second delay and error mimicing mechanism before calling the API
+      // await new Promise((resolve) => setTimeout(resolve, 5000));
+      // throw new Error('my error');
+
       const response = await axios.get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${token}` },
-  
       });
       setUser(response.data);
     } catch (error) {
