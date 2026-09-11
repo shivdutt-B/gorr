@@ -195,56 +195,14 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
 
   return (
     <div className="bg-white/[0.025] w-full rounded-[4px] p-4 shadow-lg border border-white/[0.07]">
-      <h3 className="text-2xl font-bold mb-4 text-white">Deployment</h3>
+      <h3 className="text-2xl font-[450] mb-4 text-white">Deployment logs will appear here</h3>
 
       {/* Globe Visualization */}
-      <div className="w-full aspect-[2/1] h-[500px] flex rounded-[4px] mb-8">
+      <div className="bg-white/[0.025] w-full aspect-[2/1] h-[500px] flex rounded-[4px] mb-8">
         <div className="w-full   flex flex-col h-full">
-          <div className="bg-[#1a1a1a] rounded-[4px] overflow-y-auto h-full">
+          <div className=" rounded-[4px] overflow-y-auto h-full">
             {logs.length === 0 ? (
-              <div className="flex-1 h-full flex items-center justify-center">
-                <svg viewBox="0 0 200 100" className="w-full h-full opacity-40">
-                  <ellipse
-                    cx="100"
-                    cy="50"
-                    rx="80"
-                    ry="40"
-                    stroke="#FFFFFF06"
-                    fill="none"
-                    strokeWidth="0.5"
-                  />
-                  <ellipse
-                    cx="100"
-                    cy="50"
-                    rx="80"
-                    ry="40"
-                    stroke="white"
-                    fill="none"
-                    strokeWidth="0.5"
-                    transform="rotate(30 100 50)"
-                  />
-                  <ellipse
-                    cx="100"
-                    cy="50"
-                    rx="80"
-                    ry="40"
-                    stroke="white"
-                    fill="none"
-                    strokeWidth="0.5"
-                    transform="rotate(60 100 50)"
-                  />
-                  <ellipse
-                    cx="100"
-                    cy="50"
-                    rx="80"
-                    ry="40"
-                    stroke="white"
-                    fill="none"
-                    strokeWidth="0.5"
-                    transform="rotate(90 100 50)"
-                  />
-                </svg>
-              </div>
+              <div className="flex-1 h-full flex items-center justify-center"></div>
             ) : (
               [...logs].reverse().map((log, index) => (
                 <div

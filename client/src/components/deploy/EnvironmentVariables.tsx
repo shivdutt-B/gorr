@@ -62,9 +62,9 @@ const EnvironmentVariables: React.FC<EnvironmentVariablesProps> = ({
     <div className="block text-md mb-2">
           Environment Variable
         </div>
-      <div className="mb-6 border border-white/[0.07] bg-white/[0.025] p-3 rounded-[4px]">
+      <div className="mb-6 border border-white/[0.07] bg-white/[0.025] px-[13px] py-[8px] rounded-[4px]">
         <div
-          className="flex items-center text-[#929292] font-semibold rounded cursor-pointer"
+          className="flex items-center text-[#929292] font-[450] rounded cursor-pointer"
           onClick={onToggleExpand}
         >
           <div

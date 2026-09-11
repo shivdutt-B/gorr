@@ -59,28 +59,32 @@ export default function ImportRepoList() {
 
   const renderHeader = () => (
     <>
-      <h2 className="text-xl font-semibold mb-4">Import Git Repository</h2>
-      <div className="flex items-center space-x-2 mb-4">
-        <div className="bg-[#0a0a0a] p-2 px-4 rounded-lg flex items-center justify-start w-1/2 cursor-pointer border border-gray-700">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="mr-2"
-            fill="currentColor"
-            width="20px"
-            height="20px"
-            viewBox="0 0 1024 1024"
-          >
-            <path d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9a127.5 127.5 0 0 1 38.1 91v112.5c.8 9 0 17.9 15 17.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z" />
-          </svg>
-          <span className="truncate">{user?.login || "Loading..."}</span>
+      <div className="flex items-stretch gap-3 mb-4">
+        <div className="bg-white p-2 px-3 rounded-[4px] flex items-center justify-start w-1/3">
+          <div className="w-6 h-6 rounded-full flex items-center justify-center mr-2 shrink-0">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="black"
+              width="20px"
+              height="20px"
+              viewBox="0 0 1024 1024"
+              className="text-gray-200"
+            >
+              <path d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9a127.5 127.5 0 0 1 38.1 91v112.5c.8 9 0 17.9 15 17.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z" />
+            </svg>
+          </div>
+          <span className="truncate text-sm font-medium text-black ">
+            {user?.login || "Loading..."}
+          </span>
         </div>
-        <div className="bg-[#0a0a0a] p-[10px] px-4 rounded-lg flex items-center w-full border border-gray-700 transition-colors focus-within:border-gray-500">
+
+        <div className="bg-[hsl(var(--bg))] p-2 px-3 rounded-[4px] flex items-center w-full border border-gray-800 transition-colors focus-within:border-gray-700">
           <input
             type="text"
             placeholder="Search repositories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent outline-none w-full text-sm"
+            className="bg-transparent outline-none w-full text-sm text-gray-200 placeholder-gray-500"
             disabled={isLoading || !repos}
           />
         </div>
@@ -91,23 +95,22 @@ export default function ImportRepoList() {
   const renderFooter = () => (
     <div className="mt-4">
       {visibleCount < filteredRepos.length && (
-        <div className="flex justify-center my-3 text-gray-400 text-sm">
+        <div className="flex justify-center my-2 text-gray-500 text-sm">
           <span
-            className="group-hover:translate-x-1 text-center cursor-pointer hover:text-white transition group flex items-center gap-1"
+            className="group cursor-pointer hover:text-[hsl(var(--accent))] transition flex items-center gap-1 text-sm font-medium"
             onClick={() => setVisibleCount(visibleCount + 5)}
           >
             Load More{" "}
             <svg
-              className="w-5 h-5 transition transform group-hover:translate-y-1"
+              className="w-4 h-4 transition-transform group-hover:translate-y-0.5"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              stroke="#00000"
+              stroke="currentColor"
             >
               <path
                 d="M7 10L12 15L17 10"
-                stroke="#fff"
-                strokeWidth="1.5"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -120,11 +123,7 @@ export default function ImportRepoList() {
 
   const renderContent = () => {
     if (isUserLoading) {
-      return (
-        <p className="text-gray-400 text-center mt-4">
-          <LoadingSpinner />
-        </p>
-      );
+      return <ImportRepoListSkeleton />;
     }
 
     if (!user && !isUserLoading) {
@@ -153,24 +152,24 @@ export default function ImportRepoList() {
             version="1.1"
             width="40"
             data-view-component="true"
-            className="octicon octicon-repo mx-auto text-gray-400"
+            className="octicon octicon-repo mx-auto text-gray-500 mb-3"
             fill="currentColor"
           >
             <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"></path>
           </svg>
-          <h3 className="mt-4 text-xl font-semibold text-gray-200">
+          <h3 className="text-lg font-semibold text-gray-200">
             No Repositories Found
           </h3>
-          <p className="mt-2 text-gray-400">
+          <p className="mt-1 text-sm text-gray-500">
             We couldn't find any repositories in your GitHub account.
           </p>
-          <p className="text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Create one{" "}
             <a
               href="https://github.com/new"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500 hover:text-blue-600"
+              className="text-blue-500 hover:underline"
             >
               here.
             </a>
@@ -181,7 +180,7 @@ export default function ImportRepoList() {
 
     if (filteredRepos.length === 0) {
       return (
-        <p className="text-gray-400 text-center mt-4">
+        <p className="text-gray-500 text-sm text-center py-6">
           No repositories match your search
         </p>
       );
@@ -190,32 +189,39 @@ export default function ImportRepoList() {
     const displayedRepos = filteredRepos.slice(0, visibleCount);
 
     return (
-      <div className="rounded-md border border-gray-800 flex gap-2 flex-col">
+      <div className="rounded-[4px] border border-gray-800 flex flex-col divide-y divide-gray-800 overflow-hidden">
         {displayedRepos.map((repo: any, index: number) => (
           <div
             key={index}
-            className="flex flex-col gap-4 mob:flex mob:flex-row justify-between items-center p-5 border-b border-gray-800 last:border-0"
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 gap-3 bg-transparent hover:bg-[#1a1a1a]/40 transition-colors"
           >
-            <div className="w-full mob:w-auto flex justify-between gap-4 d:inline text-md">
-              <div className="rounded-full flex items-center justify-center truncate">
+            <div className="flex items-center gap-3 min-w-0 w-full sm:w-auto">
+              <div className="w-8 h-8  rounded-full flex items-center justify-center shrink-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="mr-2"
                   fill="currentColor"
                   width="20px"
                   height="20px"
                   viewBox="0 0 1024 1024"
+                  className="text-gray-200"
                 >
                   <path d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9a127.5 127.5 0 0 1 38.1 91v112.5c.8 9 0 17.9 15 17.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z" />
                 </svg>
-                <span className="truncate">{repo.name}</span>
               </div>
-              <div className="text-gray-500 text-sm">
-                {repo.lastUpdated
-                  ? new Date(repo.lastUpdated).toLocaleDateString()
-                  : "N/A"}
+
+              <div className="min-w-0 flex-1">
+                <h4 className="text-sm font-semibold text-gray-200 truncate">
+                  {repo.name}
+                </h4>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Updated{" "}
+                  {repo.lastUpdated
+                    ? new Date(repo.lastUpdated).toLocaleDateString()
+                    : "N/A"}
+                </p>
               </div>
             </div>
+
             <Link
               to={`/deploy?repo=${encodeURIComponent(
                 repo.name
@@ -224,7 +230,7 @@ export default function ImportRepoList() {
               )}&user_id=${encodeURIComponent(
                 user?.id || ""
               )}&owner=${encodeURIComponent(user?.login || "")}&redeploy=${encodeURIComponent(false)}`}
-              className="w-full mob:w-auto bg-white text-black text-sm font-medium px-3 py-2 rounded-[4px]"
+              className="w-full sm:w-auto text-center text-[12px] px-3 py-1 font-medium rounded-[3px] bg-[hsl(var(--accent))] text-black transition-colors shrink-0"
             >
               Import
             </Link>
@@ -235,7 +241,7 @@ export default function ImportRepoList() {
   };
 
   return (
-    <div className="bg-[#0a0a0a] text-white p-6 rounded-xl border border-gray-800 max-w-[800px] w-full m-4 mx-auto shadow-lg">
+    <div className="text-white p-6 rounded-[4px] max-w-[800px] w-full my-4 mx-auto">
       {renderHeader()}
       {renderContent()}
       {!isLoading && filteredRepos.length > 0 && renderFooter()}

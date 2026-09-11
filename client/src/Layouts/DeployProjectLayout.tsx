@@ -213,7 +213,7 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
   <>
     <Navbar />
 
-    <div className="max-w-[750px] w-full m-auto mt-36 mb-20">
+    <div className="max-w-[750px] w-full m-auto mt-24 mb-20">
       <div className="flex flex-col items-center justify-center w-full min-h-screen bg-[hsl(var(--bg))] text-[hsl(var(--text-primary))]">
         <div className="w-full bg-[hsl(var(--bg))] overflow-hidden">
           <div className="pb-8">
@@ -263,7 +263,8 @@ const DeployProjectLayout: React.FC<DeployProjectLayoutProps> = ({
                     bg-white/[0.025]
                     border
                     border-white/[0.07]
-                    p-3
+                    px-[13px]
+                    py-[6px]
                     rounded-[4px]
                     flex-grow
                     font-mono

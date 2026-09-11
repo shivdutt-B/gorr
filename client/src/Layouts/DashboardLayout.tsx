@@ -180,7 +180,7 @@ function DashboardLayout() {
                   className="
                     w-full
                     overflow-hidden
-                    rounded-2xl
+                    rounded-[4px]
                     border
                     border-white/[0.07]
                     bg-white/[0.005]
@@ -192,7 +192,7 @@ function DashboardLayout() {
                     className="
                       h-[120px]
                       w-full
-                      rounded-xl
+                      rounded-[4px]
                       bg-white/[0.06]
                       animate-pulse
                     "
@@ -206,7 +206,7 @@ function DashboardLayout() {
                         className="
                           h-7
                           w-7
-                          rounded-full
+                          rounded-[4px]
                           bg-white/[0.07]
                           animate-pulse
                         "
@@ -216,7 +216,7 @@ function DashboardLayout() {
                         className="
                           h-4
                           w-28
-                          rounded-md
+                          rounded-[4px]
                           bg-white/[0.07]
                           animate-pulse
                         "
@@ -229,7 +229,7 @@ function DashboardLayout() {
                         mt-1
                         h-6
                         w-40
-                        rounded-md
+                        rounded-[4px]
                         bg-white/[0.07]
                         animate-pulse
                       "
@@ -240,7 +240,7 @@ function DashboardLayout() {
                       className="
                         h-4
                         w-32
-                        rounded-md
+                        rounded-[4px]
                         bg-white/[0.05]
                         animate-pulse
                       "
@@ -252,7 +252,7 @@ function DashboardLayout() {
                         mt-1
                         h-3
                         w-44
-                        rounded-md
+                        rounded-[4px]
                         bg-white/[0.05]
                         animate-pulse
                       "
@@ -264,7 +264,7 @@ function DashboardLayout() {
                         className="
                           h-9
                           w-24
-                          rounded-lg
+                          rounded-[4px]
                           bg-white/[0.06]
                           animate-pulse
                         "
@@ -274,7 +274,7 @@ function DashboardLayout() {
                         className="
                           h-9
                           w-24
-                          rounded-lg
+                          rounded-[4px]
                           bg-white/[0.06]
                           animate-pulse
                         "

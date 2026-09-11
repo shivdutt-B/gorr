@@ -83,9 +83,11 @@ export function Navbar({ className }: NavbarProps) {
                 <IconUser className="h-3 w-3" /> <span>Profile</span>{" "}
               </button>{" "}
               {isProfileOpen && (
-                <div className="absolute right-0 top-[calc(100%+0.75rem)] w-72 overflow-hidden rounded-[4px] border border-white/10 bg-[#0b0c11]/95 p-3 text-left shadow-panel backdrop-blur-[10px]">
+                <div 
+                className="absolute right-0 top-[calc(100%+0.75rem)] w-72 overflow-hidden rounded-[4px] border border-gray-800  p-3 text-left z-[999] bg-[hsl(var(--bg))]"
+                >
                   {" "}
-                  <div className="border-b border-white/10 pb-3">
+                  <div className="border-b border-gray-800 pb-3">
                     {" "}
                     <p className="text-sm font-semibold text-foreground">
                       {" "}

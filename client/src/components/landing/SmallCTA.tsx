@@ -1,9 +1,14 @@
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { userAtom } from "../../states/userAtom";
 
 export function SmallCTA() {
+  const user = useRecoilValue(userAtom);
+  const link = user ? "/dashboard" : "/join";
   return (
-    <section className="relative w-full overflow-hidden bg-transparent py-12 sm:py-16">
+    <section className="relative w-full overflow-hidden bg-transparent py-8 sm:py-12">
       <div className="container-gutter">
         <div
           className="
@@ -81,8 +86,8 @@ export function SmallCTA() {
             </div>
 
             {/* CTA */}
-            <a
-              href="#"
+            <Link
+              to={user ? "/dashboard" : "/join"}
               className="
                 group
                 inline-flex
@@ -121,7 +126,7 @@ export function SmallCTA() {
                   strokeWidth={1.7}
                 />
               </span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>
