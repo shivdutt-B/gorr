@@ -55,7 +55,7 @@ app.use((req, res) => {
     axios
       .post(`${MAIN_SERVER_URL}/projects/increment-view`, { slug: projectSlug })
       .catch((err) => {
-        console.error("⚠️ Failed to increment project view:", err.message);
+        console.error("Failed to increment project view:", err.message);
       });
   }
 
@@ -76,7 +76,7 @@ app.use((req, res) => {
 
   // Proxying the request to the constructed URL
   return proxy.web(req, res, { target: resolvesTo, changeOrigin: true }, (err) => {
-    console.error("⚠️ Proxy error:", err.message);
+    console.error("Proxy error:", err.message);
     if (!res.headersSent) {
       res.status(502).send("Bad gateway");
     }
