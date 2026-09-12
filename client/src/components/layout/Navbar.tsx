@@ -20,6 +20,9 @@ export function Navbar({ className }: NavbarProps) {
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
   useEffect(() => {
     const handlePointerDown = (event: globalThis.MouseEvent) => {
       if (
@@ -33,14 +36,30 @@ export function Navbar({ className }: NavbarProps) {
     document.addEventListener("mousedown", handlePointerDown);
     return () => document.removeEventListener("mousedown", handlePointerDown);
   }, []);
+
   useEffect(() => {
     if (!user) {
       setIsProfileOpen(false);
     }
   }, [user]);
-  const handleLogout = async () => {
+
+  const handleLogoutClick = () => {
     setIsProfileOpen(false);
-    await logout();
+    setShowConfirmation(true);
+  };
+
+  const handleConfirm = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setIsLoggingOut(false);
+      setShowConfirmation(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setShowConfirmation(false);
   };
   return (
     <header
@@ -130,7 +149,7 @@ export function Navbar({ className }: NavbarProps) {
                     <button
                       type="button"
                       disabled={isUserLoading}
-                      onClick={handleLogout}
+                      onClick={handleLogoutClick}
                       className="inline-flex items-center justify-between px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-[4px] hover:bg-red-700"
                     >
                       <span>Logout</span>
@@ -161,6 +180,45 @@ export function Navbar({ className }: NavbarProps) {
           )}
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      {showConfirmation && (
+        <div className="fixed left-0 top-0 h-screen w-screen bg-black/50 z-[9999] flex items-center justify-center backdrop-blur-sm">
+          <div className="bg-[hsl(var(--bg))] border border-gray-800 rounded-[4px] p-6 py-10 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Confirm Logout
+            </h3>
+            <p className="text-sm text-gray-400 mb-4">
+              Are you sure you want to log out?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="px-4 py-2 bg-gray-200 text-gray-900 rounded-[4px] text-sm font-medium hover:bg-gray-300 transition-colors"
+                disabled={isLoggingOut}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirm}
+                className="px-4 py-2 bg-red-600 text-white rounded-[4px] text-sm font-medium hover:bg-red-700 transition-colors flex items-center"
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? (
+                  <>
+                    <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                    Logging out...
+                  </>
+                ) : (
+                  "Yes, Log out"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
