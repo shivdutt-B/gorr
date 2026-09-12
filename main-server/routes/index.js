@@ -6,14 +6,15 @@ const { githubCallback, getMe, logout } = require("../controllers/authController
 const { buildProject } = require("../controllers/buildProjectController");
 const { redeployProject } = require("../controllers/redeployProjectController");
 const { checkSlugAvailability } = require("../controllers/slugController");
-const { getUserProjects } = require("../controllers/projectController");
+const { getUserProjects, incrementProjectView } = require("../controllers/projectController");
 const { deleteProject } = require("../controllers/deleteProjectController");
 
 // Public Authentication routes
 router.get("/auth/github/callback", githubCallback);
 
-// Public Utility routes
+// Public Utility and Proxy routes
 router.get("/check-slug", checkSlugAvailability);
+router.post("/projects/increment-view", incrementProjectView);
 
 // Authenticated User routes
 router.get("/auth/me", requireAuth, getMe);

@@ -20,5 +20,6 @@ model Project {
   user        User     @relation(fields: [userId], references: [userId])
   userId      Int
   createdAt   DateTime @default(now())
-  projectUrl String @unique
+  projectUrl  String   @unique
+  views       Int      @default(0)
 } 

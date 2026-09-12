@@ -6,6 +6,8 @@ export interface Project {
   gitUrl: string;
   userId: number;
   createdAt: string;
+  projectUrl?: string;
+  views?: number;
 }
 
 interface ProjectsResponse {

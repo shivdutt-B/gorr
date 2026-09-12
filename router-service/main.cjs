@@ -1,12 +1,14 @@
 const express = require("express");
 const httpProxy = require("http-proxy");
+const axios = require("axios");
 require("dotenv").config();
-const heimdall = require('heimdall-nodejs-sdk');
+const heimdall = require("heimdall-nodejs-sdk");
 
 // Initialize Express and set up the proxy
 const app = express();
 const PORT = process.env.PORT || 8000;
 const BASE_PATH = process.env.S3_BASE_PATH;
+const MAIN_SERVER_URL = process.env.MAIN_SERVER_URL || "http://localhost:5000";
 const proxy = httpProxy.createProxy();
 
 // Add Heimdall ping endpoint
@@ -27,6 +29,24 @@ app.use((req, res) => {
     subdomain = hostname.split(".").slice(0, -2).join("/");
   }
 
+  // Extract base project slug for view counter tracking
+  const projectSlug = subdomain ? subdomain.split("/")[0].split("_")[0] : null;
+
+  // Check if request is a main document page view (excluding iframe previews from dashboard)
+  const isMainPageView =
+    req.url === "/" ||
+    req.url === "/index.html" ||
+    (req.headers.accept && req.headers.accept.includes("text/html"));
+  const isIframe = req.headers["sec-fetch-dest"] === "iframe";
+
+  if (projectSlug && isMainPageView && !isIframe) {
+    axios
+      .post(`${MAIN_SERVER_URL}/projects/increment-view`, { slug: projectSlug })
+      .catch((err) => {
+        console.error("⚠️ Failed to increment project view:", err.message);
+      });
+  }
+
   // Constructing the target URL for the proxy based on the subdomain
   const resolvesTo = `${BASE_PATH}/${subdomain}`;
 
@@ -35,8 +55,7 @@ app.use((req, res) => {
 });
 
 // Event listener for proxy requests to modify the path if necessary
-// Although this is handled in the AWS S3 bucket itself, we are doing it here for the sake of completeness.
-proxy.on("proxyReq", (proxyReq, req, res) => {
+proxy.on("proxyReq", (proxyReq, req) => {
   const url = req.url;
   if (url === "/") {
     // Appending 'index.html' to the path if the URL is the root

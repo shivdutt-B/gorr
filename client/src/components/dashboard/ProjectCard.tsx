@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { GitBranch } from "lucide-react";
+import { GitBranch, Eye } from "lucide-react";
 import { useDeleteProject } from "../../hooks/useDeleteProject";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { projectsAtom, Project } from "../../states/projectsAtom";
@@ -210,16 +210,28 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
         {/* Project Information */}
         <div className="flex flex-col gap-3 relative z-[2]">
-          {/* Project Name */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#1a1a1a] rounded-full flex items-center justify-center">
-              <GitBranch className="w-4 h-4 text-white" />
+          {/* Project Name & View Counter Badge */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-8 h-8 bg-[#1a1a1a] rounded-full flex items-center justify-center flex-shrink-0">
+                <GitBranch className="w-4 h-4 text-white" />
+              </div>
+
+              <div className="min-w-0">
+                <h3 className="text-[20px] font-semibold text-gray-200 truncate">
+                  {project.slug}
+                </h3>
+              </div>
             </div>
 
-            <div className="min-w-0">
-              <h3 className="text-[20px] font-semibold text-gray-200 truncate">
-                {project.slug}
-              </h3>
+            <div
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 border border-white/10 text-sm text-gray-300 font-medium flex-shrink-0 rounded-[4px]"
+              title="Total Website Views"
+            >
+              {/* <Eye className="w-3.5 h-3.5" /> */}
+              <span>
+                {project.views ?? 0} {project.views === 1 ? "view" : "views"}
+              </span>
             </div>
           </div>
 
