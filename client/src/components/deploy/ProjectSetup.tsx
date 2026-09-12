@@ -11,12 +11,13 @@ interface ProjectSetupProps {
   initialValidationOnMount?: boolean;
 }
 
+const validateProjectName = (name: string) => /^[a-z0-9-]*$/.test(name);
+
 const ProjectSetup: React.FC<ProjectSetupProps> = ({
   projectName,
   onProjectNameChange,
   isRedeploy,
   onValidationChange,
-  initialValidationOnMount = true,
 }) => {
   const [searchParams] = useSearchParams();
   const { domainStatus } = useSlugAvailability(isRedeploy ? "" : projectName);
@@ -26,63 +27,24 @@ const ProjectSetup: React.FC<ProjectSetupProps> = ({
     if (!isRedeploy && !projectName) {
       const repoName = searchParams.get("repo");
       if (repoName) {
-        handleProjectNameChange(repoName.toLowerCase());
+        onProjectNameChange(repoName.toLowerCase());
       }
     }
-  }, [isRedeploy, searchParams]); // Add projectName to deps if you want to prevent overwriting
+  }, [isRedeploy, searchParams]);
 
-  // Validation function for project name
-  const validateProjectName = (name: string) => {
-    // Only allow lowercase letters, numbers, and hyphens (no underscores)
-    const validPattern = /^[a-z0-9-]*$/;
-    return validPattern.test(name);
-  };
-
-  // Handle project name change with validation
-  const handleProjectNameChange = (value: string) => {
-    onProjectNameChange(value);
-    updateValidation(value);
-  };
-
-  // Update validation status
-  const updateValidation = (name: string) => {
-    if (!onValidationChange) return;
-
-    // Check all validation conditions
+  // Notify parent of validation changes
+  useEffect(() => {
     const isValid =
-      name !== "" &&
-      validateProjectName(name) &&
-      (isRedeploy || domainStatus === "available");
+      isRedeploy ||
+      (projectName !== "" &&
+        validateProjectName(projectName) &&
+        domainStatus === "available");
 
-    onValidationChange(isValid);
-  };
+    onValidationChange?.(isValid);
+  }, [projectName, domainStatus, isRedeploy, onValidationChange]);
 
-  // Update validation when domain status changes
-  useEffect(() => {
-    updateValidation(projectName);
-  }, [domainStatus]);
-
-  // Validate on initial mount
-  useEffect(() => {
-    if (initialValidationOnMount) {
-      updateValidation(projectName);
-    }
-  }, []);
-
-  // Determine if the current project name is invalid
   const isInvalidFormat =
     projectName !== "" && !validateProjectName(projectName);
-
-  useEffect(() => {
-    if (isRedeploy) {
-      // If redeploying, consider the project name valid by default
-      onValidationChange?.(true);
-    } else {
-      // Only validate project name if not redeploying
-      const isValid = validateProjectName(projectName);
-      onValidationChange?.(isValid);
-    }
-  }, [projectName, isRedeploy, onValidationChange]);
 
   return (
     <>
@@ -122,7 +84,7 @@ const ProjectSetup: React.FC<ProjectSetupProps> = ({
           <input
             type="text"
             value={projectName}
-            onChange={(e) => handleProjectNameChange(e.target.value)}
+            onChange={(e) => onProjectNameChange(e.target.value)}
             placeholder={isRedeploy ? "" : "Enter project name"}
             className={`w-full bg-white/[0.025] px-[13px] py-[6px] rounded-[4px] text-white border border-white/[0.07] focus:border-gray-400 outline-none transition-all duration-200 ${
               isRedeploy ? "opacity-70 cursor-not-allowed" : ""

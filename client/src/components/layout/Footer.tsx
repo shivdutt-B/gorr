@@ -1,4 +1,4 @@
-import { TextHoverEffect } from "../Helper/TextHoverEffect";
+import { TextHoverEffect } from "../helper/TextHoverEffect";
 
 const Footer = () => {
   return (

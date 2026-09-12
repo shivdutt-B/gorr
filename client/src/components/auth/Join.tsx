@@ -1,16 +1,19 @@
 import React from "react";
-import { ArrowLeft, Github } from "lucide-react";
-import { RainbowButton } from "../ui/RainbowButton";
-import useGitHubOAuth from "../../hooks/useAuth";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import GorrLogo from "../../assets/Logo/gorr_logo.svg";
 import GitHubLogo from "../../assets/others/github.png";
 
 export function Join() {
-  const initiateOAuth = useGitHubOAuth(
-    import.meta.env.VITE_CLIENT_ID,
-    import.meta.env.VITE_GITHUB_REDIRECT_URL,
-  );
+  const initiateOAuth = () => {
+    const state = crypto.randomUUID();
+    localStorage.setItem("latestCSRFToken", state);
+    const clientId = import.meta.env.VITE_CLIENT_ID;
+    const redirectUri = import.meta.env.VITE_GITHUB_REDIRECT_URL;
+    window.location.assign(
+      `https://github.com/login/oauth/authorize?client_id=${clientId}&response_type=code&scope=repo&redirect_uri=${redirectUri}&state=${state}`
+    );
+  };
 
   return (
     <main
@@ -172,9 +175,7 @@ export function Join() {
           "
         >
           <Link
-          to="/"
-            type="button"
-            onClick={initiateOAuth}
+            to="/"
             className="
               group
               flex
