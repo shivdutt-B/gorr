@@ -5,12 +5,12 @@ const { executeDeployment } = require("../services/deploymentService");
 
 /**
  * Handles initial project build & deployment.
- * Validates request, provisions user, runs ECS build task, and creates project record in database.
+ * Uses authenticated user from req.user.userId.
  */
 const buildProject = async (req, res) => {
-  const { gitURL, slug, rootDirectory, envVariables, userId } = req.body;
+  const { gitURL, slug, rootDirectory, envVariables } = req.body;
   const projectSlug = slug || generateSlug();
-  const parsedUserId = userId ? parseInt(userId) : undefined;
+  const userId = req.user.userId;
 
   // 1. Validate required payload
   if (!gitURL) {
@@ -50,14 +50,12 @@ const buildProject = async (req, res) => {
       projectId: projectSlug,
     });
 
-    // 5. Upsert user record if userId provided
-    if (parsedUserId) {
-      await prisma.user.upsert({
-        where: { userId: parsedUserId },
-        create: { userId: parsedUserId },
-        update: {},
-      });
-    }
+    // 5. Ensure user record exists in database
+    await prisma.user.upsert({
+      where: { userId },
+      create: { userId },
+      update: {},
+    });
 
     // 6. Execute containerized deployment
     const result = await executeDeployment({
@@ -67,12 +65,12 @@ const buildProject = async (req, res) => {
       envVariables,
       type: "deployment",
       onComplete: async ({ slug, gitUrl, url }) => {
-        // Persist project in database on successful deployment
+        // Persist project in database associated strictly with authenticated user
         const project = await prisma.project.create({
           data: {
             slug,
             gitUrl,
-            userId: parsedUserId,
+            userId,
             projectUrl: url,
           },
         });
@@ -113,7 +111,6 @@ const buildProject = async (req, res) => {
       return res.status(500).json({
         status: "error",
         message: "Failed to deploy project",
-        error: error.message || "Unknown error occurred",
         data: { projectSlug },
       });
     }

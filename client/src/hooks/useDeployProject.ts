@@ -20,6 +20,8 @@ interface DeployResponse {
   error?: string;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
 export const useDeployProject = () => {
   const [isDeploying, setIsDeploying] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -34,7 +36,6 @@ export const useDeployProject = () => {
     gitURL,
     slug,
     rootDirectory,
-    userId,
     envVariables = [],
   }: DeployProjectParams) => {
     // Reset states at the start of new deployment
@@ -48,34 +49,32 @@ export const useDeployProject = () => {
     setStatus("QUEUED");
 
     try {
-      console.log('bef: ')
       const response = await axios.post<DeployResponse>(
-        `${import.meta.env.VITE_API_BASE_URL}/deploy-project` || "http://localhost:5000/deploy-project",
+        `${API_BASE_URL}/deploy-project`,
         {
           gitURL,
           slug,
           rootDirectory,
-          userId,
           envVariables,
-        }
+        },
+        { withCredentials: true }
       );
 
-      if (response.data.status == "error") {
-        setError(response.data.message);
+      if (response.data.status === "error") {
+        setError(new Error(response.data.message));
         setStatus("FAILED");
         setIsQueued(false);
         setIsDeploying(false);
         return null;
       }
 
-      const data = response.data;
       setDeploymentData(response.data);
       setIsQueued(false);
 
       return response.data;
     } catch (err: any) {
       setIsQueued(false);
-      setError(err?.response?.data?.message || 'Unknown error occurred');
+      setError(new Error(err?.response?.data?.message || 'Unknown error occurred'));
       setStatus("FAILED");
       return null;
     } finally {

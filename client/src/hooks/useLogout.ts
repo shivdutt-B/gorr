@@ -1,34 +1,36 @@
 import { useSetRecoilState } from "recoil";
 import { userAtom } from "../states/userAtom";
+import { projectsAtom } from "../states/projectsAtom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
 export const useLogout = () => {
   const setUser = useSetRecoilState(userAtom);
+  const setProjects = useSetRecoilState(projectsAtom);
   const navigate = useNavigate();
 
   const logout = async () => {
     try {
-      // Clear user data from Recoil state
+      // Call server-side logout endpoint to destroy session and clear HTTP-only cookie
+      await axios.post(
+        `${API_BASE_URL}/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
+    } catch (error) {
+      console.error("Error during server logout:", error);
+    } finally {
+      // Clear local application state
       setUser(null);
-      
-      // Clear cookies by setting them to expire
-      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      document.cookie = "github_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      
-      // Clear CSRF token from local storage
+      setProjects(null);
       localStorage.removeItem("latestCSRFToken");
-      
-      // Reset axios default headers if you're using them
-      delete axios.defaults.headers.common["Authorization"];
-      
+
       // Redirect to home page
       navigate("/");
-    } catch (error) {
-      console.error("Error during logout:", error);
     }
   };
 
   return { logout };
-}; 
+};

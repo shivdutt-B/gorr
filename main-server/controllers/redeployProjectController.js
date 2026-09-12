@@ -4,11 +4,11 @@ const { executeDeployment } = require("../services/deploymentService");
 
 /**
  * Handles redeploying an existing project.
- * Validates project ownership, runs ECS build task, and updates project URL in database.
+ * Enforces project ownership using req.user.userId directly in database query.
  */
 const redeployProject = async (req, res) => {
-  const { gitURL, slug, rootDirectory, envVariables, userId } = req.body;
-  const parsedUserId = userId ? parseInt(userId) : undefined;
+  const { gitURL, slug, rootDirectory, envVariables } = req.body;
+  const userId = req.user.userId;
 
   // 1. Validate required payload
   if (!slug) {
@@ -28,27 +28,22 @@ const redeployProject = async (req, res) => {
   }
 
   try {
-    // 3. Verify project exists in database
-    const existingProject = await prisma.project.findUnique({
-      where: { slug },
+    // 3. Verify project exists in database and belongs to the authenticated user
+    const existingProject = await prisma.project.findFirst({
+      where: {
+        slug,
+        userId,
+      },
     });
 
     if (!existingProject) {
       return res.status(404).json({
         status: "error",
-        message: "Project not found. Cannot redeploy a non-existent project.",
+        message: "Project not found or access denied",
       });
     }
 
-    // 4. Verify user permissions
-    if (parsedUserId && existingProject.userId !== parsedUserId) {
-      return res.status(403).json({
-        status: "error",
-        message: "You don't have permission to redeploy this project",
-      });
-    }
-
-    // 5. Execute containerized redeployment
+    // 4. Execute containerized redeployment
     const result = await executeDeployment({
       slug,
       gitUrl: gitURL || existingProject.gitUrl,
@@ -61,7 +56,7 @@ const redeployProject = async (req, res) => {
         // Update project URL if changed
         if (existingProject.projectUrl !== url) {
           project = await prisma.project.update({
-            where: { slug },
+            where: { id: existingProject.id },
             data: { projectUrl: url },
           });
 
@@ -102,7 +97,6 @@ const redeployProject = async (req, res) => {
       return res.status(500).json({
         status: "error",
         message: "Project redeployment failed",
-        error: error.message || "Unknown error occurred",
         data: { projectSlug: slug },
       });
     }

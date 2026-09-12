@@ -9,6 +9,8 @@ interface UseFetchProjectsReturn {
   fetchProjects: (force?: boolean) => Promise<void>;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
 export function useFetchProjects(): UseFetchProjectsReturn {
   const setProjects = useSetRecoilState(projectsAtom);
   const projects = useRecoilValue(projectsAtom);
@@ -18,13 +20,11 @@ export function useFetchProjects(): UseFetchProjectsReturn {
 
   const fetchProjects = useCallback(
     async (force = false) => {
-      console.log("START");
-
       // If request in progress, or projects already loaded (and not forced), or no user or request loading in map, return
       if (
         requestInProgress.current ||
         (!force && projects?.data) ||
-        !user?.id ||
+        !user ||
         isRequestLoading("FetchProjects")
       ) {
         return;
@@ -34,11 +34,10 @@ export function useFetchProjects(): UseFetchProjectsReturn {
       const controller = startLoading("FetchProjects", true, 10000);
 
       try {
-        const url = `${
-          import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
-        }/projects?userId=${user?.id}`;
+        const url = `${API_BASE_URL}/projects`;
 
         const response = await axios.get(url, {
+          withCredentials: true,
           signal: controller.signal,
           timeout: 10000,
         });
@@ -65,4 +64,3 @@ export function useFetchProjects(): UseFetchProjectsReturn {
 
   return { fetchProjects };
 }
-

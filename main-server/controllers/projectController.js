@@ -1,22 +1,15 @@
 const { prisma } = require("../services/prismaService");
 
 /**
- * Retrieves all projects owned by a specific user.
+ * Retrieves all projects owned by the currently authenticated user.
  */
 const getUserProjects = async (req, res) => {
-  const { userId } = req.query;
-
-  if (!userId) {
-    return res.status(400).json({
-      status: "error",
-      message: "User ID is required",
-    });
-  }
-
   try {
+    const userId = req.user.userId;
+
     const projects = await prisma.project.findMany({
       where: {
-        userId: parseInt(userId),
+        userId,
       },
       orderBy: {
         createdAt: "desc",
@@ -32,7 +25,6 @@ const getUserProjects = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: "Failed to fetch projects",
-      error: error.message,
     });
   }
 };

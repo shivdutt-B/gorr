@@ -4,33 +4,33 @@ const { prisma } = require("../services/prismaService");
 
 /**
  * Handles project deletion: cleans up S3 build artifacts and removes project record from database.
+ * Strictly verifies project ownership using req.user.userId.
  */
 const deleteProject = async (req, res) => {
-  const { userId, slug } = req.body;
+  const { slug } = req.body;
+  const userId = req.user.userId;
 
   // 1. Validate required fields
-  if (!userId || !slug) {
+  if (!slug) {
     return res.status(400).json({
       status: "error",
-      message: "User ID and project slug are required",
+      message: "Project slug is required",
     });
   }
 
   try {
-    const parsedUserId = parseInt(userId);
-
-    // 2. Verify project exists and belongs to the requesting user
+    // 2. Verify project exists and belongs to the requesting authenticated user
     const project = await prisma.project.findFirst({
       where: {
         slug,
-        userId: parsedUserId,
+        userId,
       },
     });
 
     if (!project) {
       return res.status(404).json({
         status: "error",
-        message: "Project not found or doesn't belong to the user",
+        message: "Project not found",
       });
     }
 
@@ -59,7 +59,7 @@ const deleteProject = async (req, res) => {
       console.error("⚠️ S3 deletion warning (continuing with DB deletion):", s3Error.message);
     }
 
-    // 4. Delete project record from database
+    // 4. Delete project record from database enforcing ownership in where query
     await prisma.project.delete({
       where: {
         id: project.id,
@@ -78,7 +78,6 @@ const deleteProject = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: "Failed to delete project",
-      error: error.message,
     });
   }
 };

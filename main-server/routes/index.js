@@ -1,21 +1,28 @@
 const express = require("express");
 const router = express.Router();
 
-const { githubCallback } = require("../controllers/authController");
+const { requireAuth } = require("../middleware/authMiddleware");
+const { githubCallback, getMe, logout } = require("../controllers/authController");
 const { buildProject } = require("../controllers/buildProjectController");
 const { redeployProject } = require("../controllers/redeployProjectController");
 const { checkSlugAvailability } = require("../controllers/slugController");
 const { getUserProjects } = require("../controllers/projectController");
 const { deleteProject } = require("../controllers/deleteProjectController");
 
-// Authentication routes
+// Public Authentication routes
 router.get("/auth/github/callback", githubCallback);
 
-// Project management and deployment routes
-router.get("/projects", getUserProjects);
+// Public Utility routes
 router.get("/check-slug", checkSlugAvailability);
-router.post("/deploy-project", buildProject);
-router.post("/redeploy-project", redeployProject);
-router.post("/delete-project", deleteProject);
+
+// Authenticated User routes
+router.get("/auth/me", requireAuth, getMe);
+router.post("/auth/logout", requireAuth, logout);
+
+// Protected Project management and deployment routes
+router.get("/projects", requireAuth, getUserProjects);
+router.post("/deploy-project", requireAuth, buildProject);
+router.post("/redeploy-project", requireAuth, redeployProject);
+router.post("/delete-project", requireAuth, deleteProject);
 
 module.exports = router;

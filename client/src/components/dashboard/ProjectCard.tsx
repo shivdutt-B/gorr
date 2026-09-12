@@ -45,7 +45,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     e.preventDefault();
 
     const result = await deleteProject({
-      userId,
       slug: project.slug,
     });
 

@@ -1,22 +1,20 @@
-// client/src/hooks/useRedeployProject.ts
 import { useState } from "react";
 import axios from "axios";
-import { useRecoilValue } from "recoil";
-import { userAtom } from "../states/userAtom";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export const useRedeployProject = () => {
   const [isRedeploying, setIsRedeploying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deploymentData, setDeploymentData] = useState<any>(null);
   const [isQueued, setIsQueued] = useState(false);
-  const [queuedTimestamp, setQueuedTimestamp] = useState<Date | null>(null);
-  const user = useRecoilValue(userAtom);
+  const [queuedTimestamp, setQueuedTimestamp] = useState<string | null>(null);
 
   const redeployProject = async (
     gitURL: string,
     slug: string,
     rootDirectory: string,
-    userId?: string,
+    _userId?: string,
     envVariables: { key: string; value: string }[] = []
   ) => {
     // Reset states at the start of new deployment
@@ -27,27 +25,25 @@ export const useRedeployProject = () => {
     setQueuedTimestamp(new Date().toISOString());
 
     try {
-      console.log("env vars:", envVariables);
-      
-      const url =
-        `${import.meta.env.VITE_API_BASE_URL}/redeploy-project` ||
-        `http://localhost:5000/redeploy-project`;
-      const response = await axios.post(url, {
-        gitURL,
-        slug,
-        rootDirectory,
-        envVariables,
-        userId: user?.id,
-      });
+      const url = `${API_BASE_URL}/redeploy-project`;
+      const response = await axios.post(
+        url,
+        {
+          gitURL,
+          slug,
+          rootDirectory,
+          envVariables,
+        },
+        { withCredentials: true }
+      );
 
-      if (response.data.status == "error") {
+      if (response.data.status === "error") {
         setDeploymentData(null);
         setIsQueued(false);
         setIsRedeploying(false);
         setError(response.data.message);
         return null;
       }
-
 
       setDeploymentData(response.data);
       setIsQueued(false);
