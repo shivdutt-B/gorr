@@ -1,6 +1,7 @@
 const express = require("express");
 const httpProxy = require("http-proxy");
 const axios = require("axios");
+const path = require("path");
 require("dotenv").config();
 const heimdall = require("heimdall-nodejs-sdk");
 
@@ -8,8 +9,13 @@ const heimdall = require("heimdall-nodejs-sdk");
 const app = express();
 const PORT = process.env.PORT || 8000;
 const BASE_PATH = process.env.S3_BASE_PATH;
+const BASE_DOMAIN = process.env.BASE_DOMAIN || "localhost";
 const MAIN_SERVER_URL = process.env.MAIN_SERVER_URL || "http://localhost:5000";
 const proxy = httpProxy.createProxy();
+
+if (!BASE_DOMAIN) {
+  console.warn("BASE_DOMAIN is not set in .env — subdomain parsing will fail.");
+}
 
 // Add Heimdall ping endpoint
 heimdall.ping(app);
@@ -19,18 +25,24 @@ app.use((req, res) => {
   const hostname = req.hostname;
   let subdomain;
 
-  // Check if the hostname contains underscores (for Angular projects)
-  if (hostname.includes("_")) {
-    const parts = hostname.split(".");
-    const subdomainPart = parts[0];
-    subdomain = subdomainPart.replace(/_/g, "/");
+  // --- Derive subdomain by stripping the known base domain, not by counting labels ---
+  if (hostname === BASE_DOMAIN) {
+    // Request hit the bare base domain directly (no subdomain)
+    subdomain = "";
+  } else if (BASE_DOMAIN && hostname.endsWith(`.${BASE_DOMAIN}`)) {
+    subdomain = hostname.slice(0, -(BASE_DOMAIN.length + 1));
   } else {
-    // Handle regular subdomains
-    subdomain = hostname.split(".").slice(0, -2).join("/");
+    // Fallback: shouldn't normally happen, but avoid crashing
+    subdomain = hostname;
+  }
+
+  // Support underscore-based nested paths (e.g. for Angular projects: foo_bar -> foo/bar)
+  if (subdomain.includes("_")) {
+    subdomain = subdomain.replace(/_/g, "/");
   }
 
   // Extract base project slug for view counter tracking
-  const projectSlug = subdomain ? subdomain.split("/")[0].split("_")[0] : null;
+  const projectSlug = subdomain ? subdomain.split("/")[0] : null;
 
   // Check if request is a main document page view (excluding iframe previews from dashboard)
   const isMainPageView =
@@ -47,20 +59,28 @@ app.use((req, res) => {
       });
   }
 
+  // --- SPA fallback: rewrite extensionless routes to index.html ---
+  // Real static assets (bundle.js, style.css, logo.png, etc.) have an extension
+  // and pass through untouched. Anything else (client-side routes like /movie,
+  // /movie/123, or a hard refresh on any non-root page) gets index.html so the
+  // SPA shell loads and the client-side router can take over.
+  const [rawPath, queryString] = req.url.split("?");
+  const hasExtension = path.extname(rawPath) !== "";
+
+  if (!hasExtension) {
+    req.url = queryString ? `/index.html?${queryString}` : "/index.html";
+  }
+
   // Constructing the target URL for the proxy based on the subdomain
-  const resolvesTo = `${BASE_PATH}/${subdomain}`;
+  const resolvesTo = subdomain ? `${BASE_PATH}/${subdomain}` : BASE_PATH;
 
   // Proxying the request to the constructed URL
-  return proxy.web(req, res, { target: resolvesTo, changeOrigin: true });
-});
-
-// Event listener for proxy requests to modify the path if necessary
-proxy.on("proxyReq", (proxyReq, req) => {
-  const url = req.url;
-  if (url === "/") {
-    // Appending 'index.html' to the path if the URL is the root
-    proxyReq.path += "index.html";
-  }
+  return proxy.web(req, res, { target: resolvesTo, changeOrigin: true }, (err) => {
+    console.error("⚠️ Proxy error:", err.message);
+    if (!res.headersSent) {
+      res.status(502).send("Bad gateway");
+    }
+  });
 });
 
 // Starting the server and logging the port number
