@@ -1,32 +1,24 @@
 import { useLoading } from "../hooks/useLoading";
-import { useSetRecoilState, useRecoilValue } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { userAtom } from "../states/userAtom";
 import axios from "axios";
 import { useCallback, useRef, useEffect } from "react";
-import { requestMapAtom } from "../states/loadingAtom";
-import { useRecoilState } from "recoil";
 import { useLocation } from "react-router-dom";
-import GetCookie from "../utils/GetCookie";
 
 export function useFetchUserData() {
   const { startLoading, stopLoading, isRequestLoading } = useLoading();
   const setUser = useSetRecoilState(userAtom);
-  const user = useRecoilValue(userAtom);
   const requestInProgress = useRef(false);
-  const [requestMap, setRequestMap] = useRecoilState(requestMapAtom);
   const location = useLocation();
 
   // Check for token in URL when component mounts
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
-    const token = queryParams.get('token');
+    const token = queryParams.get("token");
 
     if (token) {
       try {
-        // Store token in cookies instead of localStorage
         document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24}; SameSite=Lax`;
-        
-        // Remove token from URL (for security)
         const newUrl = window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
       } catch (error) {
@@ -40,9 +32,8 @@ export function useFetchUserData() {
       return;
     }
 
-    // Get token from cookie instead of localStorage
-    const token = GetCookie("token");
-    
+    const token = document.cookie.match(/token=([^;]+)/)?.[1] || null;
+
     if (!token) {
       setUser(null);
       return;
@@ -52,9 +43,6 @@ export function useFetchUserData() {
     const controller = startLoading("FetchUser", true, 10000);
 
     try {
-      // 5-second delay and error mimicing mechanism before calling the API
-      // await new Promise((resolve) => setTimeout(resolve, 20000));
-
       const response = await axios.get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${token}` },
         signal: controller.signal,
@@ -63,7 +51,6 @@ export function useFetchUserData() {
 
       setUser(response.data);
     } catch (error) {
-      // If error occurs or timeout occurs (10s), remove invalid token cookie and fallback to no user state
       document.cookie = "token=; path=/; max-age=0";
       setUser(null);
     } finally {
