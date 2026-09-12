@@ -67,7 +67,7 @@ const redeployProject = async (req, res) => {
 
           await publishLog(slug, {
             status: "INFO",
-            message: "📝 Project URL updated in database",
+            message: "Project deployment URL updated in database",
             details: `New URL: ${url}`,
             timestamp: new Date().toISOString(),
             projectId: slug,
@@ -91,11 +91,11 @@ const redeployProject = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("❗ Redeploy project error:", error);
+    console.error("[BUILD SERVICE] Project redeployment failed:", error);
 
     await publishLog(slug, {
       status: "ERROR",
-      message: "❌ Redeployment process failed",
+      message: "Redeployment process failed",
       details: error.message,
       timestamp: new Date().toISOString(),
       projectId: slug,

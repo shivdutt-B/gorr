@@ -56,15 +56,15 @@ async function initRedisSubscribe() {
 
     // Forward Redis messages to the corresponding socket channel
     subscriber.on("pmessage", (pattern, channel, message) => {
-      console.log(`📡 Received message on ${channel}:`, message);
+      console.log(`Received message on ${channel}:`, message);
       io.to(channel).emit("message", message);
     });
 
     subscriber.on("error", (err) => {
-      console.error("❗ Redis subscription error:", err);
+      console.error("Redis subscription error:", err);
     });
   } catch (error) {
-    console.error("❗ Error subscribing to Redis:", error);
+    console.error("Error subscribing to Redis:", error);
   }
 }
 
@@ -76,5 +76,5 @@ initRedisSubscribe();
 
 // Start the HTTP server with both Socket.IO and Express
 server.listen(PORT, () => {
-  console.log(`✅ HTTP/Socket.IO Server running on port ${PORT}`);
+  console.log(`HTTP/Socket.IO Server running on port ${PORT}`);
 });

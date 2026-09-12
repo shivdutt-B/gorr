@@ -8,62 +8,64 @@ function formatLogMessage(message) {
     const parsedMessage =
       typeof message === "string" ? JSON.parse(message) : message;
 
-    // Create a beautifully formatted message
+    // Create a cleanly formatted message
     const formattedMessage = {
       ...parsedMessage,
-      formattedTimestamp: new Date(parsedMessage.timestamp).toLocaleString(),
+      formattedTimestamp: new Date(parsedMessage.timestamp).toISOString(),
       statusBadge: getStatusBadge(parsedMessage.status),
       stageBadge: getStageBadge(parsedMessage.stage),
     };
 
     return formattedMessage;
   } catch (err) {
-    console.error(`❗ Error formatting message: ${err.message}`);
+    console.error(`[BUILD SERVICE] Error formatting message: ${err.message}`);
     return message;
   }
 }
 
 // Get status badge based on status
 function getStatusBadge(status) {
-  switch (status) {
+  switch (status ? status.toUpperCase() : "") {
     case "QUEUED":
-      return "⏳ QUEUED";
+      return "QUEUED";
     case "STARTED":
-      return "🚀 STARTED";
+      return "STARTED";
     case "BUILDING":
-      return "🔨 BUILDING";
+      return "BUILDING";
     case "INFO":
-      return "ℹ️ INFO";
+      return "INFO";
     case "WARNING":
-      return "⚠️ WARNING";
+    case "WARN":
+      return "WARN";
     case "ERROR":
-      return "❌ ERROR";
+      return "ERROR";
     case "COMPLETED":
-      return "✅ COMPLETED";
+    case "SUCCESS":
+      return "SUCCESS";
     default:
-      return status;
+      return status ? status.toUpperCase() : "INFO";
   }
 }
 
 // Get stage badge based on stage
 function getStageBadge(stage) {
-  switch (stage) {
+  switch (stage ? stage.toLowerCase() : "") {
     case "initialization":
-      return "🏁 Initialization";
+      return "[INIT]";
     case "setup":
-      return "🔧 Setup";
+      return "[SETUP]";
     case "building":
-      return "🏗️ Building";
+      return "[BUILD]";
     case "built":
-      return "📦 Built";
+      return "[BUILT]";
     case "uploading":
-      return "📤 Uploading";
+      return "[DEPLOY]";
     case "completed":
-      return "🎉 Completed";
+      return "[SUCCESS]";
     case "failed":
-      return "💥 Failed";
+      return "[FAILED]";
     default:
-      return stage;
+      return stage ? `[${stage.toUpperCase()}]` : "[BUILD]";
   }
 }
 

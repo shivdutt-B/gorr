@@ -57,8 +57,8 @@ async function executeDeployment({
   // 2. Publish initial queued status
   await publishLog(slug, {
     status: "QUEUED",
-    message: `🔄 ${label} has been added to the queue and will start soon`,
-    details: `${label} environment is being prepared`,
+    message: `${label} added to build queue`,
+    details: `${label} environment is being initialized`,
     timestamp: new Date().toISOString(),
     projectId: slug,
     stage: "initialization",
@@ -98,8 +98,8 @@ async function executeDeployment({
   // 4. Publish started status
   await publishLog(slug, {
     status: "STARTED",
-    message: `🚀 ${label} process has started successfully`,
-    details: "Your code is being processed by our build system",
+    message: `${label} task execution started successfully`,
+    details: "Container running build job",
     timestamp: new Date().toISOString(),
     projectId: slug,
     stage: "building",
@@ -118,7 +118,7 @@ async function executeDeployment({
         })
       );
     } catch (err) {
-      console.error("❗ Failed to stop ECS task:", err.message);
+      console.error("[BUILD SERVICE] Failed to stop ECS task:", err.message);
     }
   };
 
@@ -174,7 +174,7 @@ async function executeDeployment({
               projectName,
             });
           } catch (callbackError) {
-            console.error("❗ onComplete callback failed:", callbackError);
+            console.error("[BUILD SERVICE] onComplete callback failed:", callbackError);
           }
         }
 

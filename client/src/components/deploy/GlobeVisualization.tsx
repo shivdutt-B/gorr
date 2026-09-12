@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
 // Add type declaration for import.meta.env
@@ -30,71 +30,43 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
 }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [logs, setLogs] = useState<BuildLog[]>([]);
+  const logContainerRef = useRef<HTMLDivElement>(null);
 
-  // Add waiting for logs message when deploy is clicked
+  // Auto-scroll terminal container to bottom when new logs arrive
+  useEffect(() => {
+    if (logContainerRef.current) {
+      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+    }
+  }, [logs]);
+
+  // Initial waiting log
   useEffect(() => {
     if (isDeploying && logs.length === 0) {
       const waitingLog: BuildLog = {
-        status: "pending",
-        message: "⏰Waiting for deployment logs...",
+        status: "INFO",
+        message: "Waiting for deployment logs...",
         timestamp: new Date().toISOString(),
         stage: "init",
         type: "info",
+        statusBadge: "INFO",
+        stageBadge: "INIT",
       };
       setLogs([waitingLog]);
     }
   }, [isDeploying, logs.length]);
 
-  const getStatusEmoji = (status: string): string => {
-    switch (status.toLowerCase()) {
-      case "success":
-        return "✅ ";
-      case "error":
-        return "❌ ";
-      case "warning":
-        return "⚠️ ";
-      case "info":
-        return "ℹ️ ";
-      case "pending":
-        return "⏳ ";
-      case "running":
-        return "🔄 ";
-      case "complete":
-        return "🎉 ";
-      default:
-        return "📝 ";
-    }
-  };
-
-  const getStageStyle = (stage?: string): { emoji: string; color: string } => {
-    if (!stage) return { emoji: "🔍", color: "text-gray-400" };
-
-    switch (stage.toLowerCase()) {
-      case "build":
-        return { emoji: "🏗️", color: "text-blue-400" };
-      case "deploy":
-        return { emoji: "🚀", color: "text-green-400" };
-      case "test":
-        return { emoji: "🧪", color: "text-purple-400" };
-      case "install":
-        return { emoji: "📦", color: "text-yellow-400" };
-      case "compile":
-        return { emoji: "⚙️", color: "text-orange-400" };
-      case "lint":
-        return { emoji: "🧹", color: "text-pink-400" };
-      case "init":
-        return { emoji: "🔰", color: "text-teal-400" };
-      case "cleanup":
-        return { emoji: "🧼", color: "text-indigo-400" };
-      default:
-        return { emoji: "🔹", color: "text-gray-400" };
-    }
+  // Clean emoji characters and missing glyph placeholders
+  const sanitizeText = (str?: string): string => {
+    if (!str) return "";
+    return str
+      .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "")
+      .replace(/[\uE000-\uF8FF]|\uFFFD/g, "")
+      .trim();
   };
 
   useEffect(() => {
     if (!projectSlug) return;
 
-    // Initialize socket connection using environment variable with fallback
     const socketInstance = io(
       import.meta.env.VITE_SOCKET_URL || "http://localhost:7000",
       {
@@ -107,34 +79,29 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
     );
 
     socketInstance.on("connect", () => {
-      // Subscribe to the project's log channel
       socketInstance.emit("subscribe", `logs:${projectSlug}`);
     });
 
     socketInstance.on("message", (message) => {
       try {
-        // Parse the message if it's a string
         let log = typeof message === "string" ? JSON.parse(message) : message;
 
-        // Format the log object
+        const formattedMessage = sanitizeText(log.message) || "No message provided";
+        const rawDetails =
+          typeof log.details === "object"
+            ? JSON.stringify(log.details, null, 2)
+            : log.details?.toString();
+        const formattedDetails = sanitizeText(rawDetails);
+
         log = {
           ...log,
           timestamp: log.timestamp || new Date().toISOString(),
-          message: log.message?.trim() || "No message provided",
-          status: log.status || "info",
+          message: formattedMessage,
+          status: log.status || "INFO",
           type: log.type || log.status?.toLowerCase() || "info",
-          details:
-            typeof log.details === "object"
-              ? JSON.stringify(log.details, null, 2)
-              : log.details?.toString()?.trim(),
-          statusBadge:
-            log.statusBadge?.trim() ||
-            `${getStatusEmoji(log.status)} ${log.status?.toUpperCase()}`,
-          stageBadge:
-            log.stageBadge?.trim() ||
-            (log.stage
-              ? `${getStageStyle(log.stage).emoji} ${log.stage}`
-              : undefined),
+          details: formattedDetails,
+          statusBadge: sanitizeText(log.statusBadge) || log.status?.toUpperCase() || "INFO",
+          stageBadge: sanitizeText(log.stageBadge) || log.stage?.toUpperCase() || "BUILD",
         };
 
         setLogs((prevLogs) => [...prevLogs, log]);
@@ -148,43 +115,17 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
     });
 
     socketInstance.on("disconnect", (reason) => {
-      // Attempt to reconnect if disconnected unexpectedly
       if (reason === "io server disconnect") {
         socketInstance.connect();
       }
     });
 
-    socketInstance.on("reconnect", (attemptNumber) => {
-      // Resubscribe to the channel after reconnection
+    socketInstance.on("reconnect", () => {
       socketInstance.emit("subscribe", `logs:${projectSlug}`);
-    });
-
-    // Listen for build logs
-    socketInstance.on("build-log", (log: BuildLog) => {
-      const getStageEmoji = (stage?: string): string => {
-        switch (stage?.toLowerCase()) {
-          case "building":
-            return "🏗️ ";
-          case "initialization":
-            return "🚀 ";
-          case "completed":
-            return "✨ ";
-          default:
-            return "📝 ";
-        }
-      };
-
-      const formattedLog = {
-        ...log,
-        message: `${getStageEmoji(log.stage)}${log.message}`,
-      };
-
-      setLogs((prevLogs) => [...prevLogs, formattedLog]);
     });
 
     setSocket(socketInstance);
 
-    // Cleanup on unmount
     return () => {
       if (socketInstance) {
         socketInstance.emit("unsubscribe", `logs:${projectSlug}`);
@@ -197,49 +138,65 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
     <div className="bg-white/[0.025] w-full rounded-[4px] p-4 shadow-lg border border-white/[0.07]">
       <h3 className="text-2xl font-[450] mb-4 text-white">Deployment logs will appear here</h3>
 
-      {/* Globe Visualization */}
+      {/* Globe Visualization Container */}
       <div className="bg-white/[0.025] w-full aspect-[2/1] h-[500px] flex rounded-[4px] mb-8">
-        <div className="w-full   flex flex-col h-full">
-          <div className=" rounded-[4px] overflow-y-auto h-full">
+        <div className="w-full flex flex-col h-full">
+          <div
+            ref={logContainerRef}
+            className="rounded-[4px] overflow-y-auto h-full font-mono text-xs p-3 space-y-1.5 scrollbar-thin scrollbar-thumb-gray-800"
+          >
             {logs.length === 0 ? (
-              <div className="flex-1 h-full flex items-center justify-center"></div>
+              <div className="flex-1 h-full flex items-center justify-center text-gray-500">
+                No active deployment logs available.
+              </div>
             ) : (
-              [...logs].reverse().map((log, index) => (
-                <div
-                  key={index}
-                  className="mb-4 p-3 border-b border-gray-800 text-sm"
-                >
-                  <div className="flex flex-col mob:flex-row mob:items-center gap-2 mb-1">
-                    <span className="text-gray-500 text-xs">
-                      {new Date(log.timestamp).toLocaleTimeString()}
-                    </span>
-                    {log.statusBadge && (
-                      <span
-                        className={`px-2 py-0.5 ${
-                          log.type?.toLowerCase() === "error"
-                            ? "bg-red-900/30 text-red-400"
-                            : log.type?.toLowerCase() === "warning"
-                            ? "bg-yellow-900/30 text-yellow-400"
-                            : "bg-blue-900/30 text-blue-400"
-                        } rounded-md text-xs`}
-                      >
-                        {log.statusBadge}
+              logs.map((log, index) => {
+                const cleanMsg = log.message.trim();
+                const cleanDet = log.details ? log.details.trim() : "";
+                
+                // Show details only if it is non-empty and NOT identical to the message
+                const showDetails = Boolean(cleanDet && cleanDet !== cleanMsg);
+
+                return (
+                  <div
+                    key={index}
+                    className="py-1 px-1 border-b border-gray-800/40 hover:bg-white/[0.02] transition-colors"
+                  >
+                    <div className="flex items-start gap-2 leading-relaxed">
+                      {/* Timestamp */}
+                      <span className="text-gray-500 shrink-0 select-none">
+                        [{new Date(log.timestamp).toLocaleTimeString()}]
                       </span>
-                    )}
-                    {log.stageBadge && (
-                      <span className="text-purple-400 px-2 py-0.5 bg-purple-900/30 rounded-md text-xs">
-                        {log.stageBadge}
+
+                      {/* Status Badge */}
+                      {log.statusBadge && (
+                        <span className="text-gray-400 font-semibold shrink-0 uppercase">
+                          [{log.statusBadge}]
+                        </span>
+                      )}
+
+                      {/* Stage Badge */}
+                      {log.stageBadge && (
+                        <span className="text-gray-500 font-semibold shrink-0 uppercase">
+                          [{log.stageBadge}]
+                        </span>
+                      )}
+
+                      {/* Log Message */}
+                      <span className="text-gray-300 font-mono whitespace-pre-wrap break-all flex-1">
+                        {cleanMsg}
                       </span>
-                    )}
-                  </div>
-                  <div className="text-gray-300 font-medium">{log.message}</div>
-                  {log.details && (
-                    <div className="text-gray-500 mt-2 ml-2 p-2 bg-gray-800/30 rounded border-l-2 border-gray-700 text-xs">
-                      {log.details}
                     </div>
-                  )}
-                </div>
-              ))
+
+                    {/* Distinct Details Output */}
+                    {/* {showDetails && (
+                      <pre className="mt-1 ml-16 p-2 bg-black/30 text-gray-400 text-[11px] rounded border-l-2 border-gray-700 whitespace-pre-wrap break-all overflow-x-auto">
+                        {cleanDet}
+                      </pre>
+                    )} */}
+                  </div>
+                );
+              })
             )}
           </div>
         </div>

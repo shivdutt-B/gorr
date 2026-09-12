@@ -25,7 +25,7 @@ const buildProject = async (req, res) => {
   if (!isRedisReady) {
     return res.status(503).json({
       status: "error",
-      message: "Redis service is not connected. Deployment cannot proceed.",
+      message: "Unable to start the deployment. Please try again later.",
     });
   }
 
@@ -44,9 +44,9 @@ const buildProject = async (req, res) => {
 
     // 4. Publish validation status to Redis
     await publishLog(projectSlug, {
-      status: "VALIDATING",
-      message: "🔍 Validating project details",
-      details: "Checking user and project information",
+      status: "INFO",
+      message: "Validating project configuration and credentials",
+      details: "Checking user account and project details",
       timestamp: new Date().toISOString(),
       projectId: projectSlug,
       stage: "validation",
@@ -81,7 +81,7 @@ const buildProject = async (req, res) => {
 
         await publishLog(slug, {
           status: "INFO",
-          message: "📝 Project created in database",
+          message: "Project record successfully persisted to database",
           details: `Project slug: ${slug}`,
           timestamp: new Date().toISOString(),
           projectId: slug,
@@ -104,11 +104,11 @@ const buildProject = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("❗ Build project error:", error);
+    console.error("[BUILD SERVICE] Project deployment failed:", error);
 
     await publishLog(projectSlug, {
       status: "ERROR",
-      message: "❌ Deployment process failed",
+      message: "Deployment process failed",
       details: error.message,
       timestamp: new Date().toISOString(),
       projectId: projectSlug,
