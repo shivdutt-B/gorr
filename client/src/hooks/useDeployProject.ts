@@ -48,7 +48,7 @@ export const useDeployProject = () => {
     setStatus("QUEUED");
 
     try {
-      console.log("env vars:", envVariables);
+      console.log('bef: ')
       const response = await axios.post<DeployResponse>(
         `${import.meta.env.VITE_API_BASE_URL}/deploy-project` || "http://localhost:5000/deploy-project",
         {
@@ -74,9 +74,8 @@ export const useDeployProject = () => {
 
       return response.data;
     } catch (err: any) {
-      console.error("Error redeploying project:", err);
       setIsQueued(false);
-      setError(err as Error);
+      setError(err?.response?.data?.message || 'Unknown error occurred');
       setStatus("FAILED");
       return null;
     } finally {

@@ -2,30 +2,52 @@
  * Utility functions for formatting log messages
  */
 
+// Helper to strip ANSI escape codes, emojis, and unprintable glyphs
+function sanitizeLogText(str) {
+  if (!str || typeof str !== "string") return str || "";
+  return str
+    // Strip ANSI escape sequences (e.g. \u001b[32m)
+    .replace(/\u001b\[[0-9;]*[a-zA-Z]/g, "")
+    // Strip Unicode Emojis
+    .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "")
+    // Strip Private Use & Replacement characters
+    .replace(/[\uE000-\uF8FF]|\uFFFD/g, "")
+    .trim();
+}
+
 // Format log message for better display
 function formatLogMessage(message) {
   try {
-    const parsedMessage =
-      typeof message === "string" ? JSON.parse(message) : message;
+    let parsedMessage = typeof message === "string" ? JSON.parse(message) : message;
 
-    // Create a cleanly formatted message
+    if (typeof parsedMessage === "string") {
+      parsedMessage = { message: parsedMessage };
+    }
+
+    const cleanMsg = sanitizeLogText(parsedMessage.message || "");
+    const status = parsedMessage.status ? parsedMessage.status.toUpperCase() : "INFO";
+
     const formattedMessage = {
-      ...parsedMessage,
-      formattedTimestamp: new Date(parsedMessage.timestamp).toISOString(),
-      statusBadge: getStatusBadge(parsedMessage.status),
-      stageBadge: getStageBadge(parsedMessage.stage),
+      projectId: parsedMessage.projectId,
+      timestamp: parsedMessage.timestamp || new Date().toISOString(),
+      formattedTimestamp: new Date(parsedMessage.timestamp || Date.now()).toISOString(),
+      type: parsedMessage.type || "info",
+      status,
+      statusBadge: getStatusBadge(status),
+      message: cleanMsg,
     };
 
     return formattedMessage;
   } catch (err) {
-    console.error(`[BUILD SERVICE] Error formatting message: ${err.message}`);
+    console.error(`[SOCKET SERVER] Error formatting message: ${err.message}`);
     return message;
   }
 }
 
 // Get status badge based on status
 function getStatusBadge(status) {
-  switch (status ? status.toUpperCase() : "") {
+  const cleanStatus = status ? status.toUpperCase().replace(/[\[\]]/g, "") : "";
+  switch (cleanStatus) {
     case "QUEUED":
       return "QUEUED";
     case "STARTED":
@@ -43,34 +65,12 @@ function getStatusBadge(status) {
     case "SUCCESS":
       return "SUCCESS";
     default:
-      return status ? status.toUpperCase() : "INFO";
-  }
-}
-
-// Get stage badge based on stage
-function getStageBadge(stage) {
-  switch (stage ? stage.toLowerCase() : "") {
-    case "initialization":
-      return "[INIT]";
-    case "setup":
-      return "[SETUP]";
-    case "building":
-      return "[BUILD]";
-    case "built":
-      return "[BUILT]";
-    case "uploading":
-      return "[DEPLOY]";
-    case "completed":
-      return "[SUCCESS]";
-    case "failed":
-      return "[FAILED]";
-    default:
-      return stage ? `[${stage.toUpperCase()}]` : "[BUILD]";
+      return cleanStatus || "INFO";
   }
 }
 
 module.exports = {
+  sanitizeLogText,
   formatLogMessage,
   getStatusBadge,
-  getStageBadge,
 };

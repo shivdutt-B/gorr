@@ -58,10 +58,8 @@ async function executeDeployment({
   await publishLog(slug, {
     status: "QUEUED",
     message: `${label} added to build queue`,
-    details: `${label} environment is being initialized`,
     timestamp: new Date().toISOString(),
     projectId: slug,
-    stage: "initialization",
   });
 
   // 3. Dispatch AWS ECS Fargate task
@@ -99,10 +97,8 @@ async function executeDeployment({
   await publishLog(slug, {
     status: "STARTED",
     message: `${label} task execution started successfully`,
-    details: "Container running build job",
     timestamp: new Date().toISOString(),
     projectId: slug,
-    stage: "building",
     taskArn,
   });
 
@@ -155,7 +151,7 @@ async function executeDeployment({
       }
 
       // Handle successful build completion
-      if (log.stage === "completed" && !isSettled) {
+      if ((log.status === "COMPLETED" || log.status === "SUCCESS" || log.message === "COMPLETED") && !isSettled) {
         isSettled = true;
         await cleanup();
 
@@ -188,7 +184,7 @@ async function executeDeployment({
       }
 
       // Handle build failure
-      else if ((log.status === "ERROR" || log.status === "FAILED") && !isSettled) {
+      else if ((log.status === "ERROR" || log.status === "FAILED" || log.message === "FAILED") && !isSettled) {
         isSettled = true;
         await cleanup();
         await stopTask(`${label} failed with error status`);

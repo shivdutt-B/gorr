@@ -35,6 +35,15 @@ const PROJECT_ID = process.env.PROJECT_ID;
    LOG FORMATTING & STAGING HELPERS
    ========================================================================== */
 
+function sanitizeLogText(str) {
+  if (!str || typeof str !== "string") return str || "";
+  return str
+    .replace(/\u001b\[[0-9;]*[a-zA-Z]/g, "")
+    .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "")
+    .replace(/[\uE000-\uF8FF]|\uFFFD/g, "")
+    .trim();
+}
+
 function getStatusFromType(type) {
   switch (type.toLowerCase()) {
     case "error":
@@ -48,40 +57,9 @@ function getStatusFromType(type) {
   }
 }
 
-function getStageFromLog(log, type) {
-  const upperLog = log.toUpperCase();
-  if (type === "error" || upperLog.includes("FAILED")) return "failed";
-  if (upperLog.includes("INITIALIZED") || upperLog.includes("STARTING BUILD PROCESS")) return "initialization";
-  if (upperLog.includes("INSTALLING DEPENDENCIES") || upperLog.includes("PACKAGE.JSON FOUND") || upperLog.includes("RUNNING BUILD")) return "setup";
-  if (upperLog.includes("BUILD COMPLETED") || upperLog.includes("FOUND BUILD OUTPUT")) return "built";
-  if (upperLog.includes("UPLOADING") || upperLog.includes("PREPARING TO UPLOAD")) return "uploading";
-  if (upperLog.includes("COMPLETED") || upperLog.includes("SUCCESSFULLY")) return "completed";
-  return "building";
-}
-
-function getStageBadge(stage) {
-  switch (stage ? stage.toLowerCase() : "") {
-    case "initialization":
-      return "[INIT]";
-    case "setup":
-      return "[SETUP]";
-    case "building":
-      return "[BUILD]";
-    case "built":
-      return "[BUILT]";
-    case "uploading":
-      return "[DEPLOY]";
-    case "completed":
-      return "[SUCCESS]";
-    case "failed":
-      return "[FAILED]";
-    default:
-      return stage ? `[${stage.toUpperCase()}]` : "[BUILD]";
-  }
-}
-
 function getStatusBadge(status) {
-  switch (status ? status.toUpperCase() : "") {
+  const cleanStatus = status ? status.toUpperCase().replace(/[\[\]]/g, "") : "";
+  switch (cleanStatus) {
     case "QUEUED":
       return "QUEUED";
     case "STARTED":
@@ -91,6 +69,7 @@ function getStatusBadge(status) {
     case "INFO":
       return "INFO";
     case "WARNING":
+    case "WARN":
       return "WARN";
     case "ERROR":
       return "ERROR";
@@ -98,40 +77,45 @@ function getStatusBadge(status) {
     case "SUCCESS":
       return "SUCCESS";
     default:
-      return status ? status.toUpperCase() : "INFO";
+      return cleanStatus || "INFO";
   }
 }
 
-function publishLog(log, type = "info", customDetails) {
+function publishLog(log, type = "info") {
   if (!PROJECT_ID) {
     console.error("[BUILD SERVICE] PROJECT_ID is not defined. Cannot publish logs.");
     return;
   }
 
+  if (!log) return;
+
   try {
-    const status = getStatusFromType(type);
-    const stage = getStageFromLog(log, type);
-
-    const logData = {
-      projectId: PROJECT_ID,
-      timestamp: new Date().toISOString(),
-      type,
-      status,
-      message: log.trim(),
-      details: customDetails || (type === "error" ? log : undefined),
-      stage,
-      stageBadge: getStageBadge(stage),
-      statusBadge: getStatusBadge(status),
-    };
-
-    console.log(`[${logData.statusBadge}] ${logData.stageBadge} ${logData.message}`);
-
+    const rawLines = String(log).split(/\r?\n/);
     const channel = `logs:${PROJECT_ID}`;
-    publisher
-      .publish(channel, JSON.stringify(logData))
-      .catch((error) =>
-        console.error(`[BUILD SERVICE] Error publishing log to Redis: ${error.message}`)
-      );
+
+    for (const rawLine of rawLines) {
+      const sanitizedLine = sanitizeLogText(rawLine);
+      if (!sanitizedLine) continue;
+
+      const status = getStatusFromType(type);
+
+      const logData = {
+        projectId: PROJECT_ID,
+        timestamp: new Date().toISOString(),
+        type,
+        status,
+        statusBadge: getStatusBadge(status),
+        message: sanitizedLine,
+      };
+
+      console.log(`[${logData.statusBadge}] ${logData.message}`);
+
+      publisher
+        .publish(channel, JSON.stringify(logData))
+        .catch((error) =>
+          console.error(`[BUILD SERVICE] Error publishing log to Redis: ${error.message}`)
+        );
+    }
   } catch (error) {
     console.error(`[BUILD SERVICE] Error formatting log: ${error.message}`);
   }
@@ -142,11 +126,16 @@ function formatLogMessage(message) {
     const parsedMessage =
       typeof message === "string" ? JSON.parse(message) : message;
 
+    const cleanMsg = sanitizeLogText(parsedMessage.message || "");
+
     return {
-      ...parsedMessage,
-      formattedTimestamp: new Date(parsedMessage.timestamp).toISOString(),
+      projectId: parsedMessage.projectId,
+      timestamp: new Date().toISOString(),
+      formattedTimestamp: new Date(parsedMessage.timestamp || Date.now()).toISOString(),
+      type: parsedMessage.type || "info",
+      status: parsedMessage.status ? parsedMessage.status.toUpperCase() : "INFO",
       statusBadge: getStatusBadge(parsedMessage.status),
-      stageBadge: getStageBadge(parsedMessage.stage),
+      message: cleanMsg,
     };
   } catch (err) {
     console.error(`[BUILD SERVICE] Error formatting message: ${err.message}`);
@@ -382,5 +371,4 @@ init();
 module.exports = {
   formatLogMessage,
   getStatusBadge,
-  getStageBadge,
 };

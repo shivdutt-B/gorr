@@ -46,10 +46,8 @@ const buildProject = async (req, res) => {
     await publishLog(projectSlug, {
       status: "INFO",
       message: "Validating project configuration and credentials",
-      details: "Checking user account and project details",
       timestamp: new Date().toISOString(),
       projectId: projectSlug,
-      stage: "validation",
     });
 
     // 5. Upsert user record if userId provided
@@ -82,10 +80,8 @@ const buildProject = async (req, res) => {
         await publishLog(slug, {
           status: "INFO",
           message: "Project record successfully persisted to database",
-          details: `Project slug: ${slug}`,
           timestamp: new Date().toISOString(),
           projectId: slug,
-          stage: "project_creation",
         });
 
         return project;
@@ -109,10 +105,8 @@ const buildProject = async (req, res) => {
     await publishLog(projectSlug, {
       status: "ERROR",
       message: "Deployment process failed",
-      details: error.message,
       timestamp: new Date().toISOString(),
       projectId: projectSlug,
-      stage: "failed",
     }).catch(() => {});
 
     if (!res.headersSent) {

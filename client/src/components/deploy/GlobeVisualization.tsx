@@ -1,12 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
-
-// Add type declaration for import.meta.env
-interface ImportMeta {
-  env: {
-    VITE_SOCKET_URL?: string;
-  };
-}
+import { Terminal } from "lucide-react";
 
 interface GlobeVisualizationProps {
   projectSlug?: string;
@@ -16,11 +10,8 @@ interface GlobeVisualizationProps {
 interface BuildLog {
   status: string;
   message: string;
-  details?: string;
   timestamp: string;
-  stage?: string;
   statusBadge?: string;
-  stageBadge?: string;
   type?: string;
 }
 
@@ -32,51 +23,58 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
   const [logs, setLogs] = useState<BuildLog[]>([]);
   const logContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll terminal container to bottom when new logs arrive
-  useEffect(() => {
-    if (logContainerRef.current) {
-      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
-    }
-  }, [logs]);
+  // Helper to sanitize ANSI escape codes, emojis, and unprintable glyphs
+  const sanitizeText = (str?: string): string => {
+    if (!str) return "";
+    return (
+      str
+        // Strip ANSI escape sequences (e.g. \u001b[32m)
+        .replace(/\u001b\[[0-9;]*[a-zA-Z]/g, "")
+        // Strip Unicode Emojis
+        .replace(
+          /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu,
+          "",
+        )
+        // Strip Private Use & Replacement characters
+        .replace(/[\uE000-\uF8FF]|\uFFFD/g, "")
+        .trim()
+    );
+  };
 
-  // Initial waiting log
+  // Clean raw badge strings (remove any existing square brackets)
+  const cleanBadgeStr = (badge?: string): string => {
+    if (!badge) return "";
+    return sanitizeText(badge)
+      .replace(/[\[\]]/g, "")
+      .toUpperCase();
+  };
+
+  // Initial waiting log setup
   useEffect(() => {
     if (isDeploying && logs.length === 0) {
       const waitingLog: BuildLog = {
         status: "INFO",
-        message: "Waiting for deployment logs...",
+        message: "Initializing deployment environment...",
         timestamp: new Date().toISOString(),
-        stage: "init",
         type: "info",
         statusBadge: "INFO",
-        stageBadge: "INIT",
       };
       setLogs([waitingLog]);
     }
   }, [isDeploying, logs.length]);
 
-  // Clean emoji characters and missing glyph placeholders
-  const sanitizeText = (str?: string): string => {
-    if (!str) return "";
-    return str
-      .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "")
-      .replace(/[\uE000-\uF8FF]|\uFFFD/g, "")
-      .trim();
-  };
-
   useEffect(() => {
     if (!projectSlug) return;
 
-    const socketInstance = io(
-      import.meta.env.VITE_SOCKET_URL || "http://localhost:7000",
-      {
-        withCredentials: true,
-        transports: ["websocket", "polling"],
-        reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-      }
-    );
+    const socketUrl =
+      import.meta.env.VITE_SOCKET_URL || "http://localhost:7000";
+    const socketInstance = io(socketUrl, {
+      withCredentials: true,
+      transports: ["websocket", "polling"],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
 
     socketInstance.on("connect", () => {
       socketInstance.emit("subscribe", `logs:${projectSlug}`);
@@ -85,33 +83,38 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
     socketInstance.on("message", (message) => {
       try {
         let log = typeof message === "string" ? JSON.parse(message) : message;
+        if (typeof log === "string") {
+          try {
+            log = JSON.parse(log);
+          } catch {
+            log = { message: log };
+          }
+        }
 
-        const formattedMessage = sanitizeText(log.message) || "No message provided";
-        const rawDetails =
-          typeof log.details === "object"
-            ? JSON.stringify(log.details, null, 2)
-            : log.details?.toString();
-        const formattedDetails = sanitizeText(rawDetails);
+        const formattedMessage =
+          sanitizeText(log.message) || "No log content provided";
 
-        log = {
-          ...log,
+        const statusStr = cleanBadgeStr(
+          log.statusBadge || log.status || "INFO",
+        );
+
+        const normalizedLog: BuildLog = {
           timestamp: log.timestamp || new Date().toISOString(),
           message: formattedMessage,
           status: log.status || "INFO",
           type: log.type || log.status?.toLowerCase() || "info",
-          details: formattedDetails,
-          statusBadge: sanitizeText(log.statusBadge) || log.status?.toUpperCase() || "INFO",
-          stageBadge: sanitizeText(log.stageBadge) || log.stage?.toUpperCase() || "BUILD",
+          statusBadge: statusStr,
         };
 
-        setLogs((prevLogs) => [...prevLogs, log]);
+        // Prepend the new log to the top of the array
+        setLogs((prevLogs) => [normalizedLog, ...prevLogs]);
       } catch (error) {
-        console.error("Error parsing log message:", error);
+        console.error("Error parsing socket log message:", error);
       }
     });
 
     socketInstance.on("error", (error) => {
-      console.error("Socket error:", error);
+      console.error("Socket connection error:", error);
     });
 
     socketInstance.on("disconnect", (reason) => {
@@ -134,73 +137,76 @@ const GlobeVisualization: React.FC<GlobeVisualizationProps> = ({
     };
   }, [projectSlug]);
 
+  const getStatusBadgeStyle = (statusBadge?: string) => {
+    switch (statusBadge) {
+      case "SUCCESS":
+      case "COMPLETED":
+        return "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+      case "ERROR":
+      case "FAILED":
+        return "bg-rose-500/10 text-rose-400 border-rose-500/30";
+      case "WARN":
+      case "WARNING":
+        return "bg-amber-500/10 text-amber-400 border-amber-500/30";
+      case "BUILDING":
+      case "STARTED":
+      case "QUEUED":
+        return "bg-sky-500/10 text-sky-400 border-sky-500/30";
+      default:
+        return "bg-zinc-800 text-zinc-300 border-zinc-700/50";
+    }
+  };
+
   return (
-    <div className="bg-white/[0.025] w-full rounded-[4px] p-4 shadow-lg border border-white/[0.07]">
-      <h3 className="text-2xl font-[450] mb-4 text-white">Deployment logs will appear here</h3>
-
-      {/* Globe Visualization Container */}
-      <div className="bg-white/[0.025] w-full aspect-[2/1] h-[500px] flex rounded-[4px] mb-8">
-        <div className="w-full flex flex-col h-full">
-          <div
-            ref={logContainerRef}
-            className="rounded-[4px] overflow-y-auto h-full font-mono text-xs p-3 space-y-1.5 scrollbar-thin scrollbar-thumb-gray-800"
-          >
-            {logs.length === 0 ? (
-              <div className="flex-1 h-full flex items-center justify-center text-gray-500">
-                No active deployment logs available.
-              </div>
-            ) : (
-              logs.map((log, index) => {
-                const cleanMsg = log.message.trim();
-                const cleanDet = log.details ? log.details.trim() : "";
-                
-                // Show details only if it is non-empty and NOT identical to the message
-                const showDetails = Boolean(cleanDet && cleanDet !== cleanMsg);
-
-                return (
-                  <div
-                    key={index}
-                    className="py-1 px-1 border-b border-gray-800/40 hover:bg-white/[0.02] transition-colors"
-                  >
-                    <div className="flex items-start gap-2 leading-relaxed">
-                      {/* Timestamp */}
-                      <span className="text-gray-500 shrink-0 select-none">
-                        [{new Date(log.timestamp).toLocaleTimeString()}]
-                      </span>
-
-                      {/* Status Badge */}
-                      {log.statusBadge && (
-                        <span className="text-gray-400 font-semibold shrink-0 uppercase">
-                          [{log.statusBadge}]
-                        </span>
-                      )}
-
-                      {/* Stage Badge */}
-                      {log.stageBadge && (
-                        <span className="text-gray-500 font-semibold shrink-0 uppercase">
-                          [{log.stageBadge}]
-                        </span>
-                      )}
-
-                      {/* Log Message */}
-                      <span className="text-gray-300 font-mono whitespace-pre-wrap break-all flex-1">
-                        {cleanMsg}
-                      </span>
-                    </div>
-
-                    {/* Distinct Details Output */}
-                    {/* {showDetails && (
-                      <pre className="mt-1 ml-16 p-2 bg-black/30 text-gray-400 text-[11px] rounded border-l-2 border-gray-700 whitespace-pre-wrap break-all overflow-x-auto">
-                        {cleanDet}
-                      </pre>
-                    )} */}
-                  </div>
-                );
-              })
-            )}
+    <div
+      ref={logContainerRef}
+      className="bg-white/[0.025] w-full h-[500px] rounded-[4px] shadow-lg border border-white/[0.07] overflow-y-auto text-xs p-2 space-y-1.5 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent"
+    >
+      {logs.length === 0 ? (
+        <div className="flex h-full flex-col items-center justify-center select-none">
+          <div className="flex flex-col items-center gap-3">
+            <Terminal className="h-10 w-10 text-zinc-600" />
+            <p className="text-lg text-zinc-500 font-medium">
+              Deployment logs will appear here
+            </p>
           </div>
         </div>
-      </div>
+      ) : (
+        logs.map((log, index) => {
+          const cleanMsg = log.message.trim();
+
+          return (
+            <div key={index} className="group py-1 px-2 text-mono border-b border-white/[0.03] last:border-b-0">
+              <div className="flex items-center gap-2.5 leading-relaxed">
+                {/* Timestamp */}
+                <span className="text-zinc-500 shrink-0 select-none text-sm">
+                  {new Date(log.timestamp).toLocaleTimeString([], {
+                    hour12: false,
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}
+                </span>
+
+                {/* Status Badge */}
+                {log.statusBadge && (
+                  <span
+                    className={`px-1.5 py-0.5 text-xs tracking-wider rounded font-semibold uppercase shrink-0 border ${getStatusBadgeStyle(
+                      log.statusBadge,
+                    )}`}
+                  >
+                    {log.statusBadge}
+                  </span>
+                )}
+              </div>
+              {/* Log Message */}
+              <div className="text-zinc-200 whitespace-pre-wrap break-all flex-1 text-xs font-mono py-2">
+                {cleanMsg}
+              </div>
+            </div>
+          );
+        })
+      )}
     </div>
   );
 };

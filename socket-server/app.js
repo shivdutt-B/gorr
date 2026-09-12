@@ -46,6 +46,8 @@ io.on("connection", (socket) => {
   });
 });
 
+const { formatLogMessage } = require("./utils/logFormatter");
+
 // Initialize Redis subscription to listen for logs
 async function initRedisSubscribe() {
   console.log("Subscribing to build logs...");
@@ -56,8 +58,8 @@ async function initRedisSubscribe() {
 
     // Forward Redis messages to the corresponding socket channel
     subscriber.on("pmessage", (pattern, channel, message) => {
-      console.log(`Received message on ${channel}:`, message);
-      io.to(channel).emit("message", message);
+      const formattedLog = formatLogMessage(message);
+      io.to(channel).emit("message", JSON.stringify(formattedLog));
     });
 
     subscriber.on("error", (err) => {

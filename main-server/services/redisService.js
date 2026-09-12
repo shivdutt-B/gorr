@@ -16,7 +16,7 @@ const createRedisClient = (name = "publisher") => {
   const client = new Redis(redisUrl, {
     retryStrategy: (times) => {
       if (times > 5) {
-        console.error(`❌ ${name}: Max retry attempts reached.`);
+        console.error(`[REDIS ERROR] ${name}: Max retry attempts reached.`);
         return null;
       }
       return Math.min(times * 50, 2000);
@@ -26,9 +26,9 @@ const createRedisClient = (name = "publisher") => {
     connectionName: name,
   });
 
-  client.on("connect", () => console.log(`✅ Connected to Redis (${name})`));
-  client.on("error", (err) => console.error(`❗ Redis (${name}) error:`, err.message));
-  client.on("close", () => console.log(`📡 Redis connection closed (${name})`));
+  client.on("connect", () => console.log(`[REDIS INFO] Connected to Redis (${name})`));
+  client.on("error", (err) => console.error(`[REDIS ERROR] Redis (${name}) error:`, err.message));
+  client.on("close", () => console.log(`[REDIS INFO] Redis connection closed (${name})`));
 
   return client;
 };
@@ -38,7 +38,7 @@ let publisher;
 try {
   publisher = createRedisClient("publisher");
 } catch (error) {
-  console.error("❌ Failed to initialize Redis publisher:", error.message);
+  console.error("[REDIS ERROR] Failed to initialize Redis publisher:", error.message);
 }
 
 /**
@@ -116,7 +116,7 @@ const publishLog = async (projectId, log) => {
     await publisher.publish(`logs:${projectId}`, JSON.stringify(log));
     return true;
   } catch (error) {
-    console.error("❗ Error publishing log:", error.message);
+    console.error("[REDIS ERROR] Error publishing log:", error.message);
     return false;
   }
 };
@@ -139,7 +139,7 @@ const subscribeToLogs = (projectId, callback) => {
     if (!isSubscribed) {
       subscriberClient.subscribe(`logs:${projectId}`, (err) => {
         if (err) {
-          console.error("❗ Error subscribing to logs:", err.message);
+          console.error("[REDIS ERROR] Error subscribing to logs:", err.message);
         } else {
           isSubscribed = true;
         }
@@ -151,7 +151,7 @@ const subscribeToLogs = (projectId, callback) => {
     try {
       callback(JSON.parse(message));
     } catch (error) {
-      console.error("❗ Error parsing log message:", error.message);
+      console.error("[REDIS ERROR] Error parsing log message:", error.message);
     }
   });
 
@@ -165,7 +165,7 @@ const subscribeToLogs = (projectId, callback) => {
         await subscriberClient.quit();
       }
     } catch (error) {
-      console.error("❗ Error unsubscribing:", error.message);
+      console.error("[REDIS ERROR] Error unsubscribing:", error.message);
     }
   };
 
