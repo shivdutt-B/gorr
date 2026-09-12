@@ -1,93 +1,65 @@
+const { ListObjectsV2Command, DeleteObjectsCommand } = require("@aws-sdk/client-s3");
+const { s3Client, config } = require("../config/aws");
 const { prisma } = require("../services/prismaService");
-const AWS = require("aws-sdk");
-require("dotenv").config();
 
-// Configure AWS S3
-const s3 = new AWS.S3({
-  region: process.env.AWS_S3_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
-
-/*
-  * Get the userId and slug from the request body
-  * Validate that both userId and slug are provided
-  * Check if the project exists in the database for the given userId and slug
-  * If the project does not exist, return an error response
-  * If the project exists, proceed to delete the project files from S3
-  * List all objects in the S3 bucket under the project slug
-  * If no objects are found, log a message and continue
-  * If objects are found, prepare a delete request for all objects in the project folder
-  * Send the delete request to S3 to remove all project files
-  * After deleting the files from S3, delete the project record from the database
-  * Return a success response with the project slug
-  * If any error occurs during the process, log the error and return an error response
-*/
+/**
+ * Handles project deletion: cleans up S3 build artifacts and removes project record from database.
+ */
 const deleteProject = async (req, res) => {
+  const { userId, slug } = req.body;
+
+  // 1. Validate required fields
+  if (!userId || !slug) {
+    return res.status(400).json({
+      status: "error",
+      message: "User ID and project slug are required",
+    });
+  }
+
   try {
-    const { userId, slug } = req.body;
+    const parsedUserId = parseInt(userId);
 
-    if (!userId || !slug) {
-      return res.json({
-        status: "error",
-        message: "User ID and project slug are required",
-      });
-    }
-
-    // Find the project to ensure it exists and belongs to the user
+    // 2. Verify project exists and belongs to the requesting user
     const project = await prisma.project.findFirst({
       where: {
-        slug: slug,
-        userId: parseInt(userId),
+        slug,
+        userId: parsedUserId,
       },
     });
 
     if (!project) {
-      return res.json({
+      return res.status(404).json({
         status: "error",
         message: "Project not found or doesn't belong to the user",
       });
     }
 
-    // Delete the project from S3
+    // 3. Delete project build artifacts from S3
     try {
-      const bucketName = process.env.AWS_S3_BUCKET_NAME;
-      const folderKey = `${slug}/`;
-
-      // List all objects in the folder
-      const listParams = {
+      const bucketName = config.S3_BUCKET;
+      const listCommand = new ListObjectsV2Command({
         Bucket: bucketName,
-        Prefix: folderKey,
-      };
+        Prefix: `${slug}/`,
+      });
 
-      const listedObjects = await s3.listObjectsV2(listParams).promise();
+      const listedObjects = await s3Client.send(listCommand);
 
-      if (listedObjects.Contents.length === 0) {
-        console.log(`No objects found in S3 for project: ${slug}`);
-      } else {
-        // Delete all objects in the folder
-        const deleteParams = {
+      if (listedObjects.Contents && listedObjects.Contents.length > 0) {
+        const deleteCommand = new DeleteObjectsCommand({
           Bucket: bucketName,
-          Delete: { Objects: [] },
-        };
-
-        listedObjects.Contents.forEach(({ Key }) => {
-          deleteParams.Delete.Objects.push({ Key });
+          Delete: {
+            Objects: listedObjects.Contents.map(({ Key }) => ({ Key })),
+          },
         });
 
-        await s3.deleteObjects(deleteParams).promise();
-        console.log(
-          `Deleted ${deleteParams.Delete.Objects.length} objects from S3 for project: ${slug}`
-        );
+        await s3Client.send(deleteCommand);
+        console.log(`Deleted ${listedObjects.Contents.length} objects from S3 for: ${slug}`);
       }
     } catch (s3Error) {
-      console.error("Error deleting project files from S3:", s3Error);
-      // Continue with database deletion even if S3 deletion fails
+      console.error("⚠️ S3 deletion warning (continuing with DB deletion):", s3Error.message);
     }
 
-    // Delete the project from the database
+    // 4. Delete project record from database
     await prisma.project.delete({
       where: {
         id: project.id,
@@ -98,7 +70,7 @@ const deleteProject = async (req, res) => {
       status: "success",
       message: "Project deleted successfully",
       data: {
-        slug: slug,
+        slug,
       },
     });
   } catch (error) {

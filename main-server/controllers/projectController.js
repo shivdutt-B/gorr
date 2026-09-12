@@ -1,13 +1,8 @@
 const { prisma } = require("../services/prismaService");
 
-/*
-  * Get the userId from the request query
-  * Validate that userId is provided
-  * Fetch all projects for the given userId from the database
-  * If no projects are found, return an empty array
-  * If projects are found, return them in the response
-  * If any error occurs during the process, log the error and return an error response
-*/
+/**
+ * Retrieves all projects owned by a specific user.
+ */
 const getUserProjects = async (req, res) => {
   const { userId } = req.query;
 

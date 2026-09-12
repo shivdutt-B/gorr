@@ -1,418 +1,120 @@
 const { generateSlug } = require("random-word-slugs");
-const { RunTaskCommand, StopTaskCommand } = require("@aws-sdk/client-ecs");
-const { ecsClient, config } = require("../config/aws");
-const { publishLog, subscribeToLogs, publisher, waitForRedisConnection } = require("../services/redisService");
 const { prisma } = require("../services/prismaService");
+const { publishLog } = require("../services/redisService");
+const { executeDeployment } = require("../services/deploymentService");
 
+/**
+ * Handles initial project build & deployment.
+ * Validates request, provisions user, runs ECS build task, and creates project record in database.
+ */
 const buildProject = async (req, res) => {
-  /*
-  First check if Redis is connected. If not, return an error response.
-  This ensures that we don't attempt to redeploy if we can't log the status.
-  We use a utility function to wait for Redis connection with retries.
-  */
-  try {
-    await waitForRedisConnection(publisher, 10, 1000);
-  } catch (err) {
-    return res.status(200).json({
+  const { gitURL, slug, rootDirectory, envVariables, userId } = req.body;
+  const projectSlug = slug || generateSlug();
+  const parsedUserId = userId ? parseInt(userId) : undefined;
+
+  // 1. Validate required payload
+  if (!gitURL) {
+    return res.status(400).json({
       status: "error",
-      message: "Could not connect to Redis. Please try again later.",
-      error: err.message,
+      message: "Git URL is required",
     });
   }
-  
+
   try {
-    const { gitURL, slug, rootDirectory, envVariables } = req.body;
-    const userId = req.body.userId ? parseInt(req.body.userId) : undefined;
-    const projectSlug = slug || generateSlug();
-    let taskArn = null;
-    let responseWasSent = false;
-    let temporaryProject = null;
-    let createdProject = null;
+    // 2. Check slug uniqueness in database
+    const existingProject = await prisma.project.findUnique({
+      where: { slug: projectSlug },
+    });
 
-    try {
-      // Validate required parameters
-      if (!gitURL) {
-        return res.json({
-          status: "error",
-          message: "Git URL is required",
-        });
-      }
-
-      // Check if the slug already exists in the database
-      const existingProject = await prisma.project.findUnique({
-        where: { slug: projectSlug },
-      });
-
-      if (existingProject) {
-        return res.json({
-          status: "error",
-          message: "Project with this slug already exists",
-        });
-      }
-
-      // Start publishing logs after validating the request and checking slug availability
-      await publishLog(projectSlug, {
-        status: "VALIDATING",
-        message: "🔍 Validating project details",
-        details: "Checking user and project information",
-        timestamp: new Date().toISOString(),
-        projectId: projectSlug,
-        stage: "validation",
-      });
-
-      // Check if user exists, if not create the user
-      if (userId) {
-        const existingUser = await prisma.user.findUnique({
-          where: { userId: userId },
-        });
-
-        if (!existingUser) {
-          await prisma.user.create({
-            data: { userId: userId },
-          });
-          await publishLog(projectSlug, {
-            status: "INFO",
-            message: "👤 New user created",
-            details: `User ID: ${userId}`,
-            timestamp: new Date().toISOString(),
-            projectId: projectSlug,
-            stage: "user_creation",
-          });
-        }
-      }
-
-      // Store project details temporarily - we'll create it in the database after successful deployment
-      temporaryProject = {
-        slug: projectSlug,
-        gitUrl: gitURL,
-        userId: userId,
-        status: "QUEUED",
-      };
-
-      // Publish initial queued status to Redis
-      await publishLog(projectSlug, {
-        status: "QUEUED",
-        message:
-          "🔄 Your build has been added to the queue and will start soon",
-        details: "Build environment is being prepared",
-        timestamp: new Date().toISOString(),
-        projectId: projectSlug,
-        stage: "initialization",
-      });
-
-      // Use envVariables directly
-      const FORMATTED_ENV_VARS = await JSON.stringify(envVariables);
-
-      // Define ECS task command
-      const command = new RunTaskCommand({
-        cluster: config.CLUSTER,
-        taskDefinition: config.TASK,
-        launchType: process.env.ECS_LAUNCH_TYPE,
-        count: 1,
-        networkConfiguration: {
-          awsvpcConfiguration: {
-            assignPublicIp: "ENABLED",
-            subnets: config.SUBNETS,
-            securityGroups: config.SECURITY_GROUPS,
-          },
-        },
-        overrides: {
-          containerOverrides: [
-            {
-              name: process.env.ECS_IMAGE,
-              environment: [
-                { name: "GIT_REPOSITORY_URL", value: gitURL },
-                { name: "PROJECT_ID", value: projectSlug },
-                { name: "ROOT_DIRECTORY", value: rootDirectory },
-                { name: "ENV_VARS", value: FORMATTED_ENV_VARS },
-              ],
-            },
-          ],
-        },
-      });
-
-      // Run the ECS task
-      const taskResponse = await ecsClient.send(command);
-      taskArn = taskResponse.tasks[0].taskArn;
-
-      // Update temporary project status
-      temporaryProject.status = "STARTED";
-      temporaryProject.taskArn = taskArn;
-
-      // Publish task started status to Redis
-      await publishLog(projectSlug, {
-        status: "STARTED",
-        message: "🚀 Build process has started successfully",
-        details: "Your code is being processed by our build system",
-        timestamp: new Date().toISOString(),
-        projectId: projectSlug,
-        stage: "building",
-        taskArn: taskArn,
-      });
-
-      /*
-       * Till this point:
-       * make sure we are connected to the redis using waitForRedisConnection()
-       * Validated the response data like gitURL, slug, rootDirectory, envVariables on any invalidation send error response
-       * Checked if the slug already exists in the database if it does send error response
-       * Check if user with the provided userId exists, if not create the user
-       * Created a temporary project object to store project details
-       * Stringify the envVariables to pass them to ECS
-       * Defined the ECS task command with necessary overrides
-       * Ran the ECS task and stored the taskArn
-       * Updated the temporary project status to "STARTED"
-      */
-
-      const buildResult = await new Promise((resolve, reject) => {
-        const timeout = setTimeout(async () => {
-          try {
-            if (subscriber) {
-              await subscriber.unsubscribe();
-            }
-
-            // Stop the ECS task if it times out
-            if (taskArn) {
-              try {
-                const stopCommand = new StopTaskCommand({
-                  cluster: config.CLUSTER,
-                  task: taskArn,
-                  reason: "Build timed out after 15 minutes",
-                });
-                await ecsClient.send(stopCommand);
-              } catch (stopError) {
-                console.error(
-                  "❗ Failed to stop ECS task after timeout:",
-                  stopError
-                );
-              }
-            }
-          } catch (error) {
-            console.error("❗ Error unsubscribing:", error);
-          }
-
-          reject(new Error("Build timed out after 15 minutes"));
-        }, 15 * 60 * 1000); // 15 minute timeout
-
-        let subscriber = null;
-
-        // Subscribe to logs and store the subscriber reference
-        subscriber = subscribeToLogs(projectSlug, async (log) => {
-        
-          /*
-          * This section is only to detect Angular projects
-          * and capture the project name if available.
-          * It will not affect the build process or deployment.
-          */
-          let isAngularProject = false;
-          let projectName = null;
-
-          // Check if log message is a string before trying to use string methods
-          if (typeof log.message === "string") {
-            if (log.message.includes("Detected Angular project")) {
-              isAngularProject = true;
-
-              // Improve regex pattern to capture project name more reliably
-              const match = log.message.match(
-                /Detected Angular project:\s*([^\s]+)/
-              );
-              if (match && match[1]) {
-                projectName = match[1];
-
-                // Store this information at the subscriber level for later use
-                subscriber.isAngularProject = true;
-                subscriber.projectName = projectName;
-              }
-            }
-          }
-
-          /*
-          * Handle different log stages and statuses
-          */
-
-          if (log.stage === "completed") {
-            clearTimeout(timeout);
-            try {
-              await subscriber.unsubscribe();
-            } catch (error) {
-              console.error("❗ Error unsubscribing:", error);
-            }
-
-            // Send success response to client when build is completed
-            if (!responseWasSent) {
-              // Use the stored values from subscriber if current ones aren't set
-              isAngularProject =
-                isAngularProject || subscriber.isAngularProject || false;
-              projectName = projectName || subscriber.projectName || null;
-
-              const baseUrl = process.env.PROXY_DOMAIN || "localhost:8000";
-              let url;
-
-              if (isAngularProject && projectName) {
-                url = `https://${projectSlug}_${projectName}_browser.${baseUrl}`;
-                // url = `http://${projectSlug}_${projectName}_browser.localhost:8000`;
-              } else {
-                url = `https://${projectSlug}.${baseUrl}`;
-                // url = `http://${projectSlug}.localhost:8000`;
-              }
-
-              console.log(`🔌 Generated URL: ${url}`);
-
-              // Now create the project in database after successful deployment
-              try {
-                createdProject = await prisma.project.create({
-                  data: {
-                    slug: projectSlug,
-                    gitUrl: gitURL,
-                    userId: userId,
-                    projectUrl: url,
-                  },
-                });
-
-                await publishLog(projectSlug, {
-                  status: "INFO",
-                  message: "📝 Project created in database",
-                  details: `Project slug: ${projectSlug}`,
-                  timestamp: new Date().toISOString(),
-                  projectId: projectSlug,
-                  stage: "project_creation",
-                });
-              } catch (dbError) {
-                console.error(
-                  "❗ Failed to create project in database:",
-                  dbError
-                );
-                await publishLog(projectSlug, {
-                  status: "ERROR",
-                  message: "❌ Failed to create project in database",
-                  details: dbError.message,
-                  timestamp: new Date().toISOString(),
-                  projectId: projectSlug,
-                  stage: "project_creation_failed",
-                });
-              }
-
-              res.status(200).json({
-                status: "success",
-                message: "Project deployment completed successfully",
-                data: {
-                  projectSlug,
-                  url,
-                  project: createdProject,
-                  isAngularProject,
-                  projectName,
-                },
-              });
-              responseWasSent = true;
-            }
-
-            resolve({ success: true, log });
-          } else if (log.status === "ERROR" || log.status === "FAILED") {
-            clearTimeout(timeout);
-            try {
-              await subscriber.unsubscribe();
-            } catch (error) {
-              console.error("❗ Error unsubscribing:", error);
-            }
-
-            // Stop the ECS task if there's an error
-            if (taskArn) {
-              try {
-                const stopCommand = new StopTaskCommand({
-                  cluster: config.CLUSTER,
-                  task: taskArn,
-                  reason: "Build process failed with error status",
-                });
-                await ecsClient.send(stopCommand);
-              } catch (stopError) {
-                console.error(
-                  "❗ Failed to stop ECS task after error:",
-                  stopError
-                );
-              }
-            }
-
-            // Send error response to client when build fails
-            if (!responseWasSent) {
-              res.json({
-                status: "error",
-                message: "Project deployment failed",
-                error: log.message || "Build failed",
-                data: {
-                  projectSlug,
-                },
-              });
-              responseWasSent = true;
-            }
-
-            reject(new Error(log.message || "Build failed"));
-          }
-        });
-      });
-    } catch (error) {
-      console.error("❗ Build project error:", error);
-
-      // If we have a task running, try to stop it
-      if (taskArn) {
-        try {
-          // Send command to stop the ECS task
-          const stopCommand = new StopTaskCommand({
-            cluster: config.CLUSTER,
-            task: taskArn,
-            reason: "Build process failed or was terminated",
-          });
-          await ecsClient.send(stopCommand);
-        } catch (stopError) {
-          console.error("❗ Failed to stop ECS task:", stopError);
-        }
-      }
-
-      // Publish error status to Redis
-      await publishLog(projectSlug, {
-        status: "ERROR",
-        message: "❌ Deployment process failed",
-        details: error.message,
-        error: {
-          name: error.name,
-          message: error.message,
-          stack:
-            process.env.NODE_ENV === "production" ? undefined : error.stack,
-        },
-        timestamp: new Date().toISOString(),
-        projectId: projectSlug,
-        stage: "failed",
-      });
-
-      // Send error response if we haven't already sent a response
-      if (!responseWasSent) {
-        res.json({
-          status: "error",
-          message: "Failed to deploy project",
-          error: error.message,
-          data: {
-            projectSlug,
-          },
-        });
-        responseWasSent = true;
-      }
-    }
-  } catch (globalError) {
-    console.error("❗ Unexpected deployment error:", globalError);
-
-    // Only send response if headers haven't been sent yet
-    if (!res.headersSent) {
-      return res.json({
+    if (existingProject) {
+      return res.status(409).json({
         status: "error",
-        message: "Deployment failed due to an unexpected error",
-        error: globalError.message || "Unknown error occurred",
+        message: "Project with this slug already exists",
+      });
+    }
+
+    // 3. Publish validation status to Redis
+    await publishLog(projectSlug, {
+      status: "VALIDATING",
+      message: "🔍 Validating project details",
+      details: "Checking user and project information",
+      timestamp: new Date().toISOString(),
+      projectId: projectSlug,
+      stage: "validation",
+    });
+
+    // 4. Upsert user record if userId provided
+    if (parsedUserId) {
+      await prisma.user.upsert({
+        where: { userId: parsedUserId },
+        create: { userId: parsedUserId },
+        update: {},
+      });
+    }
+
+    // 5. Execute containerized deployment
+    const result = await executeDeployment({
+      slug: projectSlug,
+      gitUrl: gitURL,
+      rootDirectory,
+      envVariables,
+      type: "deployment",
+      onComplete: async ({ slug, gitUrl, url }) => {
+        // Persist project in database on successful deployment
+        const project = await prisma.project.create({
+          data: {
+            slug,
+            gitUrl,
+            userId: parsedUserId,
+            projectUrl: url,
+          },
+        });
+
+        await publishLog(slug, {
+          status: "INFO",
+          message: "📝 Project created in database",
+          details: `Project slug: ${slug}`,
+          timestamp: new Date().toISOString(),
+          projectId: slug,
+          stage: "project_creation",
+        });
+
+        return project;
+      },
+    });
+
+    return res.status(200).json({
+      status: "success",
+      message: "Project deployment completed successfully",
+      data: {
+        projectSlug: result.projectSlug,
+        url: result.url,
+        project: result.customData,
+        isAngularProject: result.isAngularProject,
+        projectName: result.projectName,
+      },
+    });
+  } catch (error) {
+    console.error("❗ Build project error:", error);
+
+    await publishLog(projectSlug, {
+      status: "ERROR",
+      message: "❌ Deployment process failed",
+      details: error.message,
+      timestamp: new Date().toISOString(),
+      projectId: projectSlug,
+      stage: "failed",
+    }).catch(() => {});
+
+    if (!res.headersSent) {
+      return res.status(500).json({
+        status: "error",
+        message: "Failed to deploy project",
+        error: error.message || "Unknown error occurred",
+        data: { projectSlug },
       });
     }
   }
-  /*
-   * Till this point:
-   * We created a timeout as a clean up functon which will be fired after 15 minutes and stop the container, this is done to prevent the container from running forever but if everything goes right then we will terminate this timeout.
-   * Checking for angular project by subscribing to logs:<projectId> channel if its an angular project then we set the name for the project and store it in the subscriber object.
-   * We are also checking for the status of the build process and if its completed then we first clear the timeout and send response to client.
-  */
 };
 
 module.exports = { buildProject };

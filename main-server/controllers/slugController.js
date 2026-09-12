@@ -1,13 +1,8 @@
 const { prisma } = require("../services/prismaService");
 
-/*
-  * Get the slug from the request query
-  * Validate that slug is provided
-  * Check if the slug already exists in the database
-  * If the slug exists, return a response indicating it is not available
-  * If the slug does not exist, return a response indicating it is available
-  * If any error occurs during the process, log the error and return an error response
-*/
+/**
+ * Checks if a requested subdomain slug is available.
+ */
 const checkSlugAvailability = async (req, res) => {
   const { slug } = req.query;
 
@@ -21,6 +16,7 @@ const checkSlugAvailability = async (req, res) => {
   try {
     const existingProject = await prisma.project.findUnique({
       where: { slug },
+      select: { id: true },
     });
 
     return res.status(200).json({

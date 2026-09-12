@@ -2,18 +2,14 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const heimdall = require('heimdall-nodejs-sdk');
-const authRoutes = require("./routes/authRoutes");
-const buildRoutes = require("./routes/buildRoutes");
-const slugRoutes = require("./routes/slugRoutes");
-const projectRoutes = require("./routes/projectRoutes");
-const deleteProjectRoutes = require("./routes/deleteProjectRoutes");
+const heimdall = require("heimdall-nodejs-sdk");
+const routes = require("./routes");
 const { connectToDatabase } = require("./services/prismaService");
-const redeployProjectRoutes = require("./routes/redeployProjectRoute");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Standard middleware
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:5174",
@@ -23,19 +19,14 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// Add Heimdall ping endpoint
+// Ping monitoring endpoint
 heimdall.ping(app);
 
-// Routes
-app.use("/auth", authRoutes);
-app.use("/", buildRoutes);
-app.use("/", slugRoutes);
-app.use("/", projectRoutes);
-app.use("/", deleteProjectRoutes);
-app.use("/", redeployProjectRoutes);
+// Application routes
+app.use(routes);
 
 // Global error handler
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   console.error("❌ Unhandled error:", err);
   res.status(500).json({
     status: "error",
@@ -46,15 +37,15 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
-app.use((req, res) => {
+// 404 route handler
+app.use((_req, res) => {
   res.status(404).json({
     status: "error",
     message: "Route not found",
   });
 });
 
-// Improve database initialization
+// Initialize database and start HTTP server
 async function startServer() {
   try {
     await connectToDatabase();
@@ -62,7 +53,7 @@ async function startServer() {
       console.log(`✅ API Server running on port ${PORT}`)
     );
   } catch (error) {
-    console.error("❌ Failed to initialize database:", error);
+    console.error("❌ Failed to initialize server:", error);
     process.exit(1);
   }
 }

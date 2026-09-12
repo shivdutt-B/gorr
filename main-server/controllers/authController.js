@@ -1,43 +1,44 @@
 const axios = require("axios");
 
-const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5174";
+const {
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+  FRONTEND_URL = "http://localhost:5174",
+  GITHUB_ACCESS_TOKEN_ENDPOINT = "https://github.com/login/oauth/access_token",
+} = process.env;
 
-// Validate required environment variables
-if (!CLIENT_ID || !CLIENT_SECRET) {
-  throw new Error("Missing required GitHub OAuth environment variables");
-}
-
+/**
+ * Handles GitHub OAuth authorization code exchange and redirects back to frontend dashboard with token.
+ */
 const githubCallback = async (req, res) => {
-  const code = req.query.code;
+  const { code } = req.query;
 
-  if (!code)
+  if (!code) {
     return res.status(400).json({ error: "Authorization code missing" });
+  }
 
   try {
-    const tokenResponse = await axios.post(
-      process.env.GITHUB_ACCESS_TOKEN_ENDPOINT,
+    const { data } = await axios.post(
+      GITHUB_ACCESS_TOKEN_ENDPOINT,
       null,
       {
         params: {
-          client_id: CLIENT_ID,
-          client_secret: CLIENT_SECRET,
+          client_id: GITHUB_CLIENT_ID,
+          client_secret: GITHUB_CLIENT_SECRET,
           code,
         },
         headers: { Accept: "application/json" },
       }
     );
 
-    const accessToken = tokenResponse.data.access_token;
-
-    if (!accessToken)
+    if (!data.access_token) {
       return res.status(400).json({ error: "Failed to get access token" });
+    }
 
-    res.redirect(`${FRONTEND_URL}/dashboard?token=${accessToken}`);
+    return res.redirect(`${FRONTEND_URL}/dashboard?token=${data.access_token}`);
   } catch (error) {
-    console.error("Error authenticating with GitHub:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("❌ Error authenticating with GitHub:", error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

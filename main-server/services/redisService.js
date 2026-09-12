@@ -1,48 +1,63 @@
-/*
- * Redis Service Module
- *
- * This module provides functionality for Redis pub/sub messaging, primarily used for real-time build logs.
- *
- * Key components:
- *
- * 1. Connection Setup:
- *    - Creates two Redis clients (publisher and subscriber) using ioredis
- *    - Configures connection using environment variables (REDIS_URL)
- *    - Implements retry strategy with exponential backoff (50ms to 2000ms)
- *    - Sets up event listeners for connection management
- *
- * 2. Publisher Functionality:
- *    - The publishLog() function sends messages to Redis channels
- *    - Each project has its own channel named "logs:{projectId}"
- *    - Messages are JSON-serialized before publishing
- *    - Includes error handling and validation
- *
- * 3. Subscriber Functionality:
- *    - The subscribeToLogs() function listens for messages on a project channel
- *    - Takes a callback function that processes incoming messages
- *    - Automatically parses JSON messages
- *    - Returns an unsubscribe function for cleanup
- *
- * Usage:
- *   - Used by build controllers to send real-time updates about build status
- *   - Allows clients to subscribe to build logs for specific projects
- *   - Provides a clean way to handle pub/sub messaging with proper cleanup
- */
-
 const Redis = require("ioredis");
 require("dotenv").config();
 
-// Use environment variables instead of hardcoded credentials
 const redisUrl = process.env.REDIS_URL;
 
-const waitForRedisConnection = async (client, maxRetries = 10, retryDelay = 1000) => {
+/**
+ * Creates a configured Redis client instance with exponential backoff retry.
+ * @param {string} name - Connection label for logging
+ * @returns {Redis} Configured ioredis client
+ */
+const createRedisClient = (name = "publisher") => {
+  if (!redisUrl) {
+    throw new Error("REDIS_URL is required in environment variables");
+  }
+
+  const client = new Redis(redisUrl, {
+    retryStrategy: (times) => {
+      if (times > 5) {
+        console.error(`❌ ${name}: Max retry attempts reached.`);
+        return null;
+      }
+      return Math.min(times * 50, 2000);
+    },
+    maxRetriesPerRequest: 3,
+    enableOfflineQueue: false,
+    connectionName: name,
+  });
+
+  client.on("connect", () => console.log(`✅ Connected to Redis (${name})`));
+  client.on("error", (err) => console.error(`❗ Redis (${name}) error:`, err.message));
+  client.on("close", () => console.log(`📡 Redis connection closed (${name})`));
+
+  return client;
+};
+
+// Global publisher client instance
+let publisher;
+try {
+  publisher = createRedisClient("publisher");
+} catch (error) {
+  console.error("❌ Failed to initialize Redis publisher:", error.message);
+}
+
+/**
+ * Waits for a Redis client to transition to "ready" status.
+ * @param {Redis} client
+ * @param {number} maxRetries
+ * @param {number} retryDelay
+ */
+const waitForRedisConnection = (client, maxRetries = 10, retryDelay = 1000) => {
   let retries = 0;
   return new Promise((resolve, reject) => {
-    if (client.status === "ready") return resolve();
+    if (client?.status === "ready") return resolve();
+    if (!client) return reject(new Error("Redis client not initialized"));
+
     const onConnect = () => {
       client.off("error", onError);
       resolve();
     };
+
     const onError = (err) => {
       retries++;
       if (retries >= maxRetries) {
@@ -57,124 +72,36 @@ const waitForRedisConnection = async (client, maxRetries = 10, retryDelay = 1000
         }, retryDelay);
       }
     };
+
     client.once("connect", onConnect);
     client.on("error", onError);
   });
 };
 
-// Setup Redis client with improved retry strategy and error handling
-const createRedisClient = (name = "publisher") => {
-  if (!redisUrl) {
-    console.error(
-      `❌ Redis URL is not configured. Please check your environment variables.`
-    );
-    throw new Error("Redis URL is required");
-  }
-
-  const client = new Redis(redisUrl, {
-    retryStrategy: (times) => {
-      // Maximum retry attempts (e.g., 5 times)
-      const maxRetryAttempts = 5;
-
-      if (times > maxRetryAttempts) {
-        console.error(
-          `❌ ${name}: Max retry attempts (${maxRetryAttempts}) reached. Giving up.`
-        );
-        return null; // Stop retrying
-      }
-
-      const delay = Math.min(times * 50, 2000);
-      return delay;
-    },
-    maxRetriesPerRequest: 3,
-    enableOfflineQueue: false, // Don't queue commands when disconnected
-    connectionName: name,
-  });
-
-  client.on("connect", () => {
-    console.log(`✅ Successfully connected to Redis (${name})`);
-  });
-
-  client.on("error", (err) => {
-    console.error(`❗ Redis ${name} connection error:`, err.message);
-    if (err.code === "ENOTFOUND") {
-      console.error(
-        `❗ Could not resolve Redis host. Please check your REDIS_URL configuration.`
-      );
-    }
-  });
-
-  client.on("close", () => {
-    console.log(`📡 Redis connection closed (${name})`);
-  });
-
-  return client;
-};
-
-// Create Redis clients
-let publisher;
-let subscriber;
-
-try {
-  publisher = createRedisClient("publisher");
-  subscriber = createRedisClient("subscriber");
-} catch (error) {
-  console.error("❌ Failed to initialize Redis clients:", error.message);
-  // You might want to implement a fallback mechanism here
-}
-
+/**
+ * Publishes a structured log event to the project's Redis log channel.
+ * @param {string} projectId - Project slug
+ * @param {Object} log - Log payload object
+ */
 const publishLog = async (projectId, log) => {
-  if (!projectId) {
-    console.error("Project ID is required for Redis channel");
-    throw new Error("Project ID is required");
-  }
-
-  // If Redis is not ready, also send a special error log for build controller to catch
-  if (!publisher || publisher.status !== "ready") {
-    console.error("Redis publisher is not ready");
-    // Attempt to send a fallback error log to the build log handler
-    // This is a no-op if Redis is truly down, but allows for local error handling
-    try {
-      if (log && log.status !== "ERROR") {
-        await publisher?.publish?.(
-          `logs:${projectId}`,
-          JSON.stringify({
-            status: "ERROR",
-            message: "Could not connect to Redis. Could not deploy your project.",
-            details: "Redis publisher is not ready",
-            timestamp: new Date().toISOString(),
-            projectId,
-            stage: "failed",
-          })
-        );
-      }
-    } catch (e) {}
-    return false;
-  }
+  if (!projectId) throw new Error("Project ID is required");
+  if (!publisher || publisher.status !== "ready") return false;
 
   try {
     await publisher.publish(`logs:${projectId}`, JSON.stringify(log));
     return true;
   } catch (error) {
     console.error("❗ Error publishing log:", error.message);
-    // Attempt to send a fallback error log
-    try {
-      await publisher.publish(
-        `logs:${projectId}`,
-        JSON.stringify({
-          status: "ERROR",
-          message: "Could not connect to Redis. Could not deploy your project.",
-          details: error.message,
-          timestamp: new Date().toISOString(),
-          projectId,
-          stage: "failed",
-        })
-      );
-    } catch (e) {}
     return false;
   }
 };
 
+/**
+ * Subscribes to build log events for a specific project.
+ * @param {string} projectId - Project slug
+ * @param {Function} callback - Function receiving parsed log objects
+ * @returns {Redis} Subscriber client with custom cleanup unsubscribe() method
+ */
 const subscribeToLogs = (projectId, callback) => {
   if (!projectId || !callback) {
     throw new Error("Project ID and callback are required");
@@ -188,30 +115,27 @@ const subscribeToLogs = (projectId, callback) => {
       subscriberClient.subscribe(`logs:${projectId}`, (err) => {
         if (err) {
           console.error("❗ Error subscribing to logs:", err.message);
-          return;
+        } else {
+          isSubscribed = true;
         }
-        isSubscribed = true;
       });
     }
   });
 
-  subscriberClient.on("message", (channel, message) => {
+  subscriberClient.on("message", (_channel, message) => {
     try {
-      const log = JSON.parse(message);
-      callback(log);
+      callback(JSON.parse(message));
     } catch (error) {
       console.error("❗ Error parsing log message:", error.message);
     }
   });
 
-  // Enhanced unsubscribe method
   subscriberClient.unsubscribe = async () => {
     try {
       if (isSubscribed) {
         await subscriberClient.unsubscribe(`logs:${projectId}`);
         isSubscribed = false;
       }
-
       if (subscriberClient.status === "ready") {
         await subscriberClient.quit();
       }
@@ -223,5 +147,9 @@ const subscribeToLogs = (projectId, callback) => {
   return subscriberClient;
 };
 
-// Update exports to include subscribeToLogs
-module.exports = { publishLog, publisher, subscribeToLogs, waitForRedisConnection };
+module.exports = {
+  publishLog,
+  publisher,
+  subscribeToLogs,
+  waitForRedisConnection,
+};
