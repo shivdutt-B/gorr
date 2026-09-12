@@ -9,7 +9,7 @@ const heimdall = require("heimdall-nodejs-sdk");
 const app = express();
 const PORT = process.env.PORT || 8000;
 const BASE_PATH = process.env.S3_BASE_PATH;
-const BASE_DOMAIN = process.env.BASE_DOMAIN || "localhost";
+const BASE_DOMAIN = process.env.BASE_DOMAIN || "localhost:8000";
 const MAIN_SERVER_URL = process.env.MAIN_SERVER_URL || "http://localhost:5000";
 const proxy = httpProxy.createProxy();
 
