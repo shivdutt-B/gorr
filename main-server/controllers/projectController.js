@@ -21,7 +21,7 @@ const getUserProjects = async (req, res) => {
       data: projects,
     });
   } catch (error) {
-    console.error("❌ Error fetching user projects:", error);
+    console.error("Error fetching user projects:", error);
     return res.status(500).json({
       status: "error",
       message: "Failed to fetch projects",
@@ -62,7 +62,7 @@ const incrementProjectView = async (req, res) => {
       data: updatedProject,
     });
   } catch (error) {
-    console.error("❌ Error incrementing project view:", error.message);
+    console.error("Error incrementing project view:", error.message);
     return res.status(404).json({
       status: "error",
       message: "Project not found",

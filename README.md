@@ -29,28 +29,28 @@
 
 ---
 
-## 🌟 Overview
+## Overview
 
 **GORR** is a sophisticated microservices-based deployment platform designed to streamline project deployments with real-time monitoring, efficient resource management, and seamless integration with cloud services. Built for modern development workflows, GORR provides a comprehensive solution for deploying, monitoring, and managing applications at scale.
 
-> **🎯 Mission**: Simplify deployments, enhance monitoring, and accelerate development workflows through intelligent microservices architecture.
+> ** Mission**: Simplify deployments, enhance monitoring, and accelerate development workflows through intelligent microservices architecture.
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 <table>
 <tr>
 <td width="50%">
 
-### 🚀 **Deployment Excellence**
+### **Deployment Excellence**
 - **Real-time Monitoring** — Live build and deployment status updates
 - **Multi-Project Support** — Handle multiple project types and configurations
 
 </td>
 <td width="50%">
 
-### 📊 **Advanced Monitoring**
+### **Advanced Monitoring**
 - **Live Logging** — Redis-powered real-time log streaming
 - **WebSocket Communication** — Instant status updates via Socket.IO
 
@@ -59,14 +59,14 @@
 <tr>
   <td width="50%">
 
-### 🏗️ **Microservices Architecture**
+### **Microservices Architecture**
 - **5-Service Design** — Clean separation of concerns
 - **Distributed Processing** — Horizontal scaling capabilities
 
 </td>
 <td width="50%">
 
-### ☁️ **Cloud Integration**
+### **Cloud Integration**
 - **AWS S3 Storage** — Scalable artifact storage and deployment
 - **Custom Domains** — Support for custom domains and subdomains
 - **ECS Integration** — Container orchestration for scalable deployments
@@ -77,54 +77,54 @@
 
 ---
 
-## 🏛️ Architecture Overview
+## Architecture Overview
 
 <div align="center">
 <img src="./README.ASSETS/gorr-architecture.jpg" alt="GORR Architecture" width="1100px" height="800px" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
 </div>
 
-### 🧱 Microservices Breakdown
+### Microservices Breakdown
 
-| 🎯 Service | 📝 Description | 🔧 Technology |
+| Service | Description | Technology |
 |------------|-----------------|---------------|
-| **🌐 Main Server** | Authentication, project management, and build orchestration | Express.js, Prisma, PostgreSQL |
-| **🏭 Build Service** | Project building, AWS S3 integration, and deployment | Node.js, AWS ECS ECR, Redis |
-| **🔌 Socket Server** | Real-time communication and live updates | Socket.IO, Redis Pub/Sub |
-| **🔄 Router Service** | Project routing and domain management | Express.js, AWS S3 |
-| **💻 Client Application** | Interactive deployment dashboard and monitoring interface | React, Vite, TailwindCSS |
+| **Main Server** | Authentication, project management, and build orchestration | Express.js, Prisma, PostgreSQL |
+| **Build Service** | Project building, AWS S3 integration, and deployment | Node.js, AWS ECS ECR, Redis |
+| **Socket Server** | Real-time communication and live updates | Socket.IO, Redis Pub/Sub |
+| **Router Service** | Project routing and domain management | Express.js, AWS S3 |
+| **Client Application** | Interactive deployment dashboard and monitoring interface | React, Vite, TailwindCSS |
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
-### 🖥️ **Backend Infrastructure**
+### **Backend Infrastructure**
 | Technology | Badge | Purpose |
 |------------|-------|---------|
 | **Node.js** | ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white) | Runtime Environment |
 | **Express.js** | ![Express.js](https://img.shields.io/badge/Express.js-000000?style=flat-square&logo=express&logoColor=white) | Web Framework |
 | **Prisma** | ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white) | ORM & Database Client |
 
-### 🗄️ **Database & Storage**
+### **Database & Storage**
 | Technology | Badge | Purpose |
 |------------|-------|---------|
 | **PostgreSQL** | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat-square&logo=postgresql&logoColor=white) | Primary Database |
 | **Redis** | ![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white) | Pub/Sub Messaging |
 | **AWS S3** | ![AWS S3](https://img.shields.io/badge/AWS_S3-FF9900?style=flat-square&logo=amazon-s3&logoColor=white) | Artifact Storage |
 
-### 📡 **Real-time Communication**
+### **Real-time Communication**
 | Technology | Badge | Purpose |
 |------------|-------|---------|
 | **Socket.IO** | ![Socket.IO](https://img.shields.io/badge/Socket.IO-010101?style=flat-square&logo=socketdotio&logoColor=white) | WebSocket Communication |
 | **Redis Pub/Sub** | ![Redis](https://img.shields.io/badge/Redis_Pub/Sub-DC382D?style=flat-square&logo=redis&logoColor=white) | Message Broadcasting |
 
-### 🎨 **Frontend**
+### **Frontend**
 | Technology | Badge | Purpose |
 |------------|-------|---------|
 | **React** | ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) | UI Library |
 | **Vite** | ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white) | Build Tool |
 | **TailwindCSS** | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white) | Styling Framework |
 
-### ☁️ **Cloud Services**
+### **Cloud Services**
 | Technology | Badge | Purpose |
 |------------|-------|---------|
 | **AWS ECS** | ![AWS ECS](https://img.shields.io/badge/AWS_ECS-FF9900?style=flat-square&logo=amazon-ecs&logoColor=white) | Container Orchestration |
@@ -133,9 +133,9 @@
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
-### 📋 Prerequisites
+### Prerequisites
 
 Ensure you have the following installed:
 - **Node.js** (v16 or higher)
@@ -144,14 +144,14 @@ Ensure you have the following installed:
 - **AWS Account** (For S3 and ECS services)
 - **Git**
 
-### ⚡ Installation Steps
+### Installation Steps
 
 ```bash
-# 1️⃣ Clone the repository
+# 1. Clone the repository
 git clone https://github.com/shivdutt-B/gorr.git
 cd gorr
 
-# 2️⃣ Install dependencies for all services
+# 2. Install dependencies for all services
 npm run install-all
 
 # Alternative: Install dependencies for each service individually
@@ -161,7 +161,7 @@ cd socket-server && npm install && cd ../
 cd router-service && npm install && cd ../
 cd client && npm install && cd ../
 
-# 3️⃣ Configure environment variables for each service
+# 3. Configure environment variables for each service
 cp main-server/.env.example main-server/.env
 cp build-service/.env.example build-service/.env
 cp socket-server/.env.example socket-server/.env
@@ -169,47 +169,47 @@ cp router-service/.env.example router-service/.env
 cp client/.env.example client/.env
 # Edit each .env file with your own configuration
 
-# 4️⃣ Initialize the PostgreSQL database (from main-server)
+# 4. Initialize the PostgreSQL database (from main-server)
 cd main-server
 npx prisma migrate dev
 npx prisma generate
 cd ../
 
-# 5️⃣ Start all services (see below for individual service startup)
+# 5. Start all services (see below for individual service startup)
 npm run dev
 ```
 
-### 🔧 Individual Service Startup
+### Individual Service Startup
 
 ```bash
-# 🌐 Start the Main Server (Authentication & Project Management)
+# Start the Main Server (Authentication & Project Management)
 cd main-server
 npm run dev
 
-# 🏭 Start the Build Service (Project Building & Deployment)
+# Start the Build Service (Project Building & Deployment)
 cd build-service
 npm run dev
 
-# 🔌 Start the Socket Server (Real-time Communication)
+# Start the Socket Server (Real-time Communication)
 cd socket-server
 npm run dev
 
-# 🔄 Start the Router Service (Reverse Proxy & Routing)
+# Start the Router Service (Reverse Proxy & Routing)
 cd router-service
 npm run dev
 
-# 💻 Start the Client Application (Dashboard Interface)
+# Start the Client Application (Dashboard Interface)
 cd client
 npm run dev
 ```
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 gorr/
-├── 🌐 main-server/                         # API & Authentication Service
+├── main-server/                         # API & Authentication Service
 │   ├── config/                             # aws configurations
 │   ├── controllers/                        # Route handlers
 │   ├── services/                           # Utils and helpers
@@ -218,20 +218,20 @@ gorr/
 │   ├── prisma/                             # Database schema & migrations
 │   └── package.json                        
 │
-├── 🏭 build-service/                       # Build & Deployment Service
+├── build-service/                       # Build & Deployment Service
 │   ├── main.js                             # Entry Point
 │   └── package.json                        
 │
-├── 🔌 socket-server/                       # Real-time Communication Service
+├── socket-server/                       # Real-time Communication Service
 │   ├── utils.js                            # Utility and Helper
 │   ├── app.js                              # Entry Point
 │   └── package.json                        
 │
-├── 🔄 router-service/                      # Reverse Proxy Service
+├── router-service/                      # Reverse Proxy Service
 │   ├── main.cjs                            # Entry Point
 │   └── package.json                         
 │
-├── 💻 client/                             # React Dashboard
+├── client/                             # React Dashboard
 │   ├── src/
 │   │   ├── assets/                         # Contains static files
 │   │   ├── components/                     # UI Components
@@ -243,30 +243,30 @@ gorr/
 │   │   └── App.jsx                         # Entry Point
 │   └── package.json                        
 │
-└── 📄 README.ASSETS/                       # Documentation Assets
+└── README.ASSETS/                       # Documentation Assets
     └── gorr-architecture.jpg               # Architecture Diagram
 
 ```
 
 ---
 
-## 🔌 Service Ports & Configuration
+## Service Ports & Configuration
 
-| 🎯 Service | 🚪 Port | 📝 Description | 🔧 Technology |
+| Service | Port | Description | Technology |
 |------------|---------|----------------|---------------|
-| **🌐 Main Server** | `5000` | API and authentication endpoints | Express.js, Prisma |
-| **🏭 Build Service** | `ENV` | Build and deployment processing | Node.js, AWS SDK |
-| **🔌 Socket Server** | `7000` | Real-time WebSocket communication | Socket.IO, Redis |
-| **🔄 Router Service** | `8000` | Reverse proxy and routing | Express.js |
-| **💻 Client** | `5173` | Development dashboard interface | React, Vite |
+| **Main Server** | `5000` | API and authentication endpoints | Express.js, Prisma |
+| **Build Service** | `ENV` | Build and deployment processing | Node.js, AWS SDK |
+| **Socket Server** | `7000` | Real-time WebSocket communication | Socket.IO, Redis |
+| **Router Service** | `8000` | Reverse proxy and routing | Express.js |
+| **Client** | `5173` | Development dashboard interface | React, Vite |
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions to make GORR even better! Here's how you can help:
 
-### 🚀 Getting Started
+### Getting Started
 1. **Fork** the repository
 2. **Clone** your fork locally
 3. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
