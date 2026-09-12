@@ -1,6 +1,6 @@
 const { generateSlug } = require("random-word-slugs");
 const { prisma } = require("../services/prismaService");
-const { publishLog } = require("../services/redisService");
+const { checkRedisConnection, publishLog } = require("../services/redisService");
 const { executeDeployment } = require("../services/deploymentService");
 
 /**
@@ -20,8 +20,17 @@ const buildProject = async (req, res) => {
     });
   }
 
+  // 2. Ensure Redis is connected before starting deployment
+  const isRedisReady = await checkRedisConnection();
+  if (!isRedisReady) {
+    return res.status(503).json({
+      status: "error",
+      message: "Redis service is not connected. Deployment cannot proceed.",
+    });
+  }
+
   try {
-    // 2. Check slug uniqueness in database
+    // 3. Check slug uniqueness in database
     const existingProject = await prisma.project.findUnique({
       where: { slug: projectSlug },
     });
@@ -33,7 +42,7 @@ const buildProject = async (req, res) => {
       });
     }
 
-    // 3. Publish validation status to Redis
+    // 4. Publish validation status to Redis
     await publishLog(projectSlug, {
       status: "VALIDATING",
       message: "🔍 Validating project details",
@@ -43,7 +52,7 @@ const buildProject = async (req, res) => {
       stage: "validation",
     });
 
-    // 4. Upsert user record if userId provided
+    // 5. Upsert user record if userId provided
     if (parsedUserId) {
       await prisma.user.upsert({
         where: { userId: parsedUserId },
@@ -52,7 +61,7 @@ const buildProject = async (req, res) => {
       });
     }
 
-    // 5. Execute containerized deployment
+    // 6. Execute containerized deployment
     const result = await executeDeployment({
       slug: projectSlug,
       gitUrl: gitURL,

@@ -42,40 +42,65 @@ try {
 }
 
 /**
- * Waits for a Redis client to transition to "ready" status.
- * @param {Redis} client
- * @param {number} maxRetries
- * @param {number} retryDelay
+ * Synchronously checks if the primary Redis publisher client is currently ready.
+ * @returns {boolean}
  */
-const waitForRedisConnection = (client, maxRetries = 10, retryDelay = 1000) => {
-  let retries = 0;
-  return new Promise((resolve, reject) => {
-    if (client?.status === "ready") return resolve();
-    if (!client) return reject(new Error("Redis client not initialized"));
+const isRedisConnected = () => {
+  return Boolean(publisher && publisher.status === "ready");
+};
 
-    const onConnect = () => {
-      client.off("error", onError);
+/**
+ * Waits for a Redis client to transition to "ready" status, or rejects on timeout.
+ * @param {Redis} client
+ * @param {number} timeoutMs
+ * @returns {Promise<void>}
+ */
+const waitForRedisConnection = (client = publisher, timeoutMs = 3000) => {
+  if (client?.status === "ready") return Promise.resolve();
+  if (!client) return Promise.reject(new Error("Redis client not initialized"));
+
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("Redis connection timed out"));
+    }, timeoutMs);
+
+    const onReady = () => {
+      cleanup();
       resolve();
     };
 
     const onError = (err) => {
-      retries++;
-      if (retries >= maxRetries) {
-        client.off("connect", onConnect);
-        reject(new Error("Could not connect to Redis after max retries"));
-      } else {
-        setTimeout(() => {
-          if (client.status === "ready") {
-            client.off("error", onError);
-            resolve();
-          }
-        }, retryDelay);
+      if (client.status === "end") {
+        cleanup();
+        reject(err || new Error("Redis connection failed"));
       }
     };
 
-    client.once("connect", onConnect);
+    const cleanup = () => {
+      clearTimeout(timer);
+      client.off("ready", onReady);
+      client.off("error", onError);
+    };
+
+    client.on("ready", onReady);
     client.on("error", onError);
   });
+};
+
+/**
+ * Ensures Redis is connected before performing operations, waiting briefly if reconnecting.
+ * @param {number} timeoutMs
+ * @returns {Promise<boolean>}
+ */
+const checkRedisConnection = async (timeoutMs = 2000) => {
+  if (isRedisConnected()) return true;
+  try {
+    await waitForRedisConnection(publisher, timeoutMs);
+    return isRedisConnected();
+  } catch {
+    return false;
+  }
 };
 
 /**
@@ -85,7 +110,7 @@ const waitForRedisConnection = (client, maxRetries = 10, retryDelay = 1000) => {
  */
 const publishLog = async (projectId, log) => {
   if (!projectId) throw new Error("Project ID is required");
-  if (!publisher || publisher.status !== "ready") return false;
+  if (!isRedisConnected()) return false;
 
   try {
     await publisher.publish(`logs:${projectId}`, JSON.stringify(log));
@@ -148,6 +173,8 @@ const subscribeToLogs = (projectId, callback) => {
 };
 
 module.exports = {
+  checkRedisConnection,
+  isRedisConnected,
   publishLog,
   publisher,
   subscribeToLogs,

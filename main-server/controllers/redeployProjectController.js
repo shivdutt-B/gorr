@@ -1,5 +1,5 @@
 const { prisma } = require("../services/prismaService");
-const { publishLog } = require("../services/redisService");
+const { checkRedisConnection, publishLog } = require("../services/redisService");
 const { executeDeployment } = require("../services/deploymentService");
 
 /**
@@ -18,8 +18,17 @@ const redeployProject = async (req, res) => {
     });
   }
 
+  // 2. Ensure Redis is connected before starting redeployment
+  const isRedisReady = await checkRedisConnection();
+  if (!isRedisReady) {
+    return res.status(503).json({
+      status: "error",
+      message: "Redis service is not connected. Redeployment cannot proceed.",
+    });
+  }
+
   try {
-    // 2. Verify project exists in database
+    // 3. Verify project exists in database
     const existingProject = await prisma.project.findUnique({
       where: { slug },
     });
@@ -31,7 +40,7 @@ const redeployProject = async (req, res) => {
       });
     }
 
-    // 3. Verify user permissions
+    // 4. Verify user permissions
     if (parsedUserId && existingProject.userId !== parsedUserId) {
       return res.status(403).json({
         status: "error",
@@ -39,7 +48,7 @@ const redeployProject = async (req, res) => {
       });
     }
 
-    // 4. Execute containerized redeployment
+    // 5. Execute containerized redeployment
     const result = await executeDeployment({
       slug,
       gitUrl: gitURL || existingProject.gitUrl,
