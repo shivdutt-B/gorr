@@ -82,7 +82,8 @@ export function DeploymentSteps() {
         </div>
 
         {/* Steps */}
-        <div className="grid gap-14 lg:grid-cols-4 mt-12">
+        {/* <div className="grid gap-14 lg:grid-cols-4 mt-12 "> */}
+          <div className="grid gap-14 lg:grid-cols-4 mt-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {/* =====================================================
               STEP 01 — PUSH YOUR CODE
           ===================================================== */}

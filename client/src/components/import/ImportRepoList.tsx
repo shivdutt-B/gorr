@@ -251,7 +251,7 @@ export default function ImportRepoList() {
   };
 
   return (
-    <div className="text-white p-6 rounded-[4px] max-w-[800px] w-full my-4 mx-auto">
+    <div className="text-white rounded-[4px] max-w-[800px] w-full my-4 mx-auto">
       {renderHeader()}
       {renderContent()}
       {!isLoading && filteredRepos.length > 0 && renderFooter()}

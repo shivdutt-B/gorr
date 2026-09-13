@@ -29,6 +29,11 @@ export function QnASection() {
 
   const displayedIndex = hoveredIndex !== null ? hoveredIndex : activeIndex;
 
+  const toggleFAQ = (index) => {
+    // Allows toggling off on mobile; ensures active state on desktop
+    setActiveIndex((prevIndex) => (prevIndex === index ? null : index));
+  };
+
   return (
     <section className="relative w-full overflow-hidden bg-transparent py-8 sm:py-12">
       {/* Ambient background */}
@@ -78,66 +83,113 @@ export function QnASection() {
 
         {/* Q&A Grid */}
         <div className="mt-12 grid gap-16 lg:mt-16 lg:grid-cols-2 lg:gap-24">
-          {/* Left: Questions */}
+          {/* Questions Accordion List */}
           <div className="flex flex-col">
             {faqs.map((faq, index) => {
               const isActive = activeIndex === index;
 
               return (
-                <button
+                <div
                   key={index}
-                  onClick={() => setActiveIndex(index)}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  className={`
-                    group
-                    relative
-                    w-full
-                    border-b
-                    border-[hsl(var(--border)/0.15)]
-                    py-6
-                    text-left
-                    transition-colors
-                    duration-300
-                    ${isActive
-                      ? "text-[hsl(var(--accent))]"
-                      : "text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))]"
-                    }
-                  `}
+                  className="border-b border-[hsl(var(--border)/0.15)]"
                 >
-                  <span
-                    className="
-                      font-serif
-                      text-[clamp(1.3rem,2.2vw,1.75rem)]
-                      font-normal
-                      leading-[1.2]
-                      tracking-[-0.01em]
-                    "
-                  >
-                    {faq.question}
-                  </span>
-
-                  {/* Bottom accent line on active */}
-                  <span
+                  <button
+                    onClick={() => toggleFAQ(index)}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
                     className={`
-                      absolute
-                      bottom-[-1px]
-                      left-0
-                      h-[1px]
-                      bg-[hsl(var(--accent))]
-                      transition-all
-                      duration-500
-                      ease-out
-                      ${isActive ? "w-full" : "w-0"}
+                      group
+                      relative
+                      flex
+                      w-full
+                      items-center
+                      justify-between
+                      py-6
+                      text-left
+                      transition-colors
+                      duration-300
+                      ${
+                        isActive
+                          ? "text-[hsl(var(--accent))]"
+                          : "text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))]"
+                      }
                     `}
-                  />
-                </button>
+                  >
+                    <span
+                      className="
+                        font-serif
+                        text-[clamp(1.3rem,2.2vw,1.75rem)]
+                        font-normal
+                        leading-[1.2]
+                        tracking-[-0.01em]
+                      "
+                    >
+                      {faq.question}
+                    </span>
+
+                    {/* Expand/Collapse Chevron Indicator (Visible only when stacked) */}
+                    <span className="ml-4 flex-shrink-0 text-[hsl(var(--text-muted))] lg:hidden">
+                      <svg
+                        className={`h-5 w-5 transition-transform duration-300 ${
+                          isActive ? "rotate-180 text-[hsl(var(--accent))]" : ""
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </span>
+
+                    {/* Bottom accent line on active */}
+                    <span
+                      className={`
+                        absolute
+                        bottom-[-1px]
+                        left-0
+                        h-[1px]
+                        bg-[hsl(var(--accent))]
+                        transition-all
+                        duration-500
+                        ease-out
+                        ${isActive ? "w-full" : "w-0"}
+                      `}
+                    />
+                  </button>
+
+                  {/* Inline Expandable Answer for Mobile/Stacked Screens */}
+                  <div
+                    className={`
+                      grid
+                      transition-[grid-template-rows,opacity]
+                      duration-300
+                      ease-in-out
+                      lg:hidden
+                      ${
+                        isActive
+                          ? "grid-rows-[1fr] opacity-100 pb-6"
+                          : "grid-rows-[0fr] opacity-0"
+                      }
+                    `}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="text-[1.1rem] leading-[1.6] text-[hsl(var(--text-secondary))]">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>
 
-          {/* Right: Answer — no box, just text */}
-          <div className="lg:sticky lg:top-32 lg:self-start">
+          {/* Right Column Answer Display (Desktop Only) */}
+          <div className="hidden lg:sticky lg:top-32 lg:block lg:self-start">
             <span
               className="
                 text-[0.7rem]
@@ -161,7 +213,9 @@ export function QnASection() {
               "
               key={displayedIndex}
             >
-              {faqs[displayedIndex].answer}
+              {displayedIndex !== null && faqs[displayedIndex]
+                ? faqs[displayedIndex].answer
+                : "Select a question to view the answer."}
             </p>
           </div>
         </div>

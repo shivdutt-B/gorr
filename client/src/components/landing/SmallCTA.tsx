@@ -14,12 +14,7 @@ export function SmallCTA() {
   return (
     <section className="relative w-full overflow-hidden bg-transparent py-8 sm:py-12">
       <div className="container-gutter">
-        <div
-          className="
-            relative
-            overflow-hidden
-          "
-        >
+        <div className="relative overflow-hidden">
           {/* Accent glow */}
           <div
             className="
@@ -89,14 +84,14 @@ export function SmallCTA() {
               </p>
             </div>
 
-            {/* CTA */}
+            {/* CTA Button */}
             <Link
-              to={isUserLoading ? "#" : (user ? "/dashboard" : "/join")}
+              to={isUserLoading ? "#" : user ? "/dashboard" : "/join"}
               onClick={(e) => {
                 if (isUserLoading) e.preventDefault();
               }}
               className={cn(
-                "group inline-flex shrink-0 items-center gap-3 rounded-[4px] bg-[hsl(var(--accent))] py-2 pl-5 pr-2 text-[0.85rem] font-medium text-[#030303]",
+                "group inline-flex shrink-0 self-start sm:self-auto items-center justify-between gap-3 rounded-[4px] bg-[hsl(var(--accent))] py-2 pl-4 pr-2 text-[0.85rem] font-medium text-[#030303] transition-opacity whitespace-nowrap",
                 isUserLoading && "opacity-80 cursor-not-allowed"
               )}
             >
@@ -107,6 +102,7 @@ export function SmallCTA() {
                   flex
                   h-7
                   w-7
+                  shrink-0
                   items-center
                   justify-center
                   rounded-[3px]
